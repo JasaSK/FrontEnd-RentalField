@@ -45,7 +45,7 @@
             </div>
 
             <!-- Tombol Verifikasi -->
-            <form action="{{ route('set-password') }}" method="GET">
+            <form action="" method="GET">
                 <button
                     type="submit"
                     class="w-full bg-[#13810A] hover:bg-[#0f6d09] text-white font-semibold py-2 rounded-md transition duration-200 mb-4">
