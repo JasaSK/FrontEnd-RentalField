@@ -12,6 +12,7 @@
 </head>
 
 <body class="bg-white flex flex-col items-center min-h-screen">
+
     <!-- NAVBAR -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-300">
         <div class="flex justify-between items-center px-6 md:px-12 py-4">
@@ -22,106 +23,124 @@
     <div class="h-20"></div>
 
     <!-- CARD UTAMA -->
-    <div class="relative w-[95%] max-w-[980px] h-auto md:h-[580px] rounded-2xl overflow-hidden shadow-2xl bg-white">
+    <div class="relative w-[95%] max-w-[1200px] rounded-2xl overflow-hidden shadow-2xl bg-white">
 
-        <!-- BACKGROUND (untuk desktop) -->
+        <!-- BACKGROUND (desktop) -->
         <div class="hidden md:block absolute inset-0">
             <div class="w-full h-full bg-[url('/aset/register-bg.jpg')] bg-cover bg-center"></div>
             <div class="absolute inset-0 bg-black/25"></div>
         </div>
 
-        <!-- TEKS (desktop) -->
+        <!-- TEKS PROMO (desktop) -->
         <div
-            class="hidden md:block absolute top-1/2 left-[60px] md:left-[90px] -translate-y-[40%] text-white text-base md:text-[20px] font-semibold drop-shadow-lg leading-relaxed max-w-xs">
-            Selamat datang! Silakan buat<br>
-            akun untuk mulai mengakses
-            <span class="pl-10 md:pl-16">layanan kami.</span>
+            class="hidden md:block absolute top-1/2 left-12 md:left-20 -translate-y-1/2 text-white font-semibold drop-shadow-lg max-w-xs leading-relaxed text-base md:text-[20px] z-10">
+            Selamat datang! Silakan buat akun untuk mulai mengakses layanan kami.
         </div>
 
         <!-- FORM REGISTER -->
         <div
-            class="relative md:absolute md:top-5 md:right-5 md:bottom-5 bg-[#13810A]/80 md:backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full md:w-[360px] text-white flex flex-col justify-center items-center transition-all duration-300">
+            class="relative z-20 bg-[#13810A]/90 md:backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full md:w-[400px] md:ml-auto md:mr-12 my-8 text-white flex flex-col gap-4">
 
-            <div class="flex flex-col items-center w-full">
-                <!-- ICON -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mt-2 md:mt-6 mb-1" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+            <!-- ICON -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
 
-                <h2 class="text-2xl font-bold mb-5 tracking-wide">Sign up</h2>
+            <h2 class="text-2xl font-bold mb-4 text-center">Sign Up</h2>
 
-                <form action="{{ route('Register') }}" method="POST"
-                    class="w-full flex flex-col gap-4 text-sm font-medium">
-                    @csrf
+            <form action="{{ route('Register') }}" method="POST" class="flex flex-col gap-4 w-full">
+                @csrf
 
-                    <!-- Nama -->
-                    <div>
-                        <label class="block mb-1">Nama</label>
-                        <input name="name" type="text" placeholder="Nama lengkap" required
-                            class="w-full p-2.5 rounded-md text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
-                    </div>
+                <div class="flex flex-col">
+                    <label for="name" class="mb-1">Nama</label>
+                    <input id="name" name="name" type="text" placeholder="Nama lengkap" required
+                        class="w-full p-2.5 rounded-md text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
+                </div>
 
-                    <!-- Nomor Telepon -->
-                    <div>
-                        <label class="block mb-1">Nomor Telepon</label>
-                        <div class="flex items-center rounded-md overflow-hidden bg-white">
-                            <div
-                                class="flex items-center gap-1 px-3 py-2 bg-gray-100 border-r border-gray-300 text-black">
-                                <img src="https://flagcdn.com/w20/id.png" alt="Indonesia" class="w-5 h-4 rounded-sm">
-                                <span class="text-sm font-medium">+62</span>
-                            </div>
-                            <input id="no_telp" name="no_telp" type="tel" placeholder="81234567890" required
-                                class="flex-1 p-2.5 text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
+                <div class="flex flex-col">
+                    <label for="no_telp" class="mb-1">Nomor Telepon</label>
+                    <div class="flex items-center rounded-md overflow-hidden bg-white border border-gray-300">
+                        <div class="flex items-center gap-1 px-3 py-2 bg-gray-100 border-r border-gray-300 text-black">
+                            <img src="https://flagcdn.com/w20/id.png" alt="Indonesia" class="w-5 h-4 rounded-sm">
+                            <span class="text-sm font-medium">+62</span>
                         </div>
+                        <input id="no_telp" name="no_telp" type="tel" placeholder="81234567890" required
+                            class="flex-1 p-2.5 text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
                     </div>
+                </div>
 
-                    <!-- Email -->
-                    <div>
-                        <label class="block mb-1">Email</label>
-                        <input id="email" name="email" type="email" placeholder="Masukkan Email" required
-                            class="w-full p-2.5 rounded-md text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
-                    </div>
+                <div class="flex flex-col">
+                    <label for="email" class="mb-1">Email</label>
+                    <input id="email" name="email" type="email" placeholder="Masukkan email" required
+                        class="w-full p-2.5 rounded-md text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
+                </div>
 
-                    <!-- Password -->
-                    <div>
-                        <label class="block mb-1">Password</label>
-                        <input id="password" name="password" type="password" placeholder="Masukkan password" required
-                            class="w-full p-2.5 rounded-md text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
-                    </div>
+                <div class="flex flex-col">
+                    <label for="password" class="mb-1">Password</label>
+                    <input id="password" name="password" type="password" placeholder="Masukkan password" required
+                        class="w-full p-2.5 rounded-md text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
+                </div>
 
-                    <!-- Konfirmasi Password -->
-                    <div>
-                        <label class="block mb-1">Konfirmasi Password</label>
-                        <input id="password_confirmation" name="password_confirmation" type="password"
-                            placeholder="Ulangi password" required
-                            class="w-full p-2.5 rounded-md text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
-                    </div>
+                <div class="flex flex-col">
+                    <label for="password_confirmation" class="mb-1">Konfirmasi Password</label>
+                    <input id="password_confirmation" name="password_confirmation" type="password"
+                        placeholder="Ulangi password" required
+                        class="w-full p-2.5 rounded-md text-black placeholder-gray-400 focus:ring-2 focus:ring-green-300 outline-none">
+                </div>
 
-                    <!-- Input Hidden Role -->
-                    <input type="hidden" name="role" value="user">
+                <input type="hidden" name="role" value="user">
 
-                    <!-- Sudah punya akun -->
-                    <p class="text-center text-sm mt-2">
-                        Sudah memiliki akun?
-                        <a href="{{ route('PageLogin') }}"
-                            class="text-red-600 hover:text-red-500 hover:underline transition">
-                            Login sekarang
-                        </a>
-                    </p>
+                <button type="submit"
+                    class="w-full bg-white text-[#13810A] font-bold py-2.5 rounded-md hover:bg-gray-100 transition mt-2">
+                    Daftar
+                </button>
 
-                    <!-- Tombol Daftar -->
-                    <div class="flex justify-center mt-3 mb-6">
-                        <button type="submit"
-                            class="bg-white text-[#13810A] font-bold py-2.5 px-6 rounded-md hover:bg-gray-100 transition w-fit">
-                            Daftar
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <p class="text-center text-sm mt-3">
+                    Sudah memiliki akun?
+                    <a href="{{ route('PageLogin') }}"
+                        class="text-red-600 hover:text-red-500 hover:underline transition">
+                        Login sekarang
+                    </a>
+                </p>
+            </form>
         </div>
+
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (session('success'))
+        <script>
+            const email = "{{ session('email') ?? '' }}"; // ambil dari session
+            Swal.fire({
+                icon: 'success',
+                title: 'Pendaftaran Berhasil!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                if (email) {
+                    window.location.href = "{{ route('PageVerify', ['email' => 'EMAIL_PLACEHOLDER']) }}".replace(
+                        'EMAIL_PLACEHOLDER', email);
+                } else {
+                    window.location.href = "{{ route('PageVerify') }}";
+                }
+            });
+        </script>
+    @endif
+
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: '{{ session('error') }}'
+            });
+        </script>
+    @endif
 </body>
 
 </html>

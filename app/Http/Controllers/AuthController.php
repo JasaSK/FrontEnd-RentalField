@@ -16,9 +16,10 @@ class AuthController extends Controller
     {
         return view('auth.register');
     }
-    public function PageVerify()
+    public function PageVerify(Request $request)
     {
-        return view('auth.verify');
+        $email = $request->query('email');
+        return view('auth.verify', compact('email'));
     }
 
     public function login(Request $request)
@@ -83,14 +84,18 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => $request->password,
                 'password_confirmation' => $request->password_confirmation,
-                'role' => 'user', // default role
+                'role' => 'user',
             ]);
 
             $data = $response->json();
 
             if ($response->successful()) {
-                return redirect()->route('PageVerify')
-                    ->with('success', $data['message'] ?? 'Registrasi berhasil, silakan verifikasi email.');
+                // Redirect ke halaman verifikasi, tanpa menyimpan session login
+                if ($response->successful()) {
+                    return back()
+                        ->with('success', $data['message'] ?? 'Registrasi berhasil, silakan verifikasi email Anda.')
+                        ->with('email', $request->email);
+                }
             } else {
                 return back()->with('error', $data['message'] ?? 'Terjadi kesalahan saat registrasi.');
             }
@@ -120,8 +125,7 @@ class AuthController extends Controller
             $data = $response->json();
 
             if ($response->successful()) {
-                return redirect()->route('PageLogin')
-                    ->with('success', $data['message'] ?? 'Verifikasi berhasil, silakan login.');
+                return back()->with('verified_success', $data['message'] ?? 'Verifikasi berhasil!');
             } else {
                 return back()->with('error', $data['message'] ?? 'Kode verifikasi salah atau kadaluarsa.');
             }
