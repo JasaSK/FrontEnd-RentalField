@@ -33,7 +33,7 @@
                 @csrf
 
                 <!-- Email tersembunyi -->
-                <input type="hidden" name="email" value="{{ request('email') }}">
+                <input type="hidden" name="email" value="{{ session('email') }}">
 
                 <!-- Input Kode Verifikasi -->
                 <div class="flex justify-center gap-3 mb-5">
@@ -57,13 +57,18 @@
 
             <!-- Kirim Ulang -->
             <div class="text-center">
-                <p id="statusPesan" class="text-black font-semibold text-sm mb-2">
-                    Tidak menerima kode?
-                </p>
-                <button id="btnKirimUlang"
-                    class="bg-[#13810A] hover:bg-[#0f6d09] text-white text-sm font-semibold py-2 px-4 rounded-md transition duration-200">
-                    Kirim Ulang Kode
-                </button>
+                <form action="{{ route('ResendCode') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="email" value="{{ session('email') }}">
+                    <p id="statusPesan" class="text-black font-semibold text-sm mb-2">
+                        Tidak menerima kode?
+                    </p>
+                    <button type="submit" id="btnKirimUlang"
+                        class="bg-[#13810A] hover:bg-[#0f6d09] text-white text-sm font-semibold py-2 px-4 rounded-md transition duration-200">
+                        Kirim Ulang Kode
+                    </button>
+
+                </form>
             </div>
             <!-- script -->
             <script src="{{ asset('js/verifikasi.js') }}"></script>
@@ -84,30 +89,9 @@
             });
         @endif
 
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: '{{ session('error') }}'
-            });
-        @endif
     });
 </script>
+@include('Auth.notification.script')
 
-
-<script>
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const codeInputs = document.querySelectorAll('.code-input');
-        let code = '';
-        codeInputs.forEach(input => code += input.value);
-
-        // Buat input tersembunyi untuk kode gabungan
-        let hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'code';
-        hiddenInput.value = code;
-        this.appendChild(hiddenInput);
-    });
-</script>
 
 </html>

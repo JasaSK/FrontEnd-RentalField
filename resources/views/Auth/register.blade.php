@@ -109,38 +109,7 @@
 
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    @if (session('success'))
-        <script>
-            const email = "{{ session('email') ?? '' }}"; // ambil dari session
-            Swal.fire({
-                icon: 'success',
-                title: 'Pendaftaran Berhasil!',
-                text: '{{ session('success') }}',
-                showConfirmButton: false,
-                timer: 1500
-            }).then(() => {
-                if (email) {
-                    window.location.href = "{{ route('PageVerify', ['email' => 'EMAIL_PLACEHOLDER']) }}".replace(
-                        'EMAIL_PLACEHOLDER', email);
-                } else {
-                    window.location.href = "{{ route('PageVerify') }}";
-                }
-            });
-        </script>
-    @endif
-
-
-    @if (session('error'))
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: '{{ session('error') }}'
-            });
-        </script>
-    @endif
+    @include('Auth.notification.script')
 </body>
 
 </html>

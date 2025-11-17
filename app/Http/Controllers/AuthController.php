@@ -7,7 +7,11 @@ use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
-    private $apiUrl = 'http://127.0.0.1:8001/api';
+    private $apiUrl;
+    public function __construct()
+    {
+        $this->apiUrl = config('services.api_service.url');
+    }
     public function PageLogin()
     {
         return view('auth.login');
@@ -18,9 +22,10 @@ class AuthController extends Controller
     }
     public function PageVerify(Request $request)
     {
-        $email = $request->query('email');
+        $email = $request->email ?? session('email');
         return view('auth.verify', compact('email'));
     }
+
 
     public function login(Request $request)
     {
@@ -49,7 +54,10 @@ class AuthController extends Controller
             session(['token' => $data['token'] ?? null]);
             session(['user' => $data['user'] ?? null]);
 
-            return redirect()->back()->with('success', 'Login berhasil!');
+            return redirect()->route('PageIndex')->with([
+                'title' => 'Login Berhasil!',
+                'success' => 'Login berhasil!'
+            ]);
         }
 
         // 🔹 4. JIKA LOGIN GAGAL
@@ -89,13 +97,13 @@ class AuthController extends Controller
 
             $data = $response->json();
 
+            // Redirect ke halaman verifikasi, tanpa menyimpan session login
             if ($response->successful()) {
-                // Redirect ke halaman verifikasi, tanpa menyimpan session login
-                if ($response->successful()) {
-                    return back()
-                        ->with('success', $data['message'] ?? 'Registrasi berhasil, silakan verifikasi email Anda.')
-                        ->with('email', $request->email);
-                }
+
+                session(['email' => $request->email]);
+                return redirect()
+                    ->route('PageVerify', ['email' => $request->email])
+                    ->with('success', $data['message']);
             } else {
                 return back()->with('error', $data['message'] ?? 'Terjadi kesalahan saat registrasi.');
             }
@@ -115,19 +123,44 @@ class AuthController extends Controller
             'code.required' => 'Kode verifikasi wajib diisi.',
             'code.digits' => 'Kode verifikasi harus 6 digit angka.',
         ]);
-
         try {
-            $response = Http::post("{$this->apiUrl}/verify", [
+            $response = Http::post("{$this->apiUrl}/verify-code", [
                 'email' => $request->email,
                 'code' => $request->code,
             ]);
 
-            $data = $response->json();
+            // $data = $response->json();
+            // dd($response->body(), $response->status());
 
             if ($response->successful()) {
                 return back()->with('verified_success', $data['message'] ?? 'Verifikasi berhasil!');
             } else {
                 return back()->with('error', $data['message'] ?? 'Kode verifikasi salah atau kadaluarsa.');
+            }
+        } catch (\Exception $e) {
+            return back()->with('error', 'Server tidak dapat dihubungi. Pastikan API aktif.');
+        }
+    }
+
+    public function resendCode(Request $request)
+    {
+        $email = session('email'); // <-- ambil email dari session
+
+        if (!$email) {
+            return back()->with('error', 'Email tidak ditemukan di session. Silakan registrasi ulang.');
+        }
+
+        try {
+            $response = Http::post("{$this->apiUrl}/resend-code", [
+                'email' => $email,
+            ]);
+
+            $data = $response->json();
+
+            if ($response->successful()) {
+                return back()->with('success', $data['message'] ?? 'Kode verifikasi telah dikirim ulang ke email Anda.');
+            } else {
+                return back()->with('error', $data['message'] ?? 'Gagal mengirim ulang kode verifikasi.');
             }
         } catch (\Exception $e) {
             return back()->with('error', 'Server tidak dapat dihubungi. Pastikan API aktif.');

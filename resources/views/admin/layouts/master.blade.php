@@ -15,37 +15,37 @@
             </div>
 
             <nav class="flex-1 p-6 space-y-3 overflow-y-auto">
-                <a href="{{ route('dashboard-admin') }}"
+                <a href="{{ route('admin.dashboard') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('dashboard-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Dashboard
                 </a>
 
-                <a href="{{ route('pemesanan-admin') }}"
+                <a href=""
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('pemesanan-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Pemesanan
                 </a>
 
-                <a href="{{ route('banner-admin') }}"
+                <a href="{{ route('admin.banner') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('banner-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Banner
                 </a>
 
-                <a href="{{ route('galeri-admin') }}"
+                <a href="{{ route('admin.gallery') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('galeri-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
-                    Galeri
+                    Gallery
                 </a>
 
-                <a href="{{ route('lapangan-admin') }}"
+                <a href=""
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('lapangan-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Lapangan
                 </a>
 
-                <a href="{{ route('refund-admin') }}"
+                <a href=""
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('refund-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Refund
