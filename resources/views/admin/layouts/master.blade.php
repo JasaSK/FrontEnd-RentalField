@@ -21,7 +21,7 @@
                     Dashboard
                 </a>
 
-                <a href=""
+                <a href="{{route('admin.order')}}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('pemesanan-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Pemesanan
@@ -39,13 +39,13 @@
                     Gallery
                 </a>
 
-                <a href=""
+                <a href="{{ route('admin.field') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('lapangan-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Lapangan
                 </a>
 
-                <a href=""
+                <a href="{{ route('admin.refund') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('refund-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Refund

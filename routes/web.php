@@ -4,7 +4,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FieldController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\RefundController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/' , [BerandaController::class, 'PageIndex'])->name('PageIndex');
@@ -24,3 +27,9 @@ Route::get('/admin/banner', [BannerController::class, 'index'])->name('admin.ban
 Route::post('/admin/banner/store', [BannerController::class, 'store'])->name('admin.banner.store');
 
 Route::get('/admin/gallery', [GalleryController::class, 'index'])->name('admin.gallery');
+
+Route::get('/admin/refund', [RefundController::class, 'index'])->name('admin.refund');
+
+Route::get('/admin/field', [FieldController::class, 'index'])->name('admin.field');
+
+Route::get('/admin/order', [OrderController::class, 'index'])->name('admin.order');
