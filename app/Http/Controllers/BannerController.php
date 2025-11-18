@@ -120,4 +120,18 @@ class BannerController extends Controller
 
         return redirect()->back()->with('error', 'Gagal memperbarui banner.');
     }
+
+    public function destroy($id)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token'),
+        ])->delete("{$this->apiUrl}/banners/{$id}");
+
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Banner berhasil dihapus!');
+        }
+
+        return redirect()->back()->with('error', 'Gagal menghapus banner.');
+    }
+
 }

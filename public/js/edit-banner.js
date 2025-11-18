@@ -1,15 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
     const editButtons = document.querySelectorAll(".editBtn");
-    const modal = document.getElementById("editModal");
-    const cancelEdit = document.getElementById("cancelEdit");
+    const modal = document.getElementById("editBannersModal");
+    const cancelEdit = document.getElementById("cancelBannersEdit");
 
-    const previewImage = document.getElementById("previewImage");
-    const editImageInput = document.getElementById("editImage");
+    const previewImage = document.getElementById("previewBannersImage");
+    const editImageInput = document.getElementById("editBannersImage");
     const editName = document.getElementById("editBannersName");
-    const editDescription = document.getElementById("editDescription");
-    const editDate = document.getElementById("editDate");
-    const editStatus = document.getElementById("editStatus");
-    const editForm = document.getElementById("editForm");
+    const editDescription = document.getElementById("editBannersDescription");
+    const editDate = document.getElementById("editBannersDate");
+    const editStatus = document.getElementById("editBannersStatus");
+    const editForm = document.getElementById("editBannersForm");
 
     let newImageData = null; // untuk preview sementara
 

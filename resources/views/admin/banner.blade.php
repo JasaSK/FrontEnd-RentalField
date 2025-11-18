@@ -1,8 +1,6 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <p>Token: {{ session('token') }}</p>
-
     <h1 class="text-3xl font-bold text-gray-800 mb-3">Info Banner</h1>
     <div class="p-3 flex-1">
         <div class="mx-auto w-[97%] max-w-[1500px] space-y-6 mb-6">
@@ -88,23 +86,40 @@
                                 <td class="py-3 px-2 tanggal">
                                     {{ \Carbon\Carbon::parse($data['created_at'])->format('d M Y') }}
                                 </td>
-                                <td class="py-3 px-2 status">
+                                <td class="py-3 px-2 text-center">
                                     <span
-                                        class="status-label bg-[#13810A] text-white text-sm font-semibold px-4 py-1 rounded-full shadow">{{ $data['status'] }}</span>
+                                        class="inline-block px-3 py-1 text-sm font-semibold rounded-full shadow text-white
+                                        {{ $data['status'] === 'active' ? 'bg-green-600' : 'bg-gray-500' }}">
+                                        {{ ucfirst($data['status']) }}
+                                    </span>
                                 </td>
-                                <td class="py-3 px-2 relative">
-                                    <button
-                                        class="editBtn bg-[#120A81] hover:bg-blue-900 text-white text-sm font-semibold px-3 py-1 rounded-lg shadow"
-                                        data-id="{{ $data['id'] }}" data-name='{{ $data['name'] }}'
-                                        data-description='{{ $data['description'] }}' data-status='{{ $data['status'] }}'
-                                        data-image='{{ $data['image'] }}' data-created_at='{{ $data['created_at'] }}'>
-                                        Edit
-                                    </button>
-                                    <button
-                                        class="hapusBtn bg-[#880719] hover:bg-[#a41e27] text-white text-sm font-semibold px-3 py-1 rounded-lg shadow ml-2">
-                                        Hapus
-                                    </button>
+
+                                <td class="py-3 px-2">
+                                    <div class="flex justify-center items-center gap-2">
+                                        <!-- Tombol Edit -->
+                                        <button
+                                            class="editBtn bg-blue-800 hover:bg-blue-900 text-white text-sm font-semibold px-4 py-2 rounded-md shadow transition-colors duration-200"
+                                            data-id="{{ $data['id'] }}" data-name="{{ $data['name'] }}"
+                                            data-description="{{ $data['description'] }}"
+                                            data-status="{{ $data['status'] }}" data-image="{{ $data['image'] }}"
+                                            data-created_at="{{ $data['created_at'] }}">
+                                            Edit
+                                        </button>
+
+                                        <!-- Tombol Hapus -->
+                                        <form action="{{ route('admin.banner.destroy', $data['id']) }}" method="POST"
+                                            class="inline-flex m-0 p-0">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button
+                                                class="hapusBtn bg-red-700 hover:bg-red-800 text-white text-sm font-semibold px-4 py-2 rounded-md shadow transition-colors duration-200">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
+
+
                             </tr>
                         @endforeach
                     </tbody>
@@ -112,11 +127,11 @@
             </div>
 
             <!-- 🔹 Modal Edit Banner -->
-            <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div id="editBannersModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
                 <div class="bg-white rounded-xl shadow-lg p-6 w-[400px] relative">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Banner</h2>
 
-                    <form action="" method="POST" id="editForm" enctype="multipart/form-data">
+                    <form action="" method="POST" id="editBannersForm" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -130,31 +145,31 @@
                         <!-- Deskripsi -->
                         <div class="mb-3">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                            <textarea id="editDescription" name="description"
+                            <textarea id="editBannersDescription" name="description"
                                 class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]"></textarea>
                         </div>
 
                         <!-- Tanggal Upload -->
                         <div class="mb-3">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Upload</label>
-                            <input type="date" id="editDate" name="tanggal"
+                            <input type="date" id="editBannersDate" name="tanggal"
                                 class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]" />
                         </div>
                         <!-- Preview Gambar -->
-                        <img id="previewImage" src="" alt="Preview Banner"
+                        <img id="previewBannersImage" src="" alt="Preview Banner"
                             class="hidden w-32 mx-auto mb-3 rounded-md shadow">
 
                         <!-- Upload Gambar Baru -->
                         <div class="mb-3">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Ganti Gambar Banner</label>
-                            <input type="file" id="editImage" name="image"
+                            <input type="file" id="editBannersImage" name="image"
                                 class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]" />
                         </div>
 
                         <!-- Status -->
                         <div class="mb-3">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                            <select id="editStatus" name="status"
+                            <select id="editBannersStatus" name="status"
                                 class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]">
                                 <option value="active">Aktif</option>
                                 <option value="non-active">Nonaktif</option>
@@ -163,7 +178,7 @@
 
 
                         <div class="flex justify-end gap-2 mt-5">
-                            <button type="button" id="cancelEdit"
+                            <button type="button" id="cancelBannersEdit"
                                 class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">Batal</button>
                             <button type="submit"
                                 class="px-4 py-2 rounded-lg bg-[#880719] hover:bg-[#a41e27] text-white font-semibold">Simpan</button>
@@ -176,6 +191,4 @@
         </div>
     </div>
 @endsection
-@push('scripts')
-    <script src="{{ asset('js/edit-banner.js') }}"></script>
-@endpush
+

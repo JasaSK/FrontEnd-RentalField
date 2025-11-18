@@ -81,7 +81,7 @@
         </div>
     </div>
     <!-- Script -->
-    @stack('scripts')
+    @include('admin.layouts.script')
 </body>
 
 </html>
