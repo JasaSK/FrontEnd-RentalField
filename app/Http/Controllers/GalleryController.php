@@ -76,4 +76,62 @@ class GalleryController extends Controller
             return redirect()->back()->with('error', 'Gallery gagal ditambahkan!');
         }
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'category_gallery_id' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'description.required' => 'Deskripsi wajib diisi.',
+            'category_gallery_id.required' => 'Kategori wajib dipilih.',
+            'image.required' => 'Gambar wajib diupload.',
+            'image.mimes' => 'Format gambar tidak valid.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
+        ]);
+
+        $httpRequest = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token'),
+        ]);
+
+        // Kirim file jika ada
+        if ($request->hasFile('image')) {
+            $httpRequest = $httpRequest->attach(
+                'image',
+                file_get_contents($request->file('image')->getRealPath()),
+                $request->file('image')->getClientOriginalName()
+            );
+        }
+
+        // PENTING: Gunakan POST + _method PUT
+        $response = $httpRequest->post("{$this->apiUrl}/galleries/{$id}", [
+            '_method' => 'PUT',
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_gallery_id' => $request->category_gallery_id,
+        ]);
+
+        // dd($response->json());
+
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Gallery berhasil diupdate!');
+        } else {
+            return redirect()->back()->with('error', 'Gallery gagal diupdate!');
+        }
+    }
+
+    public function destroy($id)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token'),
+        ])->delete("{$this->apiUrl}/galleries/{$id}");
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Gallery berhasil dihapus!');
+        } else {
+            return redirect()->back()->with('error', 'Gagal menghapus gallery.');
+        }
+    }
 }

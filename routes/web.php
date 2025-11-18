@@ -30,6 +30,8 @@ Route::delete('/admin/banner/destroy/{id}', [BannerController::class, 'destroy']
 
 Route::get('/admin/galleries', [GalleryController::class, 'index'])->name('admin.gallery');
 Route::post('/admin/galleries/store', [GalleryController::class, 'store'])->name('admin.gallery.store');
+Route::put('/admin/galleries/update/{id}', [GalleryController::class, 'update'])->name('admin.gallery.update');
+Route::delete('/admin/galleries/destroy/{id}', [GalleryController::class, 'destroy'])->name('admin.gallery.destroy');
 
 Route::get('/admin/refund', [RefundController::class, 'index'])->name('admin.refund');
 

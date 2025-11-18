@@ -73,9 +73,9 @@
 
                     <tbody class="text-gray-700 text-center">
                         <!-- Baris 1 -->
-                        @foreach ($galleries as $data)
-                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
-                                <td class="py-3 px-2">1</td>
+                        @foreach ($galleries as $index => $data)
+                            <tr data-id="{{ $data['id'] }}" class="border-b border-gray-200 hover:bg-gray-50 transition">
+                                <td class="py-3 px-2">{{ $index + 1 }}</td>
                                 <td class="py-3 px-2">
                                     <div class="flex items-center justify-center">
                                         <img src="{{ $data['image'] }}" alt="Fasilitas"
@@ -94,28 +94,38 @@
                                 <td class="py-3 px-2 kategori">
                                     {{ $data['category_gallery']['name'] ?? 'Tidak ada kategori' }}
                                 </td>
-                                <td class="py-3 px-2 relative">
-                                    <!-- Dropdown Edit -->
-                                    <div class="relative inline-block text-left">
+                                <td class="py-3 px-2">
+                                    <div class="flex w-full justify-center items-center gap-2">
+                                        <!-- Tombol Edit -->
                                         <button
-                                            class="editBtn bg-[#120A81] hover:bg-blue-900 text-white text-sm font-semibold px-3 py-1 rounded-lg shadow">
+                                            class="editBtn flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shadow-sm transition"
+                                            data-id="{{ $data['id'] }}" data-name="{{ $data['name'] }}"
+                                            data-description="{{ $data['description'] }}"
+                                            data-category="{{ $data['category_gallery']['name'] ?? '' }}"
+                                            data-image="{{ $data['image'] }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-4 h-4"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5h2m2 0h.01M6 20h12a2 2 0 002-2v-5a2 2 0 00-2-2H6a2 2 0 00-2 2v5a2 2 0 002 2zm6-7v.01" />
+                                            </svg>
                                             Edit
                                         </button>
-                                        <div
-                                            class="dropdown hidden absolute z-10 right-0 mt-2 w-28 bg-white border border-gray-200 rounded-lg shadow-lg">
-                                            <button
-                                                class="dropdown-item block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                data-kategori="Fasilitas">Fasilitas</button>
-                                            <button
-                                                class="dropdown-item block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                data-kategori="Lapangan">Lapangan</button>
-                                        </div>
+
+                                        <!-- Tombol Hapus -->
+                                        <form action="{{ route('admin.gallery.destroy', $data['id']) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="hapusBtn flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shadow-sm transition">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-4 h-4"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                                Hapus
+                                            </button>
+                                        </form>
                                     </div>
-                                    <!-- Tombol Hapus -->
-                                    <button
-                                        class="hapusBtn bg-[#880719] hover:bg-[#a41e27] text-white text-sm font-semibold px-3 py-1 rounded-lg shadow ml-2">
-                                        Hapus
-                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -123,8 +133,68 @@
                 </table>
             </div>
             <!-- script js -->
-            @push('scripts')
-                <script src="{{ asset('js/usercard.js') }}"></script>
-                <script src="{{ asset('js/edit-galeri.js') }}"></script>
-            @endpush
-        @endsection
+
+
+            <!-- Modal Edit Galeri -->
+            <div id="editGalleryModal"
+                class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+
+                <div class="bg-white rounded-xl shadow-lg p-6 w-[400px] relative">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Galeri</h2>
+
+                    <form id="editGalleryForm" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <input type="hidden" id="edit_id" name="id">
+
+                        <!-- Nama -->
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Galeri</label>
+                            <input type="text" id="edit_name" name="name"
+                                class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]" />
+                        </div>
+
+                        <!-- Deskripsi -->
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                            <textarea id="edit_description" name="description"
+                                class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]"></textarea>
+                        </div>
+
+                        <!-- Kategori -->
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                            <select id="edit_category" name="category_gallery_id"
+                                class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]">
+                                @foreach ($categories as $cat)
+                                    <option value="{{ $cat['id'] }}">{{ $cat['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Preview Gambar -->
+                        <img id="previewGalleryImage" src="" alt="Preview Gambar"
+                            class="hidden w-32 mx-auto mb-3 rounded-md shadow">
+
+                        <!-- Upload Gambar Baru -->
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ganti Gambar Galeri</label>
+                            <input type="file" id="editGalleryImage" name="image"
+                                class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]" />
+                        </div>
+
+                        <!-- Tombol -->
+                        <div class="flex justify-end gap-2 mt-5">
+                            <button type="button" id="closeGalleryModal"
+                                class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">Batal</button>
+                            <button type="submit"
+                                class="px-4 py-2 rounded-lg bg-[#880719] hover:bg-[#a41e27] text-white font-semibold">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+@endsection

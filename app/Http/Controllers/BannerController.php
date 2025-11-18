@@ -91,12 +91,21 @@ class BannerController extends Controller
     public function update(Request $request, $id)
     {
         // Validasi
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'status' => 'required|in:active,non-active',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'status' => 'required|in:active,non-active',
+                'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ],
+            [
+                'name.required' => 'Nama wajib diisi.',
+                'description.required' => 'Deskripsi wajib diisi.',
+                'status.required' => 'Status wajib dipilih.',
+                'image.mimes' => 'Format gambar tidak valid.',
+                'image.max' => 'Ukuran gambar maksimal 2MB.',
+            ]
+        );
 
         // HTTP client dengan header token
         $http = Http::withHeaders([

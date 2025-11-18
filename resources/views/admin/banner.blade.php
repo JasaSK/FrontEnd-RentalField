@@ -71,12 +71,11 @@
                     </thead>
 
                     <tbody class="text-gray-700 text-center">
-                        @foreach ($banners as $data)
+                        @foreach ($banners as $index => $data)
                             <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
-                                <td class="py-3 px-2">1</td>
+                                <td class="py-3 px-2">{{ $index + 1 }}</td>
                                 <td class="py-3 px-2"> <img src="{{ $data['image'] }}" alt="Banners"
-                                        class="banner-img w-20 mx-auto rounded-md shadow"> </td>
-
+                                        class="banner-img w-20 mx-auto rounded-md shadow"></td>
                                 <td class="py-3 px-2 nama">
                                     {{ $data['name'] }}
                                 </td>
@@ -93,31 +92,40 @@
                                         {{ ucfirst($data['status']) }}
                                     </span>
                                 </td>
-
                                 <td class="py-3 px-2">
-                                    <div class="flex justify-center items-center gap-2">
+                                    <div class="flex w-full justify-center items-center gap-2">
                                         <!-- Tombol Edit -->
                                         <button
-                                            class="editBtn bg-blue-800 hover:bg-blue-900 text-white text-sm font-semibold px-4 py-2 rounded-md shadow transition-colors duration-200"
+                                            class="editBtn flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shadow-sm transition"
                                             data-id="{{ $data['id'] }}" data-name="{{ $data['name'] }}"
                                             data-description="{{ $data['description'] }}"
                                             data-status="{{ $data['status'] }}" data-image="{{ $data['image'] }}"
                                             data-created_at="{{ $data['created_at'] }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-4 h-4"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5h2m2 0h.01M6 20h12a2 2 0 002-2v-5a2 2 0 00-2-2H6a2 2 0 00-2 2v5a2 2 0 002 2zm6-7v.01" />
+                                            </svg>
                                             Edit
                                         </button>
 
                                         <!-- Tombol Hapus -->
-                                        <form action="{{ route('admin.banner.destroy', $data['id']) }}" method="POST"
-                                            class="inline-flex m-0 p-0">
+                                        <form action="{{ route('admin.banner.destroy', $data['id']) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                            <button
-                                                class="hapusBtn bg-red-700 hover:bg-red-800 text-white text-sm font-semibold px-4 py-2 rounded-md shadow transition-colors duration-200">
+                                            <button type="submit"
+                                                class="hapusBtn flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shadow-sm transition">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-4 h-4"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
                                                 Hapus
                                             </button>
                                         </form>
                                     </div>
                                 </td>
+
 
 
                             </tr>
