@@ -114,6 +114,13 @@ class AuthController extends Controller
 
     public function verify(Request $request)
     {
+
+        $mergedCode = implode('', $request->code);
+
+        $request->merge([
+            'code' => $mergedCode
+        ]);
+
         $request->validate([
             'email' => 'required|string|email',
             'code' => 'required|digits:6',
@@ -123,6 +130,8 @@ class AuthController extends Controller
             'code.required' => 'Kode verifikasi wajib diisi.',
             'code.digits' => 'Kode verifikasi harus 6 digit angka.',
         ]);
+
+        // dd($request->all());
         try {
             $response = Http::post("{$this->apiUrl}/verify-code", [
                 'email' => $request->email,
