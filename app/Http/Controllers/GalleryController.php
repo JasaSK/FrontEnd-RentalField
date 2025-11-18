@@ -51,11 +51,11 @@ class GalleryController extends Controller
             'image.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
+        // dd($request->all());
+
         $httpRequest = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token'),
         ]);
-
-        // Attach file jika ada
         if ($request->hasFile('image')) {
             $httpRequest = $httpRequest->attach(
                 'image',
@@ -64,23 +64,16 @@ class GalleryController extends Controller
             );
         }
 
-        // Attach field text lain
-        $httpRequest = $httpRequest
-            ->attach('name', $request->name)
-            ->attach('description', $request->description)
-            ->attach('category_gallery_id', $request->category_gallery_id);
-
-        // Kirim request ke API
-        $response = $httpRequest->post("{$this->apiUrl}/galleries");
-
-        // Debug response
+        $response = $httpRequest->post("{$this->apiUrl}/galleries", [
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_gallery_id' => $request->category_gallery_id,
+        ]);
         // dd($response->body());
-
         if ($response->successful()) {
             return redirect()->back()->with('success', 'Gallery berhasil ditambahkan!');
         } else {
-            $errorMessage = $response->json()['message'] ?? 'Gallery gagal ditambahkan!';
-            return redirect()->back()->with('error', $errorMessage);
+            return redirect()->back()->with('error', 'Gallery gagal ditambahkan!');
         }
     }
 }
