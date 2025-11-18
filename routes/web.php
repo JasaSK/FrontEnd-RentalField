@@ -25,6 +25,7 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('adm
 
 Route::get('/admin/banner', [BannerController::class, 'index'])->name('admin.banner');
 Route::post('/admin/banner/store', [BannerController::class, 'store'])->name('admin.banner.store');
+Route::put('/admin/banner/update/{id}', [BannerController::class, 'update'])->name('admin.banner.update');
 
 Route::get('/admin/gallery', [GalleryController::class, 'index'])->name('admin.gallery');
 

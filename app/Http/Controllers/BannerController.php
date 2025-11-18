@@ -75,4 +75,49 @@ class BannerController extends Controller
 
         return redirect()->back()->with('error', 'Gagal menambahkan banner.');
     }
+
+    public function update(Request $request, $id)
+    {
+        // Validasi
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'status' => 'required|in:active,non-active',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // HTTP client dengan header token
+        $http = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token'),
+        ])->asMultipart(); // Penting agar bisa kirim file
+
+        // Jika ada gambar, attach file
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $http = $http->attach(
+                'image',
+                file_get_contents($file->getRealPath()),
+                $filename
+            );
+        }
+
+        // Kirim data lainnya sekaligus
+        $response = $http->post("{$this->apiUrl}/banners/{$id}", [
+            '_method' => 'PUT', // karena update pakai PUT
+            'name' => $request->name,
+            'description' => $request->description,
+            'status' => $request->status,
+        ]);
+
+        // Debug response
+        // dd($response->json());
+
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Banner berhasil diperbarui!');
+        }
+
+        return redirect()->back()->with('error', 'Gagal memperbarui banner.');
+    }
 }

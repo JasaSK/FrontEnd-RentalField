@@ -79,10 +79,10 @@
                                 <td class="py-3 px-2"> <img src="{{ $data['image'] }}" alt="Banners"
                                         class="banner-img w-20 mx-auto rounded-md shadow"> </td>
 
-                                <td class="py-3 px-2 tanggal">
+                                <td class="py-3 px-2 nama">
                                     {{ $data['name'] }}
                                 </td>
-                                <td class="py-3 px-2 tanggal">
+                                <td class="py-3 px-2 deskripsi">
                                     {{ $data['description'] }}
                                 </td>
                                 <td class="py-3 px-2 tanggal">
@@ -94,7 +94,10 @@
                                 </td>
                                 <td class="py-3 px-2 relative">
                                     <button
-                                        class="editBtn bg-[#120A81] hover:bg-blue-900 text-white text-sm font-semibold px-3 py-1 rounded-lg shadow">
+                                        class="editBtn bg-[#120A81] hover:bg-blue-900 text-white text-sm font-semibold px-3 py-1 rounded-lg shadow"
+                                        data-id="{{ $data['id'] }}" data-name='{{ $data['name'] }}'
+                                        data-description='{{ $data['description'] }}' data-status='{{ $data['status'] }}'
+                                        data-image='{{ $data['image'] }}' data-created_at='{{ $data['created_at'] }}'>
                                         Edit
                                     </button>
                                     <button
@@ -113,31 +116,51 @@
                 <div class="bg-white rounded-xl shadow-lg p-6 w-[400px] relative">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Banner</h2>
 
-                    <form id="editForm">
-                        <!-- Edit Gambar -->
+                    <form action="" method="POST" id="editForm" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <!-- Nama Banner -->
                         <div class="mb-3">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Gambar Banner</label>
-                            <input type="file" id="editImage" name="image"
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Banner</label>
+                            <input type="text" id="editBannersName" name="name" placeholder="Masukkan nama banner"
                                 class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]" />
-                            <img id="previewImage" src="" class="w-32 mt-2 rounded-md shadow hidden">
                         </div>
 
-                        <!-- Edit Tanggal Upload -->
+                        <!-- Deskripsi -->
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                            <textarea id="editDescription" name="description"
+                                class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]"></textarea>
+                        </div>
+
+                        <!-- Tanggal Upload -->
                         <div class="mb-3">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Upload</label>
                             <input type="date" id="editDate" name="tanggal"
                                 class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]" />
                         </div>
+                        <!-- Preview Gambar -->
+                        <img id="previewImage" src="" alt="Preview Banner"
+                            class="hidden w-32 mx-auto mb-3 rounded-md shadow">
 
-                        <!-- Edit Status -->
+                        <!-- Upload Gambar Baru -->
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ganti Gambar Banner</label>
+                            <input type="file" id="editImage" name="image"
+                                class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]" />
+                        </div>
+
+                        <!-- Status -->
                         <div class="mb-3">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                             <select id="editStatus" name="status"
                                 class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#880719]">
-                                <option value="Aktif">Aktif</option>
-                                <option value="Nonaktif">Nonaktif</option>
+                                <option value="active">Aktif</option>
+                                <option value="non-active">Nonaktif</option>
                             </select>
                         </div>
+
 
                         <div class="flex justify-end gap-2 mt-5">
                             <button type="button" id="cancelEdit"
@@ -146,6 +169,7 @@
                                 class="px-4 py-2 rounded-lg bg-[#880719] hover:bg-[#a41e27] text-white font-semibold">Simpan</button>
                         </div>
                     </form>
+
                 </div>
             </div>
 
