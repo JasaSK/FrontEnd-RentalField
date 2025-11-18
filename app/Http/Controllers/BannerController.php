@@ -44,12 +44,22 @@ class BannerController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'status' => 'required|in:active,non-active',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'status' => 'required|in:active,non-active',
+                'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ],
+            [
+                'name.required' => 'Nama wajib diisi.',
+                'description.required' => 'Deskripsi wajib diisi.',
+                'status.required' => 'Status wajib dipilih.',
+                'image.required' => 'Gambar wajib diupload.',
+                'image.mimes' => 'Format gambar tidak valid.',
+                'image.max' => 'Ukuran gambar maksimal 2MB.',
+            ]
+        );
 
         $httpRequest = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token'),
@@ -68,6 +78,8 @@ class BannerController extends Controller
             'description' => $request->description,
             'status' => $request->status,
         ]);
+
+        // dd($response->body());
 
         if ($response->successful()) {
             return redirect()->back()->with('success', 'Banner berhasil ditambahkan!');
@@ -133,5 +145,4 @@ class BannerController extends Controller
 
         return redirect()->back()->with('error', 'Gagal menghapus banner.');
     }
-
 }

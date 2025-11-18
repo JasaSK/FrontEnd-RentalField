@@ -28,7 +28,8 @@ Route::post('/admin/banner/store', [BannerController::class, 'store'])->name('ad
 Route::put('/admin/banner/update/{id}', [BannerController::class, 'update'])->name('admin.banner.update');
 Route::delete('/admin/banner/destroy/{id}', [BannerController::class, 'destroy'])->name('admin.banner.destroy');
 
-Route::get('/admin/gallery', [GalleryController::class, 'index'])->name('admin.gallery');
+Route::get('/admin/galleries', [GalleryController::class, 'index'])->name('admin.gallery');
+Route::post('/admin/galleries/store', [GalleryController::class, 'store'])->name('admin.gallery.store');
 
 Route::get('/admin/refund', [RefundController::class, 'index'])->name('admin.refund');
 

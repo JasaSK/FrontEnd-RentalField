@@ -63,7 +63,7 @@
                             <th class="py-3 px-2">No</th>
                             <th class="py-3 px-2">Gambar</th>
                             <th class="py-3 px-2">Nama</th>
-                            <th class="py-3 px-2">Kategori</th>
+                            <th class="py-3 px-2">Deskripsi</th>
                             <th class="py-3 px-2">Tanggal Upload</th>
                             <th class="py-3 px-2">Status</th>
                             <th class="py-3 px-2">Aksi</th>
@@ -127,7 +127,8 @@
             </div>
 
             <!-- 🔹 Modal Edit Banner -->
-            <div id="editBannersModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div id="editBannersModal"
+                class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
                 <div class="bg-white rounded-xl shadow-lg p-6 w-[400px] relative">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Banner</h2>
 
@@ -191,4 +192,3 @@
         </div>
     </div>
 @endsection
-

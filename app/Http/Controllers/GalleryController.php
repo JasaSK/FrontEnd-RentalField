@@ -3,11 +3,84 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class GalleryController extends Controller
 {
+    private $apiUrl;
+    private $imgUrl;
+    public function __construct()
+    {
+        $this->apiUrl = config('services.api_service.url');
+        $this->imgUrl = config('services.api_image.url');
+    }
     public function index()
     {
-        return view('admin.gallery');
+        $response = Http::get("{$this->apiUrl}/galleries");
+
+        if ($response->successful()) {
+            $galleries = $response->json()['data'] ?? $response->json();
+            $galleries = array_map(function ($gallery) {
+                if (!empty($gallery['image'])) {
+                    $gallery['image'] = $this->imgUrl . '/' . 'storage/' . $gallery['image'];
+                }
+                return $gallery;
+            }, $galleries);
+        } else {
+            $galleries = [];
+        }
+
+        $categories = Http::get("{$this->apiUrl}/category-gallery")->json()['data'] ?? [];
+
+        return view('admin.gallery', compact('galleries', 'categories'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'category_gallery_id' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'description.required' => 'Deskripsi wajib diisi.',
+            'category_gallery_id.required' => 'Kategori wajib dipilih.',
+            'image.required' => 'Gambar wajib diupload.',
+            'image.mimes' => 'Format gambar tidak valid.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
+        ]);
+
+        $httpRequest = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token'),
+        ]);
+
+        // Attach file jika ada
+        if ($request->hasFile('image')) {
+            $httpRequest = $httpRequest->attach(
+                'image',
+                file_get_contents($request->file('image')->getRealPath()),
+                $request->file('image')->getClientOriginalName()
+            );
+        }
+
+        // Attach field text lain
+        $httpRequest = $httpRequest
+            ->attach('name', $request->name)
+            ->attach('description', $request->description)
+            ->attach('category_gallery_id', $request->category_gallery_id);
+
+        // Kirim request ke API
+        $response = $httpRequest->post("{$this->apiUrl}/galleries");
+
+        // Debug response
+        // dd($response->body());
+
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Gallery berhasil ditambahkan!');
+        } else {
+            $errorMessage = $response->json()['message'] ?? 'Gallery gagal ditambahkan!';
+            return redirect()->back()->with('error', $errorMessage);
+        }
     }
 }
