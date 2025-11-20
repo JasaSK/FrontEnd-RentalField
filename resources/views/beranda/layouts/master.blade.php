@@ -10,11 +10,11 @@
                 EZFutsal
             </h1>
             <div class="flex space-x-4">
-                <a href="{{ url('beranda/login') }}"
+                <a href="{{ route('PageLogin') }}"
                     class="bg-[#13810A] text-white font-semibold text-lg px-4 py-1 rounded-lg hover:bg-[#0f6508] transition">
                     Login
                 </a>
-                <a href="{{ url('beranda/daftar') }}"
+                <a href="{{ route('PageRegister') }}"
                     class="bg-[#13810A] text-white font-semibold text-lg px-4 py-1 rounded-lg hover:bg-[#0f6508] transition">
                     Daftar
                 </a>
@@ -43,8 +43,8 @@
                     Kami berlokasi strategis dan menawarkan layanan sewa lapangan dengan harga terjangkau.
                     Nikmati pengalaman bermain futsal bersama teman atau rekan kerja hanya di tempat kami.
                 </p>
-                <a href="#" class="home inline-block bg-[#13810A] hover:bg-[#0f6508] transition text-white font-semibold px-6 py-3 rounded-md text-lg">
-                    Pesin Sekarang >>
+                <a href="{{ route('PageIndex') }}" class="home inline-block bg-[#13810A] hover:bg-[#0f6508] transition text-white font-semibold px-6 py-3 rounded-md text-lg">
+                    Pesan Sekarang >>
                 </a>
             </div>
         </div>

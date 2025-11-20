@@ -12,7 +12,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\pendingController;
 use App\Http\Controllers\RefundController;
 use App\Http\Controllers\riwayatController;
-use App\Http\Controllers\searchController;
 use App\Http\Controllers\validasiController;
 use Illuminate\Support\Facades\Route;
 

@@ -97,7 +97,7 @@
 
   <!-- BUTTON KONFIRMASI -->
   <div class="flex justify-center pt-4">
-    <a href="{{ route('order-validation-lapangan') }}"
+    <a href="{{ route('beranda.order-validation') }}"
       class="bg-[#13810A] hover:bg-[#0f6e09] text-white px-8 py-3 rounded-md font-semibold transition-all duration-200 shadow-md hover:shadow-lg">
       Konfirmasi Pemesanan
     </a>
