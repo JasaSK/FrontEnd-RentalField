@@ -49,8 +49,13 @@ Route::delete('/admin/field/destroy/{id}', [FieldController::class, 'destroy'])-
 Route::get('/admin/order', [OrderController::class, 'index'])->name('admin.order');
 
 Route::get('/beranda/order-validation', [OrderValidationController::class, 'index'])->name('beranda.order-validation');
+
 Route::get('/beranda/payment', [PaymentController::class, 'index'])->name('beranda.payment');
+
 Route::get('/beranda/pending', [pendingController::class, 'index'])->name('beranda.pending');
+
 Route::get('/beranda/riwayat', [riwayatController::class, 'index'])->name('beranda.riwayat');
+
 Route::get('/beranda/search', [searchController::class, 'index'])->name('beranda.search');
+
 Route::get('/beranda/validasi', [validasiController::class, 'index'])->name('beranda.validasi');  
