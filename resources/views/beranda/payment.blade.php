@@ -84,7 +84,7 @@
       </label>
     </form>
     <!-- Tombol Konfirmasi -->
-    <a href="{{ route('pending-lapangan') }}"
+    <a href=""
       class="bg-[#13810A] hover:bg-[#0f6e09] text-white px-8 py-3 rounded-md font-semibold transition-all duration-200 shadow-md hover:shadow-lg">
       Konfirmasi Pembayaran
     </a>

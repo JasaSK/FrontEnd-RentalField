@@ -18,13 +18,13 @@
     <a href="#galeri" class="hover:text-[#13810A] transition">Galeri</a>
     <a href="#kontak" class="hover:text-[#13810A] transition">Kontak</a>
     <a href="#maps" class="hover:text-[#13810A] transition">Maps</a>
-    <a href="{{ route('riwayat-lapangan') }}" class="hover:text-[#13810A] transition">Riwayat Pesanan</a>
+    <a href="" class="hover:text-[#13810A] transition">Riwayat Pesanan</a>
   </div>
 </div>
 <!-- card search -->
 <section id="home" class="flex justify-center items-start mt-[300px] px-6 relative z-10">
   <div class="bg-[#7A0010] p-6 rounded-xl shadow-xl w-full max-w-[1500px]">
-    <form action="{{ route('search-lapangan') }}" method="GET" class="flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
+    <form action="" method="GET" class="flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
 
       <div class="flex flex-col gap-4 w-full md:w-[45%]">
         <div>
