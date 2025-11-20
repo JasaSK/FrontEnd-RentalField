@@ -16,7 +16,7 @@ use App\Http\Controllers\searchController;
 use App\Http\Controllers\validasiController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/' , [BerandaController::class, 'PageIndex'])->name('PageIndex');
+Route::get('/' , [BerandaController::class, 'Index'])->name('PageIndex');
 
 Route::get('/PageLogin' , [AuthController::class, 'PageLogin'])->name('PageLogin');
 Route::get('/PageRegister' , [AuthController::class, 'PageRegister'])->name('PageRegister');
@@ -41,10 +41,10 @@ Route::delete('/admin/galleries/destroy/{id}', [GalleryController::class, 'destr
 
 Route::get('/admin/refund', [RefundController::class, 'index'])->name('admin.refund');
 
-Route::get('/admin/field', [FieldController::class, 'index'])->name('admin.field');
-Route::post('/admin/field/store', [FieldController::class, 'store'])->name('admin.field.store');
-Route::put('/admin/field/update/{id}', [FieldController::class, 'update'])->name('admin.field.update');
-Route::delete('/admin/field/destroy/{id}', [FieldController::class, 'destroy'])->name('admin.field.destroy');
+Route::get('/admin/field', [FieldController::class, 'index'])->name('admin.fields');
+Route::post('/admin/fields/store', [FieldController::class, 'store'])->name('admin.fields.store');
+Route::put('/admin/fields/update/{id}', [FieldController::class, 'update'])->name('admin.fields.update');
+Route::delete('/admin/fields/destroy/{id}', [FieldController::class, 'destroy'])->name('admin.fields.destroy');
 
 Route::get('/admin/order', [OrderController::class, 'index'])->name('admin.order');
 

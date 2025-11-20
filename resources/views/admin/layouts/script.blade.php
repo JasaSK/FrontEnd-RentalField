@@ -2,6 +2,7 @@
 
 <script src="{{ asset('js/edit-banner.js') }}"></script>
 <script src="{{ asset('js/edit-gallery.js') }}"></script>
+<script src="{{ asset('js/edit-lapangan.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>

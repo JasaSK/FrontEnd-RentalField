@@ -39,7 +39,7 @@ class FieldController extends Controller
     {
         $request->validate([
             'name'              => 'required|string|max:255',
-            'category_field_id' => 'required|string|max:255',
+            'category_field_id' => 'required|numeric',
             'open_time'         => 'required',
             'close_time'        => 'required',
             'description'       => 'required|string',
@@ -95,7 +95,7 @@ class FieldController extends Controller
         // dd($response->body());
 
         if ($response->successful()) {
-            return redirect()->route('admin.field')->with('success', 'Field berhasil ditambahkan.');
+            return redirect()->route('admin.fields')->with('success', 'Field berhasil ditambahkan.');
         } else {
             return redirect()->back()->withErrors('Gagal menambahkan field. Silakan coba lagi.');
         }
@@ -103,12 +103,19 @@ class FieldController extends Controller
 
     public function update(Request $request, $id)
     {
+        // dd([
+        //     'url' => "{$this->apiUrl}/fields/{$id}",
+        //     'method' => 'POST (with _method=PUT)',
+        //     'data' => $request->all(),
+        //     'has_file' => $request->hasFile('image'),
+        // ]);
+
         $request->validate([
             'name'              => 'required|string|max:255',
             'category_field_id' => 'required|numeric',
             'open_time'         => 'required',
             'close_time'        => 'required',
-            'description'       => 'required|string',
+            'description' => 'required|string',
             'status'            => 'required|string|max:255',
             'price_per_hour'    => 'required|numeric',
             'image'             => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -133,17 +140,22 @@ class FieldController extends Controller
             'image.max'                  => 'Ukuran gambar maksimal 2MB.',
         ]);
 
+        // dd($request->all());
+
         $httpRequest = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token'),
-        ]);
+        ])->asForm();
+
         if ($request->hasFile('image')) {
-            $httpRequest = $httpRequest->attach(
+            $httpRequest->attach(
                 'image',
                 file_get_contents($request->file('image')->getRealPath()),
                 $request->file('image')->getClientOriginalName()
             );
         }
-        $response = $httpRequest->put("{$this->apiUrl}/fields/{$id}", [
+
+        $response = $httpRequest->post("{$this->apiUrl}/fields/{$id}", [
+            '_method' => 'PUT',
             'name' => $request->name,
             'description' => $request->description,
             'price_per_hour' => $request->price_per_hour,
@@ -152,11 +164,17 @@ class FieldController extends Controller
             'close_time' => $request->close_time,
             'status' => $request->status,
         ]);
-        dd($response->body());
+
+        dd([
+            'status' => $response->status(),
+            'body'   => $response->body(),
+            'json'   => $response->json(),
+            'headers' => $response->headers(),
+        ]);
 
 
         if ($response->successful()) {
-            return redirect()->route('FieldIndex')->with('success', 'Field berhasil diperbarui.');
+            return redirect()->route('admin.fields')->with('success', 'Field berhasil diperbarui.');
         } else {
             return redirect()->back()->withErrors('Gagal memperbarui field. Silakan coba lagi.');
         }
@@ -169,7 +187,7 @@ class FieldController extends Controller
             'Authorization' => 'Bearer ' . session('token'),
         ])->delete("{$this->apiUrl}/fields/{$id}");
         if ($response->successful()) {
-            return redirect()->route('FieldIndex')->with('success', 'Field berhasil dihapus.');
+            return redirect()->route('admin.fields')->with('success', 'Field berhasil dihapus.');
         } else {
             return redirect()->back()->withErrors('Gagal menghapus field. Silakan coba lagi.');
         }

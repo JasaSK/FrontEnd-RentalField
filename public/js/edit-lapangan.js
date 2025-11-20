@@ -1,54 +1,66 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ JS admin-lapangan.js aktif!");
+    const editButtons = document.querySelectorAll(".editFieldBtn");
+    const modal = document.getElementById("editFieldModal");
+    const closeModal = document.getElementById("cancelFieldEdit");
+    const editForm = document.getElementById("editFieldForm");
 
-  const editButtons = document.querySelectorAll(".editBtn");
+    const previewImg = document.getElementById("editFieldPreview");
+    const imageInput = document.getElementById("editFieldImage");
 
-  editButtons.forEach((btn) => {
-    const dropdown = btn.nextElementSibling;
+    const editName = document.getElementById("editFieldName");
+    const editOpen = document.getElementById("editFieldOpen");
+    const editClose = document.getElementById("editFieldClose");
+    const editPrice = document.getElementById("editFieldPrice");
+    const editDescription = document.getElementById("editFieldDescription");
+    const editCategory = document.getElementById("editFieldCategory");
+    const editStatus = document.getElementById("editFieldStatus");
 
-    // buka/tutup dropdown saat tombol edit diklik
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".dropdown").forEach((d) => {
-        if (d !== dropdown) d.classList.add("hidden");
-      });
-      dropdown.classList.toggle("hidden");
+    editButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.id;
+
+            editName.value = btn.dataset.name;
+            editOpen.value = btn.dataset.open_time;
+            editClose.value = btn.dataset.close_time;
+            editPrice.value = btn.dataset.price;
+            editDescription.value = btn.dataset.description;
+            editCategory.value = btn.dataset.category; // ← LANGSUNG ISI ID
+            editStatus.value = btn.dataset.status;
+
+            const image = btn.dataset.image;
+            if (image) {
+                previewImg.src = image;
+                previewImg.classList.remove("hidden");
+            } else {
+                previewImg.classList.add("hidden");
+            }
+
+            editForm.action = `/admin/fields/update/${id}`;
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        });
     });
 
-    // handle klik pilihan status
-    const options = dropdown.querySelectorAll(".dropdown-item");
-    options.forEach((opt) => {
-      opt.addEventListener("click", () => {
-        const newStatus = opt.getAttribute("data-status");
-        const statusCell = btn.closest("tr").querySelector(".status-label");
-
-        // ubah teks & warna
-        if (newStatus === "Available") {
-          statusCell.textContent = "Available";
-          statusCell.className =
-            "status-label bg-[#13810A] text-white text-sm font-semibold px-3 py-1 rounded-lg shadow";
-        } else if (newStatus === "Maintenance") {
-          statusCell.textContent = "Maintenance";
-          statusCell.className =
-            "status-label bg-[#D37B00] text-white text-sm font-semibold px-3 py-1 rounded-lg shadow";
+    // Preview gambar baru
+    imageInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            previewImg.src = URL.createObjectURL(file);
+            previewImg.classList.remove("hidden");
         }
-
-        dropdown.classList.add("hidden");
-      });
     });
 
-    // Hapus baris
-  document.querySelectorAll(".hapusBtn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const row = btn.closest("tr");
-      row.remove();
+    // Tombol batal
+    closeModal.addEventListener("click", () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
     });
-  });
 
-    // tutup dropdown kalau klik di luar
-    document.addEventListener("click", (e) => {
-      if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.add("hidden");
-      }
+    // Klik luar modal untuk tutup
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
     });
-  });
 });

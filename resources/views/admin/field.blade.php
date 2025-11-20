@@ -1,6 +1,7 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    <p>Token: {{ session('token') }}</p>
     <!-- Konten -->
     <h1 class="text-3xl font-bold text-gray-800 mb-3">Info Lapangan</h1>
     <div class="p-3 flex-1">
@@ -12,8 +13,7 @@
             <div class="bg-white border border-gray-200 shadow-md rounded-xl p-6 mt-8">
                 <h3 class="text-2xl font-bold text-gray-800 mb-4">Kelola Lapangan</h3>
 
-                <form action="{{ route('admin.field.store') }}" method="POST" enctype="multipart/form-data"
-                    class="space-y-4">
+                <form action="{{ route('admin.fields.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
 
                     <!-- Lapangan -->
@@ -121,27 +121,123 @@
                                 <td class="py-3 px-2 text-center">{{ $data['status'] }}</td>
                                 <td class="py-3 px-3 relative text-center">
                                     <!-- Dropdown Edit -->
-                                    <div class="relative inline-block text-left">
-                                        <button
-                                            class="editBtn bg-[#120A81] hover:bg-blue-900 text-white text-sm font-semibold px-3 py-1 rounded-lg shadow">
-                                            Edit
-                                        </button>
-                                    </div>
-
-                                    <!-- Tombol Hapus -->
                                     <button
-                                        class="hapusBtn bg-[#880719] hover:bg-[#a41e27] text-white text-sm font-semibold px-3 py-1 rounded-lg shadow ml-2">
-                                        Hapus
+                                        class="editFieldBtn bg-[#120A81] hover:bg-blue-900 text-white text-sm font-semibold px-3 py-1 rounded-lg shadow"
+                                        data-id="{{ $data['id'] }}" data-name="{{ $data['name'] }}"
+                                        data-image="{{ $data['image'] }}" data-open_time="{{ $data['open_time'] }}"
+                                        data-close_time="{{ $data['close_time'] }}"
+                                        data-description="{{ $data['description'] }}"
+                                        data-price="{{ $data['price_per_hour'] }}"
+                                        data-category="{{ $data['category_field_id'] }}"
+                                        data-status="{{ $data['status'] }}">
+                                        Edit
                                     </button>
+                                    <!-- Tombol Hapus -->
+                                    <form action="{{ route('admin.fields.destroy', $data['id']) }} " method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button
+                                            class="hapusBtn bg-[#880719] hover:bg-[#a41e27] text-white text-sm font-semibold px-3 py-1 rounded-lg shadow ml-2">
+                                            Hapus
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+
+                <!-- 🔹 Modal Edit Lapangan -->
+                <div id="editFieldModal"
+                    class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-xl shadow-lg p-6 w-[450px] relative">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Lapangan</h2>
+
+                        <form action="" method="POST" id="editFieldForm" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+
+                            <!-- Nama Lapangan -->
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lapangan</label>
+                                <input type="text" id="editFieldName" name="name"
+                                    class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-[#880719]" />
+                            </div>
+
+                            <!-- Jam Buka -->
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jam Buka</label>
+                                <input type="time" id="editFieldOpen" name="open_time"
+                                    class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-[#880719]" />
+                            </div>
+
+                            <!-- Jam Tutup -->
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jam Tutup</label>
+                                <input type="time" id="editFieldClose" name="close_time"
+                                    class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-[#880719]" />
+                            </div>
+
+                            <!-- Harga -->
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Harga per Jam</label>
+                                <input type="number" id="editFieldPrice" name="price_per_hour"
+                                    class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-[#880719]" />
+                            </div>
+
+                            <!-- Deskripsi -->
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                                <textarea id="editFieldDescription" name="description"
+                                    class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-[#880719]"></textarea>
+                            </div>
+
+                            <!-- Kategori -->
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Lapangan</label>
+                                <select id="editFieldCategory" name="category_field_id"
+                                    class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-[#880719]">
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select id="editFieldStatus" name="status"
+                                    class="border border-gray-300 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-[#880719]">
+                                    <option value="available">Tersedia</option>
+                                    <option value="booked">Sudah Dibooking</option>
+                                    <option value="maintenance">Perbaikan</option>
+                                    <option value="closed">Ditutup</option>
+                                    <option value="pending">Menunggu Pembayaran</option>
+                                </select>
+                            </div>
+
+                            <!-- Preview Gambar -->
+                            <img id="editFieldPreview" src="" class="hidden w-32 mx-auto mb-3 rounded-md shadow">
+
+                            <!-- Upload Gambar Baru -->
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ganti Gambar</label>
+                                <input type="file" id="editFieldImage" name="image"
+                                    class="border border-gray-300 rounded-lg px-3 py-2 w-full cursor-pointer focus:ring-2 focus:ring-[#880719]" />
+                            </div>
+
+                            <div class="flex justify-end gap-2 mt-5">
+                                <button type="button" id="cancelFieldEdit"
+                                    class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">Batal</button>
+                                <button type="submit"
+                                    class="px-4 py-2 rounded-lg bg-[#880719] hover:bg-[#a41e27] text-white font-semibold">Simpan</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
             </div>
-            <!-- script js -->
-            @push('scripts')
-                <script src="{{ asset('js/usercard.js') }}"></script>
-                <script src="{{ asset('js/edit-lapangan.js') }}"></script>
-            @endpush
-        @endsection
+        </div>
+    </div>
+@endsection

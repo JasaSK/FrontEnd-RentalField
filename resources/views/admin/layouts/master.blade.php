@@ -39,7 +39,7 @@
                     Gallery
                 </a>
 
-                <a href="{{ route('admin.field') }}"
+                <a href="{{ route('admin.fields') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
                     {{ Route::is('lapangan-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Lapangan
