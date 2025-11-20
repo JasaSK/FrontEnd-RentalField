@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class BerandaController extends Controller
 {
-    public function  PageIndex()
+    public function  Index()
     {
         return view('beranda.index');
     }

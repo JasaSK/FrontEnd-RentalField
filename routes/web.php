@@ -7,7 +7,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderValidationController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\pendingController;
 use App\Http\Controllers\RefundController;
+use App\Http\Controllers\riwayatController;
+use App\Http\Controllers\searchController;
+use App\Http\Controllers\validasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/' , [BerandaController::class, 'PageIndex'])->name('PageIndex');
@@ -41,3 +47,10 @@ Route::put('/admin/field/update/{id}', [FieldController::class, 'update'])->name
 Route::delete('/admin/field/destroy/{id}', [FieldController::class, 'destroy'])->name('admin.field.destroy');
 
 Route::get('/admin/order', [OrderController::class, 'index'])->name('admin.order');
+
+Route::get('/beranda/order-validation', [OrderValidationController::class, 'index'])->name('beranda.order-validation');
+Route::get('/beranda/payment', [PaymentController::class, 'index'])->name('beranda.payment');
+Route::get('/beranda/pending', [pendingController::class, 'index'])->name('beranda.pending');
+Route::get('/beranda/riwayat', [riwayatController::class, 'index'])->name('beranda.riwayat');
+Route::get('/beranda/search', [searchController::class, 'index'])->name('beranda.search');
+Route::get('/beranda/validasi', [validasiController::class, 'index'])->name('beranda.validasi');  
