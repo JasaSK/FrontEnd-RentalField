@@ -36,5 +36,8 @@ Route::delete('/admin/galleries/destroy/{id}', [GalleryController::class, 'destr
 Route::get('/admin/refund', [RefundController::class, 'index'])->name('admin.refund');
 
 Route::get('/admin/field', [FieldController::class, 'index'])->name('admin.field');
+Route::post('/admin/field/store', [FieldController::class, 'store'])->name('admin.field.store');
+Route::put('/admin/field/update/{id}', [FieldController::class, 'update'])->name('admin.field.update');
+Route::delete('/admin/field/destroy/{id}', [FieldController::class, 'destroy'])->name('admin.field.destroy');
 
 Route::get('/admin/order', [OrderController::class, 'index'])->name('admin.order');
