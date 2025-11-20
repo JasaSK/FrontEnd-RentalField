@@ -20,8 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const id = btn.dataset.id;
 
             editName.value = btn.dataset.name;
-            editOpen.value = btn.dataset.open_time;
-            editClose.value = btn.dataset.close_time;
+            editOpen.value = btn.dataset.open_time
+                ? btn.dataset.open_time.slice(0, 5)
+                : "";
+            editClose.value = btn.dataset.close_time
+                ? btn.dataset.close_time.slice(0, 5)
+                : "";
+
             editPrice.value = btn.dataset.price;
             editDescription.value = btn.dataset.description;
             editCategory.value = btn.dataset.category; // ← LANGSUNG ISI ID

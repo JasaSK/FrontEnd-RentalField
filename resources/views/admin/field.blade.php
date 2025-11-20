@@ -120,27 +120,41 @@
                                 </td>
                                 <td class="py-3 px-2 text-center">{{ $data['status'] }}</td>
                                 <td class="py-3 px-3 relative text-center">
-                                    <!-- Dropdown Edit -->
-                                    <button
-                                        class="editFieldBtn bg-[#120A81] hover:bg-blue-900 text-white text-sm font-semibold px-3 py-1 rounded-lg shadow"
-                                        data-id="{{ $data['id'] }}" data-name="{{ $data['name'] }}"
-                                        data-image="{{ $data['image'] }}" data-open_time="{{ $data['open_time'] }}"
-                                        data-close_time="{{ $data['close_time'] }}"
-                                        data-description="{{ $data['description'] }}"
-                                        data-price="{{ $data['price_per_hour'] }}"
-                                        data-category="{{ $data['category_field_id'] }}"
-                                        data-status="{{ $data['status'] }}">
-                                        Edit
-                                    </button>
-                                    <!-- Tombol Hapus -->
-                                    <form action="{{ route('admin.fields.destroy', $data['id']) }} " method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
+                                <td class="py-3 px-2">
+                                    <div class="flex w-full justify-center items-center gap-2">
+                                        <!-- Tombol Edit -->
                                         <button
-                                            class="hapusBtn bg-[#880719] hover:bg-[#a41e27] text-white text-sm font-semibold px-3 py-1 rounded-lg shadow ml-2">
-                                            Hapus
+                                            class="editFieldBtn flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shadow-sm transition"
+                                            data-id="{{ $data['id'] }}" data-name="{{ $data['name'] }}"
+                                            data-image="{{ $data['image'] }}" data-open_time="{{ $data['open_time'] }}"
+                                            data-close_time="{{ $data['close_time'] }}"
+                                            data-description="{{ $data['description'] }}"
+                                            data-price="{{ $data['price_per_hour'] }}"
+                                            data-category="{{ $data['category_field_id'] }}"
+                                            data-status="{{ $data['status'] }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-4 h-4"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5h2m2 0h.01M6 20h12a2 2 0 002-2v-5a2 2 0 00-2-2H6a2 2 0 00-2 2v5a2 2 0 002 2zm6-7v.01" />
+                                            </svg>
+                                            Edit
                                         </button>
-                                    </form>
+                                        <!-- Tombol Hapus -->
+                                        <form action="{{ route('admin.fields.destroy', $data['id']) }} " method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="hapusBtn flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shadow-sm transition">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-4 h-4"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

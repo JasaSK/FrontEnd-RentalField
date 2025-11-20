@@ -103,19 +103,13 @@ class FieldController extends Controller
 
     public function update(Request $request, $id)
     {
-        // dd([
-        //     'url' => "{$this->apiUrl}/fields/{$id}",
-        //     'method' => 'POST (with _method=PUT)',
-        //     'data' => $request->all(),
-        //     'has_file' => $request->hasFile('image'),
-        // ]);
-
         $request->validate([
             'name'              => 'required|string|max:255',
             'category_field_id' => 'required|numeric',
             'open_time'         => 'required',
             'close_time'        => 'required',
-            'description' => 'required|string',
+            'description'       => 'required|string',
+            'category_field_id' => 'required|integer',
             'status'            => 'required|string|max:255',
             'price_per_hour'    => 'required|numeric',
             'image'             => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -140,21 +134,14 @@ class FieldController extends Controller
             'image.max'                  => 'Ukuran gambar maksimal 2MB.',
         ]);
 
-        // dd($request->all());
 
+        // dd($request->all());
         $httpRequest = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token'),
-        ])->asForm();
+            'Accept' => 'application/json', // Supaya response selalu JSON
+        ]);
 
-        if ($request->hasFile('image')) {
-            $httpRequest->attach(
-                'image',
-                file_get_contents($request->file('image')->getRealPath()),
-                $request->file('image')->getClientOriginalName()
-            );
-        }
-
-        $response = $httpRequest->post("{$this->apiUrl}/fields/{$id}", [
+        $data = [
             '_method' => 'PUT',
             'name' => $request->name,
             'description' => $request->description,
@@ -163,14 +150,28 @@ class FieldController extends Controller
             'open_time' => $request->open_time,
             'close_time' => $request->close_time,
             'status' => $request->status,
-        ]);
+        ];
 
-        dd([
-            'status' => $response->status(),
-            'body'   => $response->body(),
-            'json'   => $response->json(),
-            'headers' => $response->headers(),
-        ]);
+        if ($request->hasFile('image')) {
+            // Attach file langsung dalam post() chaining
+            $response = $httpRequest
+                ->attach(
+                    'image',
+                    file_get_contents($request->file('image')->getRealPath()),
+                    $request->file('image')->getClientOriginalName()
+                )
+                ->post("{$this->apiUrl}/fields/{$id}", $data);
+        } else {
+            // Jika tidak ada file, pakai put() langsung
+            $response = $httpRequest->put("{$this->apiUrl}/fields/{$id}", $data);
+        }
+
+        // Debug response
+        // dd([
+        //     'status' => $response->status(),
+        //     'body'   => $response->body(),
+        //     'json'   => $response->json(),
+        // ]);
 
 
         if ($response->successful()) {
