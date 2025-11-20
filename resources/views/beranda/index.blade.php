@@ -29,13 +29,15 @@
 
                 <div class="flex flex-col gap-4 w-full md:w-[45%]">
                     <div>
-                        <label for="tanggal_main" class="text-white font-semibold mb-1 text-center text-lg block">Tanggal Main</label>
+                        <label for="tanggal_main" class="text-white font-semibold mb-1 text-center text-lg block">Tanggal
+                            Main</label>
                         <input type="date" id="tanggal_main" name="tanggal_main"
                             class="w-full px-5 py-4 rounded-lg text-gray-700 text-center outline-none text-lg focus:ring-4 focus:ring-[#B3001B] cursor-pointer"
                             required />
                     </div>
                     <div>
-                        <label for="jam_mulai" class="text-white font-semibold mb-1 text-center text-lg block">Jam Mulai</label>
+                        <label for="jam_mulai" class="text-white font-semibold mb-1 text-center text-lg block">Jam
+                            Mulai</label>
                         <select id="jam_mulai" name="jam_mulai"
                             class="w-full px-5 py-4 rounded-lg text-gray-700 text-center outline-none text-lg focus:ring-4 focus:ring-[#B3001B] cursor-pointer"
                             required>
@@ -49,7 +51,8 @@
 
                 <div class="flex flex-col gap-4 w-full md:w-[45%]">
                     <div>
-                        <label for="tipe_lapangan" class="text-white font-semibold mb-1 text-center text-lg block">Tipe Lapangan</label>
+                        <label for="tipe_lapangan" class="text-white font-semibold mb-1 text-center text-lg block">Tipe
+                            Lapangan</label>
                         <select id="tipe_lapangan" name="tipe_lapangan"
                             class="w-full px-5 py-4 rounded-lg text-gray-700 text-center outline-none text-lg focus:ring-4 focus:ring-[#B3001B] cursor-pointer"
                             required>
@@ -59,7 +62,8 @@
                         </select>
                     </div>
                     <div>
-                        <label for="jam_selesai" class="text-white font-semibold mb-1 text-center text-lg block">Jam Selesai</label>
+                        <label for="jam_selesai" class="text-white font-semibold mb-1 text-center text-lg block">Jam
+                            Selesai</label>
                         <select id="jam_selesai" name="jam_selesai"
                             class="w-full px-5 py-4 rounded-lg text-gray-700 text-center outline-none text-lg focus:ring-4 focus:ring-[#B3001B] cursor-pointer"
                             required>
@@ -108,7 +112,8 @@
         }
 
         $available = [0, 1, 2, 3];
-        $notAvailable = [4, 5, 6, 7];
+        $notAvailable = [6, 7];
+        $maintenance = [4, 5];
     @endphp
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[1500px] mx-auto mt-16 w-[97%]">
@@ -120,26 +125,41 @@
 
             @if ($isSearch)
                 @php
-                    $status = in_array($index, $available) ? 'available' : 'not-available';
-                @endphp
+                    $status = 'available'; // default
 
-                <div class="relative rounded-2xl overflow-hidden shadow-lg transition transform group hover:scale-105 hover:shadow-2xl cursor-pointer">
+                    if (in_array($index, $notAvailable)) {
+                        $status = 'not-available';
+                    } elseif (in_array($index, $maintenance)) {
+                        $status = 'maintenance';
+                    }
+                @endphp
+                <div
+                    class="relative rounded-2xl overflow-hidden shadow-lg transition transform group hover:scale-105 hover:shadow-2xl cursor-pointer">
                     <img src="{{ asset($lapangan->foto) }}" class="w-full h-56 object-cover">
 
-                    @if ($status === 'not-available')
-                        <div class="absolute inset-0 bg-red-700/60 flex items-center justify-center group-hover:bg-red-700/40 transition">
-                            <span class="text-white text-2xl font-bold">Tidak Tersedia</span>
-                        </div>
-                    @else
-                        <div class="absolute inset-0 bg-green-700/60 flex items-center justify-center group-hover:bg-green-700/40 transition">
-                            <span class="text-white text-2xl font-bold">Tersedia</span>
-                        </div>
-                    @endif
+                    <!-- Overlay Nama + Status -->
+                    <div
+                        class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-hover:bg-black/60 transition">
+                        <!-- Nama Lapangan -->
+                        <h2 class="text-white text-2xl font-semibold tracking-wide mb-2">{{ $lapangan->nama }}</h2>
+
+                        <!-- Status -->
+                        @if ($status === 'not-available')
+                            <span class="text-white text-lg font-bold bg-[#8B0C17] px-4 py-1 rounded">Tidak Tersedia</span>
+                        @elseif ($status === 'maintenance')
+                            <span class="text-white text-lg font-bold bg-[#D37B00] px-4 py-1 rounded">Maintenance</span>
+                        @else
+                            <span class="text-white text-lg font-bold bg-[#13810A] px-4 py-1 rounded">Tersedia</span>
+                        @endif
+                    </div>
                 </div>
             @else
-                <div class="relative rounded-2xl overflow-hidden shadow-lg group cursor-pointer hover:shadow-2xl hover:scale-105 transition">
-                    <img src="{{ asset($lapangan->foto) }}" class="w-full h-56 object-cover group-hover:scale-110 transition duration-500">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 transition">
+                <div
+                    class="relative rounded-2xl overflow-hidden shadow-lg group cursor-pointer hover:shadow-2xl hover:scale-105 transition">
+                    <img src="{{ asset($lapangan->foto) }}"
+                        class="w-full h-56 object-cover group-hover:scale-110 transition duration-500">
+                    <div
+                        class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 transition">
                         <h2 class="text-white text-2xl font-semibold tracking-wide">{{ $lapangan->nama }}</h2>
                     </div>
                 </div>
@@ -170,7 +190,6 @@
 
     <!-- SEMUA SECTION LAIN HILANG SAAT SHOW ALL / SEARCH -->
     @if (!$showAll && !$isSearch)
-
         <!-- banner -->
         <section id="banner" class="py-24 md:py-32 px-6 md:px-12 bg-white text-center">
             <h2 class="text-3xl md:text-5xl font-bold mb-10 text-[#000000]">Banner</h2>
@@ -213,15 +232,23 @@
             @endphp
 
             <div class="flex justify-center gap-4 mb-10 flex-wrap">
-                <button class="filter-btn bg-[#13810A] text-white px-5 py-2 rounded-md font-semibold border border-[#13810A]" data-filter="all">All</button>
-                <button class="filter-btn bg-transparent text-[#13810A] border border-[#13810A] hover:bg-[#13810A] hover:text-white px-5 py-2 rounded-md font-semibold" data-filter="lapangan">Lapangan</button>
-                <button class="filter-btn bg-transparent text-[#13810A] border border-[#13810A] hover:bg-[#13810A] hover:text-white px-5 py-2 rounded-md font-semibold" data-filter="fasilitas">Fasilitas</button>
+                <button
+                    class="filter-btn bg-[#13810A] text-white px-5 py-2 rounded-md font-semibold border border-[#13810A]"
+                    data-filter="all">All</button>
+                <button
+                    class="filter-btn bg-transparent text-[#13810A] border border-[#13810A] hover:bg-[#13810A] hover:text-white px-5 py-2 rounded-md font-semibold"
+                    data-filter="lapangan">Lapangan</button>
+                <button
+                    class="filter-btn bg-transparent text-[#13810A] border border-[#13810A] hover:bg-[#13810A] hover:text-white px-5 py-2 rounded-md font-semibold"
+                    data-filter="fasilitas">Fasilitas</button>
             </div>
 
             <div id="gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                 @foreach ($galeris as $galeri)
-                    <div class="gallery-item {{ $galeri->kategori }} transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer">
-                        <img src="{{ asset($galeri->gambar) }}" alt="{{ ucfirst($galeri->kategori) }} {{ $loop->iteration }}"
+                    <div
+                        class="gallery-item {{ $galeri->kategori }} transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer">
+                        <img src="{{ asset($galeri->gambar) }}"
+                            alt="{{ ucfirst($galeri->kategori) }} {{ $loop->iteration }}"
                             class="rounded-lg object-cover w-full h-52 md:h-64 shadow-md">
                     </div>
                 @endforeach
