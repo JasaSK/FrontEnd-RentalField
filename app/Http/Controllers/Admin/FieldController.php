@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -138,7 +139,7 @@ class FieldController extends Controller
         // dd($request->all());
         $httpRequest = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token'),
-            'Accept' => 'application/json', // Supaya response selalu JSON
+            'Accept' => 'application/json', 
         ]);
 
         $data = [
@@ -153,7 +154,6 @@ class FieldController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            // Attach file langsung dalam post() chaining
             $response = $httpRequest
                 ->attach(
                     'image',
@@ -162,17 +162,8 @@ class FieldController extends Controller
                 )
                 ->post("{$this->apiUrl}/fields/{$id}", $data);
         } else {
-            // Jika tidak ada file, pakai put() langsung
             $response = $httpRequest->put("{$this->apiUrl}/fields/{$id}", $data);
         }
-
-        // Debug response
-        // dd([
-        //     'status' => $response->status(),
-        //     'body'   => $response->body(),
-        //     'json'   => $response->json(),
-        // ]);
-
 
         if ($response->successful()) {
             return redirect()->route('admin.fields')->with('success', 'Field berhasil diperbarui.');

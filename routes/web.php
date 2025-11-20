@@ -1,16 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FieldController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\RefundController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BerandaController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FieldController;
-use App\Http\Controllers\GalleryController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderValidationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\pendingController;
-use App\Http\Controllers\RefundController;
 use App\Http\Controllers\riwayatController;
 use App\Http\Controllers\validasiController;
 use Illuminate\Support\Facades\Route;
@@ -40,7 +40,7 @@ Route::delete('/admin/galleries/destroy/{id}', [GalleryController::class, 'destr
 
 Route::get('/admin/refund', [RefundController::class, 'index'])->name('admin.refund');
 
-Route::get('/admin/field', [FieldController::class, 'index'])->name('admin.fields');
+Route::get('/admin/fields', [FieldController::class, 'index'])->name('admin.fields');
 Route::post('/admin/fields/store', [FieldController::class, 'store'])->name('admin.fields.store');
 Route::put('/admin/fields/update/{id}', [FieldController::class, 'update'])->name('admin.fields.update');
 Route::delete('/admin/fields/destroy/{id}', [FieldController::class, 'destroy'])->name('admin.fields.destroy');
