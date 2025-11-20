@@ -12,7 +12,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\pendingController;
 use App\Http\Controllers\RefundController;
 use App\Http\Controllers\riwayatController;
-use App\Http\Controllers\searchController;
 use App\Http\Controllers\validasiController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,7 +54,5 @@ Route::get('/beranda/payment', [PaymentController::class, 'index'])->name('beran
 Route::get('/beranda/pending', [pendingController::class, 'index'])->name('beranda.pending');
 
 Route::get('/beranda/riwayat', [riwayatController::class, 'index'])->name('beranda.riwayat');
-
-Route::get('/beranda/search', [searchController::class, 'index'])->name('beranda.search');
 
 Route::get('/beranda/validasi', [validasiController::class, 'index'])->name('beranda.validasi');  

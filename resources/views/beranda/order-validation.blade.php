@@ -61,7 +61,7 @@
 
   <!-- BUTTON KONFIRMASI -->
   <div class="flex justify-center mt-10 mb-10">
-    <a href="/payment-lapangan"
+    <a href="{{ route('beranda.payment') }}"
        class="bg-[#13810A] hover:bg-[#0f6e09] text-white px-8 py-3 rounded-md font-semibold transition-all duration-200 shadow-md hover:shadow-lg">
        Konfirmasi Data
     </a>
