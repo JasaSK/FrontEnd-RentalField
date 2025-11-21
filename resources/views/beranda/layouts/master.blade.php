@@ -43,14 +43,14 @@
                     Kami berlokasi strategis dan menawarkan layanan sewa lapangan dengan harga terjangkau.
                     Nikmati pengalaman bermain futsal bersama teman atau rekan kerja hanya di tempat kami.
                 </p>
-                <a href="{{ route('PageIndex') }}" class="home inline-block bg-[#13810A] hover:bg-[#0f6508] transition text-white font-semibold px-6 py-3 rounded-md text-lg">
+                <a href="{{ route('beranda.index') }}" class="home inline-block bg-[#13810A] hover:bg-[#0f6508] transition text-white font-semibold px-6 py-3 rounded-md text-lg">
                     Pesan Sekarang >>
                 </a>
             </div>
         </div>
     </footer>
     <!-- Script -->
-    @stack('scripts')
+    @include('beranda.layouts.script')
 </body>
 
 </html>
