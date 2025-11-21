@@ -1,7 +1,12 @@
-    <script src="{{ asset('js/main.js') }}"></script>
+<script src="{{ asset('js/main.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    @if (session('success'))
-        <script>
+<script>
+    // 🔹 Global SweetAlert
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // ✅ Success flash message
+        @if (session('success'))
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
@@ -9,32 +14,61 @@
                 showConfirmButton: false,
                 timer: 2000
             });
-        </script>
-    @endif
+        @endif
 
-
-
-    @if (session('error'))
-        <script>
+        // ✅ Error flash message
+        @if (session('error'))
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal!',
                 text: '{{ session('error') }}',
             });
-        </script>
-    @endif
-    @if ($errors->any())
-        <script>
+        @endif
+
+        // ✅ Custom Swal
+        @if (session('swal'))
+            Swal.fire({
+                icon: "{{ session('swal.icon') ?? 'info' }}",
+                title: "{{ session('swal.title') ?? '' }}",
+                text: "{{ session('swal.text') ?? '' }}",
+                @if (session('swal.timer'))
+                    timer: {{ session('swal.timer') }},
+                    showConfirmButton: false
+                @endif
+            });
+        @endif
+
+        // ✅ Menampilkan semua error validasi
+        @if ($errors->any())
             Swal.fire({
                 icon: 'error',
                 title: 'Validasi Gagal!',
                 html: `
-            <ul style="text-align: left;">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        `,
+                    <ul style="text-align: left;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                `,
             });
-        </script>
-    @endif
+        @endif
+    });
+
+    document.getElementById('logoutButton')?.addEventListener('click', function(e) {
+        e.preventDefault(); // cegah submit langsung
+        Swal.fire({
+            title: 'Apakah Anda yakin ingin logout?',
+            text: "Anda bisa login kembali nanti.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#13810A',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Logout!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logoutForm').submit();
+            }
+        });
+    });
+</script>

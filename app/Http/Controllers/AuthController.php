@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
@@ -53,17 +55,39 @@ class AuthController extends Controller
             // Simpan token ke session (atau cookie)
             session(['token' => $data['token'] ?? null]);
             session(['user' => $data['user'] ?? null]);
+            // Buat user sementara agar bisa dipakai Auth::check()
+            $user = new class($data['user']) extends Authenticatable {
+                public function __construct($attributes)
+                {
+                    foreach ($attributes as $key => $value) {
+                        $this->$key = $value;
+                    }
+                }
+            };
 
-            return redirect()->route('PageIndex')->with([
-                'title' => 'Login Berhasil!',
-                'success' => 'Login berhasil!'
+            Auth::login($user); // sekarang @auth akan mendeteksi
+            return redirect()->route('beranda.index')->with([
+                'swal' => [
+                    'icon' => 'success',
+                    'title' => 'Login Berhasil!',
+                    'text' => 'Selamat datang, ' . ($data['user']['name'] ?? 'User') . '!',
+                    'timer' => 2000
+                ]
             ]);
         }
 
         // 🔹 4. JIKA LOGIN GAGAL
         return back()->withErrors([
             'login' => $response->json()['message'] ?? 'Email atau password salah!',
-        ])->with('error', 'Email atau password salah!');
+        ])->with(
+            [
+                'swal' => [
+                    'icon' => 'error',
+                    'title' => 'Login Gagal!',
+                    'text' => $response->json()['message'] ?? 'Email atau password salah!',
+                ]
+            ]
+        );
     }
 
     public function register(Request $request)
@@ -103,9 +127,24 @@ class AuthController extends Controller
                 session(['email' => $request->email]);
                 return redirect()
                     ->route('PageVerify', ['email' => $request->email])
-                    ->with('success', $data['message']);
+                    ->with(
+                        [
+                            'swal' => [
+                                'icon' => 'success',
+                                'title' => 'Registrasi Berhasil!',
+                                'text' => $data['message'] ?? 'Silakan cek email Anda untuk kode verifikasi.',
+                                'timer' => 3000
+                            ]
+                        ]
+                    );
             } else {
-                return back()->with('error', $data['message'] ?? 'Terjadi kesalahan saat registrasi.');
+                return back()->with([
+                    'swal' => [
+                        'icon' => 'error',
+                        'title' => 'Registrasi Gagal!',
+                        'text' => $data['message'] ?? 'Terjadi kesalahan saat registrasi.',
+                    ]
+                ]);
             }
         } catch (\Exception $e) {
             return back()->with('error', 'Server tidak dapat dihubungi. Pastikan API aktif.');
@@ -142,16 +181,29 @@ class AuthController extends Controller
             // dd($response->body(), $response->status());
 
             if ($response->successful()) {
-                return back()->with('verified_success', $data['message'] ?? 'Verifikasi berhasil!');
+                return back()->with([
+                    'swal' => [
+                        'icon' => 'success',
+                        'title' => 'Verifikasi Berhasil!',
+                        'text' => 'Akun Anda telah terverifikasi. Silakan login.',
+                        'timer' => 3000
+                    ]
+                ]);
             } else {
-                return back()->with('error', $data['message'] ?? 'Kode verifikasi salah atau kadaluarsa.');
+                return back()->with([
+                    'swal' => [
+                        'icon' => 'error',
+                        'title' => 'Verifikasi Gagal!',
+                        'text' => $response->json()['message'] ?? 'Kode verifikasi salah atau kadaluarsa.',
+                    ]
+                ]);
             }
         } catch (\Exception $e) {
             return back()->with('error', 'Server tidak dapat dihubungi. Pastikan API aktif.');
         }
     }
 
-    public function resendCode(Request $request)
+    public function resendCode()
     {
         $email = session('email'); // <-- ambil email dari session
 
@@ -167,12 +219,41 @@ class AuthController extends Controller
             $data = $response->json();
 
             if ($response->successful()) {
-                return back()->with('success', $data['message'] ?? 'Kode verifikasi telah dikirim ulang ke email Anda.');
+                return back()->with([
+                    'swal' => [
+                        'icon' => 'success',
+                        'title' => 'Kode Terkirim!',
+                        'text' => $data['message'] ?? 'Kode verifikasi telah dikirim ulang ke email Anda.',
+                        'timer' => 3000
+                    ]
+                ]);
             } else {
-                return back()->with('error', $data['message'] ?? 'Gagal mengirim ulang kode verifikasi.');
+                return back()->with([
+                    'swal' => [
+                        'icon' => 'error',
+                        'title' => 'Gagal Mengirim Kode!',
+                        'text' => $data['message'] ?? 'Terjadi kesalahan saat mengirim ulang kode verifikasi.',
+                    ]
+                ]);
             }
         } catch (\Exception $e) {
             return back()->with('error', 'Server tidak dapat dihubungi. Pastikan API aktif.');
         }
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with([
+            'swal' => [
+                'icon' => 'success',
+                'title' => 'Logout Berhasil!',
+                'text' => 'Anda telah berhasil logout.',
+                'timer' => 3000
+            ]
+        ]);
     }
 }

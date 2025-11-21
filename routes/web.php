@@ -26,6 +26,7 @@ Route::post('/Register', [AuthController::class, 'Register'])->name('Register');
 Route::get('/PageVerify', [AuthController::class, 'PageVerify'])->name('PageVerify');
 Route::post('/Verify', [AuthController::class, 'Verify'])->name('Verify');
 Route::post('/ResendCode', [AuthController::class, 'resendCode'])->name('ResendCode');
+Route::post('/Logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/beranda/order-validation', [OrderValidationController::class, 'index'])->name('beranda.order-validation');
 
@@ -38,6 +39,7 @@ Route::get('/beranda/riwayat', [riwayatController::class, 'index'])->name('beran
 Route::get('/beranda/validasi', [validasiController::class, 'index'])->name('beranda.validasi');
 
 Route::middleware(['auth', 'admin'])->group(function () {
+
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::get('/admin/banner', [BannerController::class, 'index'])->name('admin.banner');
