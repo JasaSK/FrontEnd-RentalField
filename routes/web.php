@@ -8,11 +8,14 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\RefundController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BerandaController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\HystoryController;
 use App\Http\Controllers\OrderValidationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\pendingController;
 use App\Http\Controllers\riwayatController;
 use App\Http\Controllers\validasiController;
+use App\Http\Controllers\validationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [BerandaController::class, 'index'])->name('beranda.index');
@@ -34,9 +37,17 @@ Route::get('/beranda/payment', [PaymentController::class, 'index'])->name('beran
 
 Route::get('/beranda/pending', [pendingController::class, 'index'])->name('beranda.pending');
 
-Route::get('/beranda/riwayat', [riwayatController::class, 'index'])->name('beranda.riwayat');
+Route::get('/beranda/riwayat', [HystoryController::class, 'index'])->name('beranda.riwayat');
 
-Route::get('/beranda/validasi', [validasiController::class, 'index'])->name('beranda.validasi');
+Route::get('/beranda/validasi', [validationController::class, 'index'])->name('beranda.validasi');
+
+Route::get('/booking/{id}', [BookingController::class, 'show'])->name('beranda.booking.show');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/booking', [BookingController::class, 'store'])->name('beranda.booking.store');
+    Route::delete('/booking/cancel/{bookingId}', [BookingController::class, 'cancel'])->name('beranda.booking.cancel');
+    Route::get('/booking/history', [BookingController::class, 'history'])->name('beranda.booking.history');
+});
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
