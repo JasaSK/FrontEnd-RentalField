@@ -11,5 +11,12 @@
         body {
             font-family: 'Poppins', sans-serif;
         }
+
+        /* Banner Dot Active */
+        .dot-active {
+            background-color: #13810A !important;
+            transform: scale(1.2);
+            opacity: 1;
+        }
     </style>
 </head>

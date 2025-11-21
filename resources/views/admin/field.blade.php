@@ -1,7 +1,6 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <p>Token: {{ session('token') }}</p>
     <!-- Konten -->
     <h1 class="text-3xl font-bold text-gray-800 mb-3">Info Lapangan</h1>
     <div class="p-3 flex-1">
