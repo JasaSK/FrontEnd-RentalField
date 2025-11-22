@@ -40,7 +40,10 @@
 
                     <form action="{{ route('beranda.booking.store') }}" method="POST" class="space-y-6">
                         @csrf
-                        <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                        @if (session('user'))
+                            <input type="hidden" name="user_id" value="{{ session('user')['id'] }}">
+                        @endif
+
 
                         <div>
                             @if (!empty($field))
@@ -126,48 +129,6 @@
                             Booking Sekarang
                         </button>
                     </form>
-
-                    <!-- Booking Result -->
-                    @if (!empty($booking))
-                        <div class="mt-8 p-4 border-t border-gray-200">
-                            <h4 class="text-xl font-semibold text-[#13810A] mb-4 text-center">Detail Booking</h4>
-                            <div class="space-y-2 text-gray-700">
-                                <p>Kode Booking: <span class="font-medium">{{ $booking['code_booking'] }}</span></p>
-                                <p>Tanggal: <span class="font-medium">{{ $booking['date'] }}</span></p>
-                                <p>Jam: <span class="font-medium">{{ substr($booking['start_time'], 0, 5) }} -
-                                        {{ substr($booking['end_time'], 0, 5) }}</span></p>
-                                <p>Nama User: <span class="font-medium">{{ $booking['user']['name'] }}</span></p>
-                                <p>Email: <span class="font-medium">{{ $booking['user']['email'] }}</span></p>
-                                <p>No Telp: <span class="font-medium">{{ $booking['user']['no_telp'] }}</span></p>
-                                <p>Total Harga: <span class="font-semibold text-green-700">Rp
-                                        {{ number_format($booking['total_price'], 0, ',', '.') }}</span></p>
-                                <p>Status:
-                                    <span
-                                        class="px-3 py-1 rounded-full text-white font-semibold
-                                {{ $booking['status'] == 'pending' ? 'bg-yellow-500' : ($booking['status'] == 'confirmed' ? 'bg-green-600' : 'bg-red-600') }}">
-                                        {{ ucfirst($booking['status']) }}
-                                    </span>
-                                </p>
-                            </div>
-                            <div class="mt-4 flex gap-3">
-                                @if ($booking['status'] == 'pending')
-                                    <form action="{{ route('beranda.booking.cancel', $booking['id']) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">
-                                            Batalkan Booking
-                                        </button>
-                                    </form>
-                                @endif
-                                <a href="{{ route('beranda.index') }}"
-                                    class="px-4 py-2 bg-[#13810A] text-white rounded-xl hover:bg-green-800 transition">
-                                    Kembali
-                                </a>
-                            </div>
-                        </div>
-                    @endif
-
                 </div>
             </div>
 

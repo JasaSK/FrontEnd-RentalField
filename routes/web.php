@@ -31,7 +31,7 @@ Route::post('/Verify', [AuthController::class, 'Verify'])->name('Verify');
 Route::post('/ResendCode', [AuthController::class, 'resendCode'])->name('ResendCode');
 Route::post('/Logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/beranda/order-validation', [OrderValidationController::class, 'index'])->name('beranda.order-validation');
+Route::get('/beranda/bookingValidation/{id}', [OrderValidationController::class, 'show'])->name('beranda.bookingValidation');
 
 Route::get('/beranda/payment', [PaymentController::class, 'index'])->name('beranda.payment');
 

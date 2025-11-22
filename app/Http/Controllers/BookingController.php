@@ -77,7 +77,9 @@ class BookingController extends Controller
         }
 
         return redirect()->route(
-            'beranda.order-validation'
+            'beranda.bookingValidation',
+            ['id' => $booking['id']],
+
         )->with('success', 'Booking berhasil dibuat!');
     }
 
