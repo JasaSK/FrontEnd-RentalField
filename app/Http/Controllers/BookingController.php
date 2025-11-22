@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redirect;
 
 class BookingController extends Controller
 {
@@ -52,47 +53,33 @@ class BookingController extends Controller
             'start_time' => 'required',
             'end_time'   => 'required',
             'user_id'    => 'required|numeric'
-        ], [
-            'field_id.required'   => 'Field wajib dipilih.',
-            'field_id.numeric'    => 'Field tidak valid.',
-            'date.required'       => 'Tanggal wajib dipilih.',
-            'date.date'           => 'Tanggal tidak valid.',
-            'start_time.required' => 'Jam mulai wajib diisi.',
-            'end_time.required'   => 'Jam selesai wajib diisi.',
-            'user_id.required'    => 'User wajib dipilih.',
-            'user_id.numeric'     => 'User tidak valid.',
         ]);
 
-        $response = Http::post("{$this->apiUrl}/bookings", $validated);
+        $response = Http::withHeaders([
+            "Authorization" => "Bearer " . session('token')
+        ])->post("{$this->apiUrl}/booking", $validated);
 
         if (!$response->successful()) {
-            return back()->withErrors(['msg' => 'Booking gagal, silahkan coba lagi.']);
+            return back()->withErrors([
+                'msg' => $response->json('message') ?? 'Booking gagal, silahkan coba lagi.'
+            ]);
         }
 
-        // Ambil hasil booking
-        $booking = $response->json()['data'] ?? [];
+        $booking = $response->json('data');
 
-        // Tambahkan image_url pada field
-        if (!empty($booking['field']) && isset($booking['field']['image'])) {
+        if (isset($booking['field']['image'])) {
             $booking['field']['image_url'] = "{$this->imgUrl}/storage/{$booking['field']['image']}";
         }
 
-        // Ambil list fields untuk dropdown
-        $fieldsResponse = Http::get("{$this->apiUrl}/fields");
-        $fields = $fieldsResponse->successful()
-            ? ($fieldsResponse->json()['data'] ?? [])
-            : [];
-
-        return view('beranda.booking', [
-            'fields'  => $fields,
-            'field'   => $booking['field'],
-            'booking' => $booking
-        ])->with('success', 'Booking berhasil dibuat!');
+        return redirect()->route(
+            'beranda.order-validation'
+        )->with('success', 'Booking berhasil dibuat!');
     }
+
 
     public function cancel($bookingId)
     {
-        $response = Http::delete("{$this->apiUrl}/bookings/{$bookingId}");
+        $response = Http::delete("{$this->apiUrl}/booking/{$bookingId}");
 
         if ($response->successful()) {
             return redirect()->route('beranda.index')
@@ -105,7 +92,7 @@ class BookingController extends Controller
     public function history()
     {
         $userId = auth()->id();
-        $response = Http::get("{$this->apiUrl}/bookings?user_id={$userId}");
+        $response = Http::get("{$this->apiUrl}/booking?user_id={$userId}");
 
         $bookings = [];
 

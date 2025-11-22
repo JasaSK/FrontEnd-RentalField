@@ -72,24 +72,54 @@
                             @enderror
                         </div>
 
+                        @php
+                            use Carbon\Carbon;
+
+                            $open = Carbon::parse($field['open_time']);
+                            $close = Carbon::parse($field['close_time']);
+                        @endphp
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="start_time" class="block font-semibold mb-2">Jam Mulai</label>
-                                <input type="time" id="start_time" name="start_time"
+                                <select id="start_time" name="start_time"
                                     class="w-full px-5 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-[#13810A] transition duration-200">
+
+                                    <option value="">-- Pilih Jam Mulai --</option>
+
+                                    @for ($time = $open->copy(); $time < $close; $time->addHour())
+                                        <option value="{{ $time->format('H:i') }}">
+                                            {{ $time->format('H:i') }}
+                                        </option>
+                                    @endfor
+
+                                </select>
                                 @error('start_time')
                                     <p class="text-red-500 mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
+
                             <div>
                                 <label for="end_time" class="block font-semibold mb-2">Jam Selesai</label>
-                                <input type="time" id="end_time" name="end_time"
+                                <select id="end_time" name="end_time"
                                     class="w-full px-5 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-[#13810A] transition duration-200">
+
+                                    <option value="">-- Pilih Jam Selesai --</option>
+
+                                    @for ($time = $open->copy()->addHour(); $time <= $close; $time->addHour())
+                                        <option value="{{ $time->format('H:i') }}">
+                                            {{ $time->format('H:i') }}
+                                        </option>
+                                    @endfor
+
+                                </select>
                                 @error('end_time')
                                     <p class="text-red-500 mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
+
+
 
                         <button type="submit"
                             class="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#13810A] to-green-700 hover:from-green-700 hover:to-[#13810A] transition duration-300">
