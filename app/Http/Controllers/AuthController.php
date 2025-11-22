@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FakeUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
@@ -51,21 +52,17 @@ class AuthController extends Controller
         // 🔹 3. CEK HASIL DARI BACKEND
         if ($response->successful()) {
             $data = $response->json();
+            $dataUser = $data['user'];
 
             // Simpan token ke session (atau cookie)
-            session(['token' => $data['token'] ?? null]);
-            session(['user' => $data['user'] ?? null]);
+             session([
+            'token' => $data['token'],
+            'user'  => $dataUser
+        ]);
             // Buat user sementara agar bisa dipakai Auth::check()
-            $user = new class($data['user']) extends Authenticatable {
-                public function __construct($attributes)
-                {
-                    foreach ($attributes as $key => $value) {
-                        $this->$key = $value;
-                    }
-                }
-            };
+            $user = new User($dataUser);
+            Auth::login($user);
 
-            Auth::login($user); // sekarang @auth akan mendeteksi
             return redirect()->route('beranda.index')->with([
                 'swal' => [
                     'icon' => 'success',
@@ -181,14 +178,7 @@ class AuthController extends Controller
             // dd($response->body(), $response->status());
 
             if ($response->successful()) {
-                return back()->with([
-                    'swal' => [
-                        'icon' => 'success',
-                        'title' => 'Verifikasi Berhasil!',
-                        'text' => 'Akun Anda telah terverifikasi. Silakan login.',
-                        'timer' => 3000
-                    ]
-                ]);
+                return back()->with('verified_success', 'Akun Anda telah terverifikasi.');
             } else {
                 return back()->with([
                     'swal' => [

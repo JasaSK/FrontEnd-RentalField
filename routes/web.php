@@ -49,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/booking/history', [BookingController::class, 'history'])->name('beranda.booking.history');
 });
 
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['admin'])->group(function () {
 
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
