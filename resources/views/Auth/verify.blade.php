@@ -76,22 +76,8 @@
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @if (session('verified_success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Verifikasi Berhasil!',
-                text: '{{ session('verified_success') }}',
-                confirmButtonText: 'Login'
-            }).then(() => {
-                window.location.href = "{{ route('PageLogin') }}";
-            });
-        @endif
 
-    });
-</script>
-@include('Auth.notification.script')
+@include('beranda.layouts.script')
 
 
 </html>

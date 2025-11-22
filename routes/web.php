@@ -43,11 +43,10 @@ Route::get('/beranda/validasi', [validationController::class, 'index'])->name('b
 
 Route::get('/booking/{id}', [BookingController::class, 'show'])->name('beranda.booking.show');
 
-Route::middleware(['auth'])->group(function () {
-    Route::post('/booking', [BookingController::class, 'store'])->name('beranda.booking.store');
-    Route::delete('/booking/cancel/{bookingId}', [BookingController::class, 'cancel'])->name('beranda.booking.cancel');
-    Route::get('/booking/history', [BookingController::class, 'history'])->name('beranda.booking.history');
-});
+Route::post('/booking', [BookingController::class, 'store'])->name('beranda.booking.store');
+Route::delete('/booking/cancel/{bookingId}', [BookingController::class, 'cancel'])->name('beranda.booking.cancel');
+Route::get('/booking/history', [BookingController::class, 'history'])->name('beranda.booking.history');
+
 
 Route::middleware(['admin'])->group(function () {
 

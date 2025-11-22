@@ -42,11 +42,16 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
-        if (!auth()->check()) {
-            return redirect()->route('PageLogin')
-                ->with('error', 'Silakan login terlebih dahulu.');
+        if (!session('user') || !session('token')) {
+            return redirect()->route('PageLogin')->with([
+                'swal' => [
+                    'icon'  => 'warning',
+                    'title' => 'Login Diperlukan!',
+                    'text'  => 'Silakan login terlebih dahulu untuk melakukan booking.',
+                    'timer' => 3000
+                ]
+            ]);
         }
-
         $validated = $request->validate([
             'field_id'   => 'required|numeric',
             'date'       => 'required|date',

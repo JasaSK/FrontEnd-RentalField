@@ -99,7 +99,7 @@
         </div>
     </div>
 
-    @include('Auth.notification.script')
+    @include('beranda.layouts.script')
 </body>
 
 </html>
