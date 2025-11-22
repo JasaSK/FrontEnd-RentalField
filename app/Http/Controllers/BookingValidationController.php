@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class OrderValidationController extends Controller
+class BookingValidationController extends Controller
 {
     private string $apiUrl;
     private string $imgUrl;
@@ -25,16 +25,9 @@ class OrderValidationController extends Controller
         $response = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/booking/{$id}");
-        // dd([
-        //     'status' => $response->status(),
-        //     'body' => $response->body(),
-        //     'json' => $response->json()
-        // ]);
+            
         if ($response->failed()) {
-            // fallback jika API gagal
             $booking = [];
-            // bisa juga redirect dengan error
-            // return redirect()->route('beranda.home')->with('error', 'Data booking tidak tersedia');
         } else {
             $booking = $response->json() ?? [];
         }
@@ -44,5 +37,18 @@ class OrderValidationController extends Controller
         }
 
         return view('beranda.bookingValidation', compact('booking'));
+    }
+
+    public function cancel($id)
+    {
+        $response = Http::withHeaders([
+            "Authorization" => "Bearer " . session('token')
+        ])->delete("{$this->apiUrl}/booking/{$id}");
+
+        if ($response->successful()) {
+            return redirect()->route('beranda.index')->with('success', 'Booking berhasil dibatalkan.');
+        }
+
+        return back()->withErrors(['msg' => 'Gagal membatalkan booking. Silakan coba lagi.']);
     }
 }

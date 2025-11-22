@@ -84,36 +84,5 @@ class BookingController extends Controller
     }
 
 
-    public function cancel($bookingId)
-    {
-        $response = Http::delete("{$this->apiUrl}/booking/{$bookingId}");
-
-        if ($response->successful()) {
-            return redirect()->route('beranda.index')
-                ->with('success', 'Booking berhasil dibatalkan.');
-        }
-
-        return back()->withErrors(['msg' => 'Gagal membatalkan booking.']);
-    }
-
-    public function history()
-    {
-        $userId = auth()->id();
-        $response = Http::get("{$this->apiUrl}/booking?user_id={$userId}");
-
-        $bookings = [];
-
-        if ($response->successful()) {
-            $bookings = $response->json()['data'] ?? [];
-
-            // Format image url di setiap booking
-            foreach ($bookings as &$booking) {
-                if (!empty($booking['field']) && isset($booking['field']['image'])) {
-                    $booking['field']['image_url'] = "{$this->imgUrl}/storage/{$booking['field']['image']}";
-                }
-            }
-        }
-
-        return view('beranda.booking_history', compact('bookings'));
-    }
+ 
 }

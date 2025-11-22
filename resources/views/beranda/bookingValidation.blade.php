@@ -73,7 +73,7 @@
 
     <!-- Button Konfirmasi -->
     <div class="flex justify-center mt-10 mb-10">
-        <form action="{{ route('beranda.payment') }}" method="POST">
+        <form action="{{ route('beranda.payment.create', $booking['id']) }}" method="POST">
             @csrf
             <input type="hidden" name="booking_id" value="{{ $booking['id'] ?? '' }}">
 
@@ -82,5 +82,16 @@
                 Konfirmasi Data & Lanjut ke Pembayaran
             </button>
         </form>
+        <!-- Cancel Booking -->
+        <form action="{{ route('beranda.bookingValidation.cancel', $booking['id'] ?? '') }}" method="POST"
+            onsubmit="return confirm('Apakah Anda yakin ingin membatalkan booking ini?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+                class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-md font-semibold shadow-md">
+                Batalkan Booking
+            </button>
+        </form>
+
     </div>
 @endsection
