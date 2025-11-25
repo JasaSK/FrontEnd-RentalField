@@ -26,7 +26,7 @@
 
     <!-- Card Search -->
     <section id="home" class="flex justify-center items-start mt-[300px] px-6 relative z-10">
-        <div class="bg-gradient-to-r from-[#7A0010]/90 to-[#B3001B]/90 p-6 rounded-3xl shadow-2xl w-full max-w-[1500px]">
+        <div class="bg-gradient-to-r from-[#7A0010] to-[#B3001B] p-6 rounded-3xl shadow-2xl w-full max-w-[1500px]">
             <form action="{{ route('beranda.search') }}" method="post"
                 class="flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
                 @csrf
@@ -89,7 +89,6 @@
         </div>
     </section>
 
-
     <!-- Card Lapangan -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[1500px] mx-auto mt-16 w-[97%]">
         @forelse ($fields as $field)
@@ -100,22 +99,29 @@
             @php
                 $status = $field['status'] ?? 'available';
             @endphp
+
             <div onclick="window.location='{{ route('beranda.booking.show', $field['id']) }}'"
                 class="relative rounded-3xl overflow-hidden shadow-lg group hover:shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer">
+
                 <img src="{{ $field['image'] ?? asset('aset/no-image.png') }}" class="w-full h-56 object-cover">
+
                 <div
-                    class="absolute inset-0 bg-black/30 backdrop-blur-sm flex flex-col items-center justify-center group-hover:bg-black/50 transition-all duration-300">
+                    class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center group-hover:bg-black/50 transition-all duration-300">
+
                     <h2 class="text-white text-2xl font-semibold mb-2">{{ $field['name'] }}</h2>
-                    @if ($status === 'booked')
-                        <span class="text-white text-lg font-bold bg-red-700 px-4 py-1 rounded-xl">Tidak Tersedia</span>
-                    @elseif ($status === 'maintenance')
-                        <span class="text-white text-lg font-bold bg-yellow-600 px-4 py-1 rounded-xl">Maintenance</span>
-                    @else
-                        <span class="text-white text-lg font-bold bg-green-700 px-4 py-1 rounded-xl">Tersedia</span>
+
+                    {{-- STATUS hanya muncul ketika user menekan Search --}}
+                    @if ($isSearch)
+                        @if ($status === 'booked')
+                            <span class="text-white text-lg font-bold bg-red-700 px-4 py-1 rounded-xl">Tidak Tersedia</span>
+                        @elseif ($status === 'maintenance')
+                            <span class="text-white text-lg font-bold bg-yellow-600 px-4 py-1 rounded-xl">Maintenance</span>
+                        @else
+                            <span class="text-white text-lg font-bold bg-green-700 px-4 py-1 rounded-xl">Tersedia</span>
+                        @endif
                     @endif
                 </div>
             </div>
-
 
         @empty
             <p class="text-center text-lg text-red-500 mt-4">Lapangan tidak ditemukan</p>
@@ -124,7 +130,7 @@
 
     {{-- Tombol Lihat Semua / Tutup --}}
     @if (!$showAll && !$isSearch)
-        <div class="flex justify-center mt-6">
+        <div class="flex justify-center mt-6 mb-10">
             <a href="?show=all"
                 class="px-6 py-3 bg-[#13810A] text-white rounded-xl hover:bg-green-800 transition text-lg shadow-md">
                 Lihat Semua
@@ -200,33 +206,40 @@
         <section id="kontak" class="py-20 px-6 md:px-12 bg-gray-50 text-center">
             <h2 class="text-3xl md:text-5xl font-bold mb-10 text-[#000000]">Contact Us</h2>
             <div class="bg-white rounded-2xl p-8 mx-auto w-[97%] max-w-[1500px] shadow-xl">
+
+                <!-- Location -->
                 <div class="flex items-start space-x-4 pb-6 border-b border-gray-200">
-                    <div class="bg-[#7A0010] text-white p-3 rounded-full">
-                        <!-- icon location -->
+                    <div class="bg-[#7A0010] text-white w-12 h-12 flex items-center justify-center rounded-full text-xl">
+                        <i class="fa-solid fa-location-dot"></i>
                     </div>
                     <div class="text-left">
                         <h3 class="font-semibold text-lg">Location</h3>
                         <p class="text-gray-600 text-sm">Jl. Perusahaan, Perumahan Tirtasani, Estate Malang</p>
                     </div>
                 </div>
+
+                <!-- Email -->
                 <div class="flex items-start space-x-4 py-6 border-b border-gray-200">
-                    <div class="bg-[#7A0010] text-white p-3 rounded-full">
-                        <!-- icon email -->
+                    <div class="bg-[#7A0010] text-white w-12 h-12 flex items-center justify-center rounded-full text-xl">
+                        <i class="fa-solid fa-envelope"></i>
                     </div>
                     <div class="text-left">
                         <h3 class="font-semibold text-lg">Email</h3>
                         <p class="text-gray-600 text-sm">lapanganfutsal@gmail.com</p>
                     </div>
                 </div>
+
+                <!-- Call -->
                 <div class="flex items-start space-x-4 pt-6">
-                    <div class="bg-[#7A0010] text-white p-3 rounded-full">
-                        <!-- icon call -->
+                    <div class="bg-[#7A0010] text-white w-12 h-12 flex items-center justify-center rounded-full text-xl">
+                        <i class="fa-solid fa-phone"></i>
                     </div>
                     <div class="text-left">
                         <h3 class="font-semibold text-lg">Call</h3>
                         <p class="text-gray-600 text-sm">+62 000-0000-0000</p>
                     </div>
                 </div>
+
             </div>
         </section>
 
