@@ -35,8 +35,8 @@ class PaymentController extends Controller
 
         return view('beranda.payment', [
             'booking' => $booking,
-            'snapToken' => null,
-            'booking_id' => $booking_id
+            'booking_id' => $booking_id,
+            'qrisUrl' => null
         ]);
     }
 
@@ -46,6 +46,7 @@ class PaymentController extends Controller
             return redirect()->route('PageLogin')->with('error', 'Login diperlukan');
         }
 
+        // Ambil booking
         $bookingResponse = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/booking/{$booking_id}");
@@ -56,23 +57,22 @@ class PaymentController extends Controller
 
         $booking = $bookingResponse->json();
 
-        // SNAP PAYMENT
-        $snapRes = Http::withHeaders([
-            "Authorization" => "Bearer " . session('token')
-        ])->post("{$this->apiUrl}/payment/create/{$booking_id}");
-
-        $snapToken = $snapRes->json()['snap_token'] ?? null;
-        if (!$snapToken) return back()->with('error', 'Token Snap kosong, pembayaran gagal dimuat.');
-
-        // QRIS PAYMENT
+        // QRIS PAYMENT ONLY
         $qrisRes = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->post("{$this->apiUrl}/payment/create-qris/{$booking_id}");
 
+        if ($qrisRes->failed()) {
+            return back()->with('error', 'Gagal membuat QRIS Payment');
+        }
+
         // Ambil url QR dari actions[0]
         $qrisUrl = $qrisRes->json()['actions'][0]['url'] ?? null;
+        if (!$qrisUrl) {
+            return back()->with('error', 'URL QRIS tidak ditemukan.');
+        }
 
-        return view('beranda.payment', compact('booking', 'snapToken', 'qrisUrl', 'booking_id'));
+        return view('beranda.payment', compact('booking', 'qrisUrl', 'booking_id'));
     }
 
     public function getStatus($booking_id)
@@ -89,7 +89,6 @@ class PaymentController extends Controller
             return response()->json(['status' => 'error']);
         }
 
-        // Ambil status dari API, bisa 'pending' atau 'paid'
         return response()->json([
             'status' => $res->json()['status'] ?? 'pending'
         ]);
