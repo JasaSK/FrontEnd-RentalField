@@ -18,12 +18,12 @@
                         <div class="p-6">
                             <h3 class="text-2xl font-bold text-[#13810A] mb-3">{{ $field['name'] }}</h3>
                             <p class="text-gray-700 text-lg mb-2">
-                                Harga per jam: <span class="font-semibold text-green-700">Rp
+                                Harga per jam: <span class="font-semibold text-[#13810A]" >Rp
                                     {{ number_format($field['price_per_hour'], 0, ',', '.') }}</span>
                             </p>
                             <span
                                 class="px-3 py-1 rounded-full text-white font-semibold
-                            {{ $field['status'] == 'available' ? 'bg-green-600' : ($field['status'] == 'booked' ? 'bg-red-600' : 'bg-yellow-500') }}">
+                            {{ $field['status'] == 'available' ? 'bg-[#13810A]' : ($field['status'] == 'booked' ? 'bg-[#8B0C17]' : 'bg-[#D37B00]') }}">
                                 {{ ucfirst($field['status']) }}
                             </span>
                         </div>
@@ -62,7 +62,7 @@
                                 </select>
                             @endif
                             @error('field_id')
-                                <p class="text-red-500 mt-1">{{ $message }}</p>
+                                <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -71,7 +71,7 @@
                             <input type="date" id="date" name="date"
                                 class="w-full px-5 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-[#13810A] transition duration-200">
                             @error('date')
-                                <p class="text-red-500 mt-1">{{ $message }}</p>
+                                <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -98,7 +98,7 @@
 
                                 </select>
                                 @error('start_time')
-                                    <p class="text-red-500 mt-1">{{ $message }}</p>
+                                    <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -117,7 +117,7 @@
 
                                 </select>
                                 @error('end_time')
-                                    <p class="text-red-500 mt-1">{{ $message }}</p>
+                                    <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -125,7 +125,7 @@
 
 
                         <button type="submit"
-                            class="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#13810A] to-green-700 hover:from-green-700 hover:to-[#13810A] transition duration-300">
+                            class="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#13810A] to-[#0f6e09] hover:from-[#0f6e09] hover:to-[#13810A] transition duration-300">
                             Booking Sekarang
                         </button>
                     </form>

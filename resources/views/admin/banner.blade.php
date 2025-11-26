@@ -110,7 +110,8 @@
                                         </button>
 
                                         <!-- Tombol Hapus -->
-                                        <form action="{{ route('admin.banner.destroy', $data['id']) }}" method="POST">
+                                        <form action="{{ route('admin.banner.destroy', $data['id']) }}" method="POST"
+                                            class="deleteForm">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"

@@ -62,7 +62,7 @@
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#13810A',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#8B0C17',
             confirmButtonText: 'Ya, Logout!',
             cancelButtonText: 'Batal'
         }).then((result) => {

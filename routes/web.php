@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\FieldController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\RefundController;
+use App\Http\Controllers\Admin\FieldCategoryController;
+use App\Http\Controllers\Admin\GalleryCategoryController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\BookingController;
@@ -70,4 +72,15 @@ Route::middleware(['admin'])->group(function () {
     Route::delete('/admin/fields/destroy/{id}', [FieldController::class, 'destroy'])->name('admin.fields.destroy');
 
     Route::get('/admin/order', [OrderController::class, 'index'])->name('admin.order');
+
+    Route::get('/admin/field-categories', [FieldCategoryController::class, 'index'])->name('admin.field-categories');
+    Route::post('/admin/field-categories/store', [FieldCategoryController::class, 'store'])->name('admin.field-categories.store');
+    Route::put('/admin/field-categories/update/{id}', [FieldCategoryController::class, 'update'])->name('admin.field-categories.update');
+    Route::delete('/admin/field-categories/destroy/{id}', [FieldCategoryController::class, 'destroy'])->name('admin.field-categories.destroy');
+
+    Route::get('/admin/gallery-categories', [GalleryCategoryController::class, 'index'])->name('admin.gallery-categories');
+    Route::post('/admin/gallery-categories/store', [GalleryCategoryController::class, 'store'])->name('admin.gallery-categories.store');
+    Route::put('/admin/gallery-categories/update/{id}', [GalleryCategoryController::class, 'update'])->name('admin.gallery-categories.update');
+    Route::delete('/admin/gallery-categories/destroy/{id}', [GalleryCategoryController::class, 'destroy'])->name('admin.gallery-categories.destroy');
 });
+

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
@@ -139,7 +140,7 @@ class FieldController extends Controller
         // dd($request->all());
         $httpRequest = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token'),
-            'Accept' => 'application/json', 
+            'Accept' => 'application/json',
         ]);
 
         $data = [
@@ -175,9 +176,10 @@ class FieldController extends Controller
 
     public function destroy($id)
     {
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . session('token'),
-        ])->delete("{$this->apiUrl}/fields/{$id}");
+        $httpRequest = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token')
+        ]);
+        $response = $httpRequest->delete("{$this->apiUrl}/fields/{$id}");
         if ($response->successful()) {
             return redirect()->route('admin.fields')->with('success', 'Field berhasil dihapus.');
         } else {

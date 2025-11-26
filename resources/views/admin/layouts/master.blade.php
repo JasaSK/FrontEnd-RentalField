@@ -17,37 +17,48 @@
             <nav class="flex-1 p-6 space-y-3 overflow-y-auto">
                 <a href="{{ route('admin.dashboard') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
-                    {{ Route::is('dashboard-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
+                    {{ Route::is('admin.dashboard') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Dashboard
                 </a>
 
                 <a href="{{route('admin.order')}}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
-                    {{ Route::is('pemesanan-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
+                    {{ Route::is('admin.order') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Pemesanan
                 </a>
 
                 <a href="{{ route('admin.banner') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
-                    {{ Route::is('banner-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
+                    {{ Route::is('admin.banner') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Banner
                 </a>
 
                 <a href="{{ route('admin.gallery') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
-                    {{ Route::is('galeri-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
+                    {{ Route::is('admin.gallery') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Gallery
                 </a>
 
+                <a href="{{ route('admin.field-categories') }}"
+                    class="block px-4 py-2 rounded-lg transition flex items-center justify-center
+                    {{ Route::is('admin.field-categories') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
+                    Kategori Lapangan
+                </a>
+                <a href="{{ route('admin.gallery-categories') }}"
+                    class="block px-4 py-2 rounded-lg transition flex items-center justify-center
+                    {{ Route::is('admin.gallery-categories') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
+                    Kategori Galeri
+                </a>
+                
                 <a href="{{ route('admin.fields') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
-                    {{ Route::is('lapangan-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
+                    {{ Route::is('admin.fields') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Lapangan
                 </a>
 
                 <a href="{{ route('admin.refund') }}"
                     class="block px-4 py-2 rounded-lg transition flex items-center justify-center
-                    {{ Route::is('refund-admin') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
+                    {{ Route::is('admin.refund') ? 'bg-[#13810A] text-white' : 'hover:bg-[#13810A] hover:text-white text-gray-800' }}">
                     Refund
                 </a>
             </nav>

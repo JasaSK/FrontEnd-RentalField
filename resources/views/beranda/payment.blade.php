@@ -77,7 +77,7 @@
             alt="QRIS">
 
         @if (!$qrisUrl)
-            <p class="mt-3 text-red-600">QRIS gagal dimuat. Silakan refresh halaman.</p>
+            <p class="mt-3 text-[#8B0C17]">QRIS gagal dimuat. Silakan refresh halaman.</p>
         @endif
     </div>
 

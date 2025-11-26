@@ -81,7 +81,7 @@
                 <!-- Submit -->
                 <div class="flex justify-center items-center w-full md:w-[20%] mt-6 md:mt-0">
                     <button type="submit"
-                        class="bg-[#13810A] hover:bg-green-800 text-white font-semibold px-9 py-4 rounded-xl text-xl shadow-md w-full transition-all duration-200">
+                        class="bg-[#13810A] hover:bg-[#0f6e09] text-white font-semibold px-9 py-4 rounded-xl text-xl shadow-md w-full transition-all duration-200">
                         Search
                     </button>
                 </div>
@@ -113,11 +113,11 @@
                     {{-- STATUS hanya muncul ketika user menekan Search --}}
                     @if ($isSearch)
                         @if ($status === 'booked')
-                            <span class="text-white text-lg font-bold bg-red-700 px-4 py-1 rounded-xl">Tidak Tersedia</span>
+                            <span class="text-white text-lg font-bold bg-[#8B0C17] px-4 py-1 rounded-xl">Tidak Tersedia</span>
                         @elseif ($status === 'maintenance')
-                            <span class="text-white text-lg font-bold bg-yellow-600 px-4 py-1 rounded-xl">Maintenance</span>
+                            <span class="text-white text-lg font-bold bg-[#D37B00] px-4 py-1 rounded-xl">Maintenance</span>
                         @else
-                            <span class="text-white text-lg font-bold bg-green-700 px-4 py-1 rounded-xl">Tersedia</span>
+                            <span class="text-white text-lg font-bold bg-[#13810A] px-4 py-1 rounded-xl">Tersedia</span>
                         @endif
                     @endif
                 </div>
@@ -132,7 +132,7 @@
     @if (!$showAll && !$isSearch)
         <div class="flex justify-center mt-6 mb-10">
             <a href="?show=all"
-                class="px-6 py-3 bg-[#13810A] text-white rounded-xl hover:bg-green-800 transition text-lg shadow-md">
+                class="px-6 py-3 bg-[#13810A] text-white rounded-xl hover:bg-[#0f6e09] transition text-lg shadow-md">
                 Lihat Semua
             </a>
         </div>
@@ -141,7 +141,7 @@
     @if ($showAll || $isSearch)
         <div class="flex justify-center mt-6 mb-10">
             <a href="{{ route('beranda.index') }}"
-                class="px-6 py-3 bg-[#7A0010] text-white rounded-xl hover:bg-[#8f0014] transition text-lg shadow-md">
+                class="px-6 py-3 bg-[#8B0C17] text-white rounded-xl hover:bg-[#7a0a15] transition text-lg shadow-md">
                 Tutup
             </a>
         </div>

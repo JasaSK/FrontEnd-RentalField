@@ -140,10 +140,10 @@
                                         </button>
                                         <!-- Tombol Hapus -->
                                         <form action="{{ route('admin.fields.destroy', $data['id']) }} " method="POST"
-                                            class="inline">
+                                            class="deleteForm">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
+                                            <button
                                                 class="hapusBtn flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shadow-sm transition">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-4 h-4"
                                                     viewBox="0 0 24 24" stroke="currentColor">
