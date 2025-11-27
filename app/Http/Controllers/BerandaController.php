@@ -43,6 +43,7 @@ class BerandaController extends Controller
 
     public function search(Request $request)
     {
+        // Validasi input
         $request->validate([
             'tanggal_main' => 'nullable|date',
             'open_time' => 'nullable|string',
@@ -50,25 +51,41 @@ class BerandaController extends Controller
             'category_field_id' => 'nullable|numeric',
         ]);
 
-        // Panggil endpoint BE POST
+        // Set tanggal pencarian default hari ini jika tidak diisi
+        $tanggalMain = $request->input('tanggal_main', now()->toDateString());
+
+        // Ambil jam pencarian, kosongkan jika tidak diisi
+        $openTime = $request->input('open_time');
+        $closeTime = $request->input('close_time');
+
+        // Panggil endpoint BE POST /fields/search
         $response = Http::post("{$this->apiUrl}/fields/search", [
-            'tanggal_main'      => $request->input('tanggal_main'),
-            'open_time'         => $request->input('open_time'),
-            'close_time'        => $request->input('close_time'),
+            'tanggal_main'      => $tanggalMain,
+            'open_time'         => $openTime,
+            'close_time'        => $closeTime,
             'category_field_id' => $request->input('category_field_id'),
         ]);
 
-        $fields = $response->successful() ? $response->json()['data'] ?? [] : [];
-        $fields = $this->mapImages($fields);
+        // Ambil data jika response sukses
+        $fields = [];
+        if ($response->successful()) {
+            $fields = $response->json()['data'] ?? [];
 
+            // Map image URL (jika ada fungsi helper)
+            $fields = $this->mapImages($fields);
+        }
+
+        // Data tambahan untuk view
         $data = $this->getDefaultData();
         $data['fields'] = $fields;
-        $data['isSearch'] = true;
+        $data['isSearch'] = true; // menandakan ini hasil search
         $data['showAll'] = false;
-        $data['request'] = $request;
+        $data['request'] = $request->all(); // ubah jadi array agar mudah diakses di view
 
         return view('beranda.index', $data);
     }
+
+
 
     private function getDefaultData()
     {

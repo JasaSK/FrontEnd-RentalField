@@ -36,6 +36,7 @@
                         <label for="tanggal_main" class="text-white font-semibold mb-1 block text-lg text-center">Tanggal
                             Main</label>
                         <input type="date" id="tanggal_main" name="tanggal_main"
+                            value="{{ old('tanggal_main', $request['tanggal_main'] ?? '') }}"
                             class="w-full px-5 py-4 rounded-xl text-gray-800 text-center outline-none focus:ring-2 focus:ring-[#FF4C4C] cursor-pointer" />
                     </div>
                     <div>
@@ -45,27 +46,33 @@
                             class="w-full px-5 py-4 rounded-xl text-gray-800 text-center outline-none focus:ring-2 focus:ring-[#FF4C4C] cursor-pointer">
                             <option value="">Pilih Jam</option>
                             @for ($i = 8; $i <= 21; $i++)
-                                <option>{{ sprintf('%02d.00', $i) }}</option>
+                                <option value="{{ sprintf('%02d:00', $i) }}"
+                                    {{ ($request['open_time'] ?? '') == sprintf('%02d:00', $i) ? 'selected' : '' }}>
+                                    {{ sprintf('%02d:00', $i) }}
+                                </option>
                             @endfor
                         </select>
                     </div>
                 </div>
+
                 <!-- Tipe & Jam Selesai -->
                 <div class="flex flex-col gap-4 w-full md:w-[45%]">
                     <div>
-                        <label for="category_field_id" class="text-white font-semibold mb-1 block text-lg text-center">Tipe
-                            Lapangan</label>
+                        <label for="category_field_id" class="text-white font-semibold mb-1 block text-lg text-center">
+                            Tipe Lapangan
+                        </label>
                         <select id="category_field_id" name="category_field_id"
                             class="w-full px-5 py-4 rounded-xl text-gray-800 text-center outline-none focus:ring-2 focus:ring-[#FF4C4C] cursor-pointer">
                             <option value="">Pilih Tipe Lapangan</option>
-                            @foreach ($categoriesFields as $cat)
+                            @foreach ($categoriesFields ?? [] as $cat)
                                 <option value="{{ $cat['id'] }}"
-                                    {{ request('category_field_id') == $cat['id'] ? 'selected' : '' }}>
+                                    {{ old('category_field_id', $request['category_field_id'] ?? '') == $cat['id'] ? 'selected' : '' }}>
                                     {{ $cat['name'] }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
+
                     <div>
                         <label for="close_time" class="text-white font-semibold mb-1 block text-lg text-center">Jam
                             Selesai</label>
@@ -73,11 +80,15 @@
                             class="w-full px-5 py-4 rounded-xl text-gray-800 text-center outline-none focus:ring-2 focus:ring-[#FF4C4C] cursor-pointer">
                             <option value="">Pilih Jam</option>
                             @for ($i = 8; $i <= 21; $i++)
-                                <option>{{ sprintf('%02d.00', $i) }}</option>
+                                <option value="{{ sprintf('%02d:00', $i) }}"
+                                    {{ ($request['close_time'] ?? '') == sprintf('%02d:00', $i) ? 'selected' : '' }}>
+                                    {{ sprintf('%02d:00', $i) }}
+                                </option>
                             @endfor
                         </select>
                     </div>
                 </div>
+
                 <!-- Submit -->
                 <div class="flex justify-center items-center w-full md:w-[20%] mt-6 md:mt-0">
                     <button type="submit"
@@ -86,59 +97,71 @@
                     </button>
                 </div>
             </form>
+
         </div>
     </section>
 
     <!-- Card Lapangan -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[1500px] mx-auto mt-16 w-[97%]">
-        @forelse ($fields as $field)
-            @if (!$showAll && !$isSearch && $loop->iteration > 4)
+        @php
+            // Batasi tampilan awal hanya 4 lapangan kalau bukan showAll
+            $displayCount = (!$showAll && !$isSearch) || ($isSearch && !$showAll) ? 4 : count($fields);
+        @endphp
+
+        @forelse ($fields as $index => $field)
+            @if ($index >= $displayCount)
                 @break
             @endif
 
             @php
-                $status = $field['status'] ?? 'available';
+                $status = $field['status_now'] ?? 'available';
+                $statusColors = [
+                    'available' => 'bg-[#13810A]',
+                    'booked' => 'bg-[#8B0C17]',
+                    'maintenance' => 'bg-[#D37B00]',
+                    'closed' => 'bg-gray-700',
+                ];
+                $badgeColor = $statusColors[$status] ?? 'bg-gray-500';
             @endphp
 
             <div onclick="window.location='{{ route('beranda.booking.show', $field['id']) }}'"
-                class="relative rounded-3xl overflow-hidden shadow-lg group hover:shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer">
+                class="relative rounded-3xl overflow-hidden shadow-lg group hover:shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer"
+                title="Jam buka: {{ $field['open_time'] }} - {{ $field['close_time'] }}">
 
+                <!-- Gambar Lapangan -->
                 <img src="{{ $field['image'] ?? asset('aset/no-image.png') }}" class="w-full h-56 object-cover">
 
+                <!-- Overlay & Info -->
                 <div
                     class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center group-hover:bg-black/50 transition-all duration-300">
-
                     <h2 class="text-white text-2xl font-semibold mb-2">{{ $field['name'] }}</h2>
 
                     {{-- STATUS hanya muncul ketika user menekan Search --}}
                     @if ($isSearch)
-                        @if ($status === 'booked')
-                            <span class="text-white text-lg font-bold bg-[#8B0C17] px-4 py-1 rounded-xl">Tidak Tersedia</span>
-                        @elseif ($status === 'maintenance')
-                            <span class="text-white text-lg font-bold bg-[#D37B00] px-4 py-1 rounded-xl">Maintenance</span>
-                        @else
-                            <span class="text-white text-lg font-bold bg-[#13810A] px-4 py-1 rounded-xl">Tersedia</span>
-                        @endif
+                        <span class="text-white text-lg font-bold {{ $badgeColor }} px-4 py-1 rounded-xl capitalize">
+                            {{ $status === 'available' ? 'Tersedia' : ($status === 'booked' ? 'Tidak Tersedia' : ($status === 'maintenance' ? 'Maintenance' : 'Tutup')) }}
+                        </span>
                     @endif
                 </div>
             </div>
-
         @empty
             <p class="text-center text-lg text-red-500 mt-4">Lapangan tidak ditemukan</p>
         @endforelse
     </div>
 
     {{-- Tombol Lihat Semua / Tutup --}}
-    @if (!$showAll && !$isSearch)
+    @if ((!$showAll && !$isSearch) || ($isSearch && count($fields) > 4 && !$showAll))
         <div class="flex justify-center mt-6 mb-10">
-            <a href="?show=all"
+            <button
+                onclick="window.location='{{ route('beranda.index', array_merge(request()->query(), ['show' => 'all'])) }}'"
                 class="px-6 py-3 bg-[#13810A] text-white rounded-xl hover:bg-[#0f6e09] transition text-lg shadow-md">
                 Lihat Semua
-            </a>
+            </button>
         </div>
     @endif
 
-    @if ($showAll || $isSearch)
+
+    @if ($showAll)
         <div class="flex justify-center mt-6 mb-10">
             <a href="{{ route('beranda.index') }}"
                 class="px-6 py-3 bg-[#8B0C17] text-white rounded-xl hover:bg-[#7a0a15] transition text-lg shadow-md">
@@ -146,6 +169,7 @@
             </a>
         </div>
     @endif
+
 
     <!-- Banner Section -->
     @if (!$showAll && !$isSearch)
@@ -254,5 +278,34 @@
             </div>
         </section>
     @endif
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jamMulai = document.getElementById('jam_mulai');
+            const jamSelesai = document.getElementById('close_time');
+
+            function updateOptions() {
+                const startHour = parseInt(jamMulai.value.split(':')[0]) || 0;
+                const endHour = parseInt(jamSelesai.value.split(':')[0]) || 24;
+
+                // Disable jam selesai yang lebih kecil atau sama dengan jam mulai
+                for (let i = 8; i <= 21; i++) {
+                    const option = jamSelesai.querySelector(`option[value="${String(i).padStart(2,'0')}:00"]`);
+                    if (option) option.disabled = i <= startHour; // <= untuk tidak boleh sama
+                }
+
+                // Disable jam mulai yang lebih besar atau sama dengan jam selesai
+                for (let i = 8; i <= 21; i++) {
+                    const option = jamMulai.querySelector(`option[value="${String(i).padStart(2,'0')}:00"]`);
+                    if (option) option.disabled = i >= endHour; // >= untuk tidak boleh sama
+                }
+            }
+
+            jamMulai.addEventListener('change', updateOptions);
+            jamSelesai.addEventListener('change', updateOptions);
+
+            // Jalankan sekali untuk set awal
+            updateOptions();
+        });
+    </script>
 
 @endsection
