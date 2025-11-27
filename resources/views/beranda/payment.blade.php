@@ -99,7 +99,7 @@
                         });
 
                         setTimeout(() => {
-                            window.location.href = "{{ route('beranda.hystory') }}";
+                            window.location.href = "{{ route('history.index') }}";
                         }, 2000);
                     }
                 })

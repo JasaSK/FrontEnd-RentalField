@@ -8,12 +8,10 @@ use Illuminate\Support\Facades\Http;
 class PaymentController extends Controller
 {
     private $apiUrl;
-    private $imgUrl;
 
     public function __construct()
     {
         $this->apiUrl = config('services.api_service.url');
-        $this->imgUrl = config('services.api_image.url');
     }
 
     public function paymentPage($booking_id)
@@ -32,11 +30,13 @@ class PaymentController extends Controller
         }
 
         $booking = $bookingResponse->json();
+        $qrisUrl = $booking['qris_url'] ?? null;
+
 
         return view('beranda.payment', [
             'booking' => $booking,
             'booking_id' => $booking_id,
-            'qrisUrl' => null
+            'qrisUrl' => $qrisUrl
         ]);
     }
 
@@ -71,8 +71,13 @@ class PaymentController extends Controller
         if (!$qrisUrl) {
             return back()->with('error', 'URL QRIS tidak ditemukan.');
         }
-
-        return view('beranda.payment', compact('booking', 'qrisUrl', 'booking_id'));
+        // session()->flash('success', 'QRIS Payment berhasil dibuat! Silakan lanjutkan pembayaran.');
+        // return view('beranda.payment', compact('booking', 'qrisUrl', 'booking_id'));
+        return redirect()->route('beranda.payment', ['id' => $booking_id])
+            ->with([
+                'success' => 'QRIS Payment berhasil dibuat! Silakan lanjutkan pembayaran.',
+                'qrisUrl' => $qrisUrl
+            ]);
     }
 
     public function getStatus($booking_id)

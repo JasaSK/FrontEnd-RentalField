@@ -18,7 +18,7 @@
             <a href="#galeri" class="hover:text-[#13810A] transition-all duration-200">Galeri</a>
             <a href="#kontak" class="hover:text-[#13810A] transition-all duration-200">Kontak</a>
             <a href="#maps" class="hover:text-[#13810A] transition-all duration-200">Maps</a>
-            <a href="{{ route('beranda.hystory') }}" class="hover:text-[#13810A] transition-all duration-200">Riwayat
+            <a href="{{ route('history.index') }}" class="hover:text-[#13810A] transition-all duration-200">Riwayat
                 Pesanan</a>
         </div>
     </div>

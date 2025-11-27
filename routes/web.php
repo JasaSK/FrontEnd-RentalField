@@ -12,9 +12,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingValidationController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\HystoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\pendingController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\validationController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,7 +41,6 @@ Route::get('/booking/status/{id}', [PaymentController::class, 'getStatus']);
 
 Route::get('/beranda/pending', [pendingController::class, 'index'])->name('beranda.pending');
 
-Route::get('/beranda/riwayat', [HystoryController::class, 'index'])->name('beranda.hystory');
 
 Route::get('/beranda/validasi', [validationController::class, 'index'])->name('beranda.validasi');
 
@@ -49,6 +50,12 @@ Route::post('/booking', [BookingController::class, 'store'])->name('beranda.book
 Route::delete('/beranda/bookingValidation/cancel/{id}', [BookingValidationController::class, 'cancel'])->name('beranda.bookingValidation.cancel');
 Route::get('/beranda/bookingValidation/{id}', [BookingValidationController::class, 'show'])->name('beranda.bookingValidation');
 
+
+Route::get('/ticket/{id}', [TicketController::class, 'show'])->name('ticket.show');
+Route::get('/ticket/download/{id}', [TicketController::class, 'download'])->name('ticket.download');
+
+Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
+Route::get('/history/{id}', [HistoryController::class, 'show'])->name('history.show');
 
 Route::middleware(['admin'])->group(function () {
 
@@ -83,4 +90,3 @@ Route::middleware(['admin'])->group(function () {
     Route::put('/admin/gallery-categories/update/{id}', [GalleryCategoryController::class, 'update'])->name('admin.gallery-categories.update');
     Route::delete('/admin/gallery-categories/destroy/{id}', [GalleryCategoryController::class, 'destroy'])->name('admin.gallery-categories.destroy');
 });
-
