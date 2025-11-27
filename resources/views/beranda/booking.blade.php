@@ -4,9 +4,8 @@
     <section class="py-20 px-6 md:px-12 bg-gray-50 min-h-screen">
         <div class="max-w-6xl mx-auto">
 
-            <!-- Header -->
             <h2 class="text-4xl font-extrabold text-[#13810A] mb-12 text-center tracking-wide">
-                Booking Lapangan1
+                Booking Lapangan
             </h2>
 
             <div class="flex flex-col lg:flex-row gap-8">
@@ -18,7 +17,7 @@
                         <div class="p-6">
                             <h3 class="text-2xl font-bold text-[#13810A] mb-3">{{ $field['name'] }}</h3>
                             <p class="text-gray-700 text-lg mb-2">
-                                Harga per jam: <span class="font-semibold text-[#13810A]" >Rp
+                                Harga per jam: <span class="font-semibold text-[#13810A]">Rp
                                     {{ number_format($field['price_per_hour'], 0, ',', '.') }}</span>
                             </p>
                             <span
@@ -34,104 +33,105 @@
                     @endif
                 </div>
 
-                <!-- Form Booking / Detail Pesanan -->
+                <!-- Form Booking -->
                 <div class="lg:w-1/2 bg-white rounded-3xl shadow-lg p-8 flex flex-col justify-between">
                     <h3 class="text-2xl font-semibold text-[#13810A] mb-6 text-center">Form Booking</h3>
+
+                    <form action="{{ route('beranda.booking.show', $field['id']) }}" method="GET" class="space-y-6">
+                        @csrf
+                        <div>
+                            <label for="date" class="block font-semibold mb-2">Tanggal Main</label>
+                            <input type="date" id="date" name="date" value="{{ $date ?? now()->toDateString() }}"
+                                class="w-full px-5 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-[#13810A] transition duration-200"
+                                onchange="this.form.submit()">
+                            @error('date')
+                                <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </form>
+                    {{-- <pre>{{ print_r($bookedHours) }}</pre> --}}
 
                     <form action="{{ route('beranda.booking.store') }}" method="POST" class="space-y-6">
                         @csrf
                         @if (session('user'))
                             <input type="hidden" name="user_id" value="{{ session('user')['id'] }}">
                         @endif
-
-
-                        <div>
-                            @if (!empty($field))
-                                <p class="font-semibold mb-1">Lapangan: {{ $field['name'] }} - Rp
-                                    {{ number_format($field['price_per_hour'], 0, ',', '.') }}/jam</p>
-                                <input type="hidden" name="field_id" value="{{ $field['id'] }}">
-                            @else
-                                <label for="field_id" class="block font-semibold mb-2">Pilih Lapangan</label>
-                                <select id="field_id" name="field_id"
-                                    class="w-full px-5 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-[#13810A] transition duration-200">
-                                    <option value="">-- Pilih Lapangan --</option>
-                                    @foreach ($fields as $f)
-                                        <option value="{{ $f['id'] }}">{{ $f['name'] }} - Rp
-                                            {{ number_format($f['price_per_hour'], 0, ',', '.') }}/jam</option>
-                                    @endforeach
-                                </select>
-                            @endif
-                            @error('field_id')
-                                <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="date" class="block font-semibold mb-2">Tanggal Main</label>
-                            <input type="date" id="date" name="date"
-                                class="w-full px-5 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-[#13810A] transition duration-200">
-                            @error('date')
-                                <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <input type="hidden" name="field_id" value="{{ $field['id'] }}">
+                        <input type="hidden" name="date" value="{{ $date ?? now()->toDateString() }}">
 
                         @php
                             use Carbon\Carbon;
-
                             $open = Carbon::parse($field['open_time']);
                             $close = Carbon::parse($field['close_time']);
+                            $bookedHours = $bookedHours ?? [];
                         @endphp
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="start_time" class="block font-semibold mb-2">Jam Mulai</label>
-                                <select id="start_time" name="start_time"
-                                    class="w-full px-5 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-[#13810A] transition duration-200">
+                        <div>
+                            <label class="block font-semibold mb-2">Pilih Jam</label>
+                            <div class="grid grid-cols-4 gap-3" id="hourSlots">
+                                @php
+                                    $bookedHours = $bookedHours ?? [];
+                                @endphp
 
-                                    <option value="">-- Pilih Jam Mulai --</option>
-
-                                    @for ($time = $open->copy(); $time < $close; $time->addHour())
-                                        <option value="{{ $time->format('H:i') }}">
-                                            {{ $time->format('H:i') }}
-                                        </option>
-                                    @endfor
-
-                                </select>
-                                @error('start_time')
-                                    <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
-                                @enderror
+                                @for ($time = $open->copy(); $time < $close; $time->addHour())
+                                    @php
+                                        $hour = $time->format('H:i');
+                                        $isBooked = in_array($hour, $bookedHours);
+                                    @endphp
+                                    <button type="button"
+                                        class="hour-slot px-4 py-2 rounded-lg border
+            {{ $isBooked ? 'bg-red-500 text-white cursor-not-allowed' : 'bg-green-100 text-green-800 hover:bg-green-300' }}"
+                                        data-hour="{{ $hour }}" {{ $isBooked ? 'disabled' : '' }}>
+                                        {{ $hour }}
+                                    </button>
+                                @endfor
                             </div>
 
-                            <div>
-                                <label for="end_time" class="block font-semibold mb-2">Jam Selesai</label>
-                                <select id="end_time" name="end_time"
-                                    class="w-full px-5 py-3 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-[#13810A] transition duration-200">
-
-                                    <option value="">-- Pilih Jam Selesai --</option>
-
-                                    @for ($time = $open->copy()->addHour(); $time <= $close; $time->addHour())
-                                        <option value="{{ $time->format('H:i') }}">
-                                            {{ $time->format('H:i') }}
-                                        </option>
-                                    @endfor
-
-                                </select>
-                                @error('end_time')
-                                    <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            <input type="hidden" name="start_time" id="start_time">
+                            <input type="hidden" name="end_time" id="end_time">
                         </div>
 
-
-
                         <button type="submit"
-                            class="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#13810A] to-[#0f6e09] hover:from-[#0f6e09] hover:to-[#13810A] transition duration-300">
+                            class="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#13810A] to-[#0f6e09] hover:from-[#0f6e09] hover:to-[#13810A] transition duration-300 mt-4">
                             Booking Sekarang
                         </button>
                     </form>
                 </div>
             </div>
-
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slots = document.querySelectorAll('.hour-slot');
+            let selectedHours = [];
+
+            slots.forEach(slot => {
+                if (slot.disabled) return; // skip yang sudah booked
+
+                slot.addEventListener('click', function() {
+                    const hour = slot.dataset.hour;
+                    if (selectedHours.includes(hour)) {
+                        selectedHours = selectedHours.filter(h => h !== hour);
+                        slot.classList.remove('bg-green-500', 'text-white');
+                        slot.classList.add('bg-green-100', 'text-green-800');
+                    } else {
+                        selectedHours.push(hour);
+                        slot.classList.remove('bg-green-100', 'text-green-800');
+                        slot.classList.add('bg-green-500', 'text-white');
+                    }
+
+                    if (selectedHours.length > 0) {
+                        selectedHours.sort();
+                        document.getElementById('start_time').value = selectedHours[0];
+                        document.getElementById('end_time').value = selectedHours[selectedHours
+                            .length - 1];
+                    } else {
+                        document.getElementById('start_time').value = '';
+                        document.getElementById('end_time').value = '';
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

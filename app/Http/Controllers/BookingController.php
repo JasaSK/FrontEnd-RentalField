@@ -16,10 +16,8 @@ class BookingController extends Controller
         $this->apiUrl = config('services.api_service.url');
         $this->imgUrl = config('services.api_image.url');
     }
-
     public function show($fieldId)
     {
-        // Ambil detail field
         $fieldResponse = Http::get("{$this->apiUrl}/fields/{$fieldId}");
         $field = $fieldResponse->successful() ? ($fieldResponse->json()['data'] ?? []) : [];
 
@@ -27,18 +25,35 @@ class BookingController extends Controller
             $field['image_url'] = "{$this->imgUrl}/storage/{$field['image']}";
         }
 
-        // Ambil daftar semua field
-        $fieldsResponse = Http::get("{$this->apiUrl}/fields");
-        $fields = $fieldsResponse->successful()
-            ? ($fieldsResponse->json()['data'] ?? [])
+        $date = request()->get('date', now()->toDateString());
+
+        // Tambahkan token jika API butuh autentikasi
+        $bookingResponse = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token'),
+        ])->get("{$this->apiUrl}/bookings/booked-hours/{$fieldId}", [
+            'date' => $date
+        ]);
+
+        $bookedHoursRaw = $bookingResponse->successful()
+            ? ($bookingResponse->json()['booked_hours'] ?? [])
             : [];
 
+        // Round booked hours ke jam penuh (misal 11:47 → 11:00)
+        $bookedHours = array_map(function ($hour) {
+            return \Carbon\Carbon::parse($hour)->format('H:00');
+        }, $bookedHoursRaw);
+
+        // Hilangkan duplikat dan urutkan
+        $bookedHours = array_unique($bookedHours);
+        sort($bookedHours);
+
         return view('beranda.booking', [
-            'fields'  => $fields,
-            'field'   => $field,
-            'booking' => []
+            'field'       => $field,
+            'bookedHours' => $bookedHours,
+            'date'        => $date,
         ]);
     }
+
 
     public function store(Request $request)
     {
@@ -82,7 +97,4 @@ class BookingController extends Controller
 
         )->with('success', 'Booking berhasil dibuat!');
     }
-
-
- 
 }
