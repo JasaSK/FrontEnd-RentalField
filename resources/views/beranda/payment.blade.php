@@ -99,7 +99,7 @@
                         });
 
                         setTimeout(() => {
-                            window.location.href = "{{ route('history.index') }}";
+                            window.location.href = "/ticket/{{ $booking_id }}";
                         }, 2000);
                     }
                 })
