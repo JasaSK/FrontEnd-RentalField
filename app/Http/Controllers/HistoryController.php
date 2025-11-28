@@ -20,13 +20,14 @@ class HistoryController extends Controller
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token')
         ])->get("{$this->apiUrl}/booking-history");
-        // dd($response->json());
-        if ($response->failed()) {
-            return back()->with('error', 'Gagal mengambil riwayat pemesanan.');
+
+        // Jika tidak 200, anggap saja data kosong
+        if ($response->status() !== 200) {
+            $bookings = [];
+        } else {
+            $bookings = $response->json()['data'] ?? [];
         }
 
-        $bookings = $response->json()['data'] ?? [];
-        // dd($bookings);
         return view('beranda.history', compact('bookings'));
     }
 
