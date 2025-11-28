@@ -33,10 +33,18 @@ class BerandaController extends Controller
 
         $fields = $this->mapImages($fields);
 
-        $data['fields'] = $fields;
+        $showAll = $request->get('show') === 'all';
+        $limit = $showAll ? count($fields) : 4;
+
+        $fieldsLimited = array_slice($fields, 0, $limit);
+
+        $data['fields'] = $fieldsLimited;
+        $data['totalFields'] = count($fields);
+        $data['limit'] = $limit;
         $data['isSearch'] = !empty($params);
-        $data['showAll'] = $request->get('show') === 'all';
-        $data['request'] = $request;
+        $data['showAll'] = $showAll;
+        $data['request'] = $request->all();
+
 
         return view('beranda.index', $data);
     }
@@ -51,42 +59,59 @@ class BerandaController extends Controller
             'category_field_id' => 'nullable|numeric',
         ]);
 
-        // Set tanggal pencarian default hari ini jika tidak diisi
+        // Set tanggal default jika tidak diisi
         $tanggalMain = $request->input('tanggal_main', now()->toDateString());
 
-        // Ambil jam pencarian, kosongkan jika tidak diisi
-        $openTime = $request->input('open_time');
-        $closeTime = $request->input('close_time');
-
-        // Panggil endpoint BE POST /fields/search
+        // Panggil endpoint search BE
         $response = Http::post("{$this->apiUrl}/fields/search", [
             'tanggal_main'      => $tanggalMain,
-            'open_time'         => $openTime,
-            'close_time'        => $closeTime,
+            'open_time'         => $request->input('open_time'),
+            'close_time'        => $request->input('close_time'),
             'category_field_id' => $request->input('category_field_id'),
         ]);
 
-        // Ambil data jika response sukses
         $fields = [];
         if ($response->successful()) {
-            $fields = $response->json()['data'] ?? [];
-
-            // Map image URL (jika ada fungsi helper)
-            $fields = $this->mapImages($fields);
+            $fields = $this->mapImages($response->json()['data'] ?? []);
         }
 
-        // Data tambahan untuk view
+        // Simpan ke session untuk ditampilkan di searchResult
+        session()->put('search_results', $fields);
+        session()->put('search_params', $request->only([
+            'tanggal_main',
+            'open_time',
+            'close_time',
+            'category_field_id'
+        ]));
+
+        // Redirect ke halaman result
+        return redirect()->route('beranda.search.result');
+    }
+
+    public function searchResult(Request $request)
+    {
+        $allFields = session('search_results', []);
+        $params = session('search_params', []);
+
+        // cek apakah user klik "Lihat Semua"
+        $showAll = $request->query('show') === 'all';
+
+        // Default limit = 4, tapi kalau show=all → tampilkan semua
+        $limit = $showAll ? count($allFields) : 4;
+
+        // Ambil data sesuai limit
+        $fields = array_slice($allFields, 0, $limit);
+
         $data = $this->getDefaultData();
         $data['fields'] = $fields;
-        $data['isSearch'] = true; // menandakan ini hasil search
-        $data['showAll'] = false;
-        $data['request'] = $request->all(); // ubah jadi array agar mudah diakses di view
+        $data['totalFields'] = count($allFields);
+        $data['limit'] = $limit;
+        $data['isSearch'] = true;
+        $data['showAll'] = $showAll;
+        $data['request'] = $params;
 
         return view('beranda.index', $data);
     }
-
-
-
     private function getDefaultData()
     {
         $categoriesFields = Http::get("{$this->apiUrl}/category-fields")->json()['data'] ?? [];
@@ -95,7 +120,7 @@ class BerandaController extends Controller
         $galleriesResponse = Http::get("{$this->apiUrl}/galleries")->json()['data'] ?? [];
         $bannersResponse = Http::get("{$this->apiUrl}/banners")->json()['data'] ?? [];
 
-        $galleries = array_map(fn($g) => ['image' => $this->imgUrl . '/storage/' . ($g['image'] ?? '')], $galleriesResponse);
+        // FIX: mapping gallery tidak tumpang tindih
         $galleries = array_map(function ($g) {
             return [
                 'image' => $this->imgUrl . '/storage/' . ($g['image'] ?? ''),
@@ -103,10 +128,16 @@ class BerandaController extends Controller
             ];
         }, $galleriesResponse);
 
-        $banners = array_map(fn($b) => ['image' => $this->imgUrl . '/storage/' . ($b['image'] ?? '')], $bannersResponse);
+        // Banner tetap sama
+        $banners = array_map(function ($b) {
+            return [
+                'image' => $this->imgUrl . '/storage/' . ($b['image'] ?? ''),
+            ];
+        }, $bannersResponse);
 
         return compact('categoriesFields', 'categoriesGalleries', 'galleries', 'banners');
     }
+
 
     private function mapImages(array $fields)
     {
