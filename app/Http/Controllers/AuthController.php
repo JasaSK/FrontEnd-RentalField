@@ -32,34 +32,34 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // 🔹 1. VALIDASI INPUT
+        // 1. VALIDASI
         $validated = $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6',
-        ], [
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 6 karakter.',
         ]);
 
-        // 🔹 2. KIRIM DATA KE API BACKEND
+        // 2. REQUEST KE API BACKEND
         $response = Http::post("{$this->apiUrl}/login", [
             'email' => $validated['email'],
             'password' => $validated['password'],
         ]);
 
-        // 🔹 3. CEK HASIL DARI BACKEND
-        if ($response->successful()) {
-            $data = $response->json();
-            $dataUser = $data['user'];
+        $data = $response->json();
 
-            // Simpan token ke session (atau cookie)
-             session([
-            'token' => $data['token'],
-            'user'  => $dataUser
-        ]);
-            // Buat user sementara agar bisa dipakai Auth::check()
+        // 3. JIKA LOGIN SUKSES
+        if ($response->successful() && $data['status'] === true) {
+
+            // User sebenarnya berada di `data`
+            $dataUser = $data['data'];
+
+            // Simpan session
+            session([
+                'token' => $data['token'],
+                'user' => $dataUser,
+                'role' => $data['role'] ?? null,
+            ]);
+
+            // Login user palsu agar Auth::check() bisa bekerja
             $user = new User($dataUser);
             Auth::login($user);
 
@@ -67,25 +67,24 @@ class AuthController extends Controller
                 'swal' => [
                     'icon' => 'success',
                     'title' => 'Login Berhasil!',
-                    'text' => 'Selamat datang, ' . ($data['user']['name'] ?? 'User') . '!',
+                    'text' => 'Selamat datang, ' . ($dataUser['name'] ?? 'User') . '!',
                     'timer' => 2000
                 ]
             ]);
         }
 
-        // 🔹 4. JIKA LOGIN GAGAL
+        // 4. LOGIN GAGAL
         return back()->withErrors([
-            'login' => $response->json()['message'] ?? 'Email atau password salah!',
-        ])->with(
-            [
-                'swal' => [
-                    'icon' => 'error',
-                    'title' => 'Login Gagal!',
-                    'text' => $response->json()['message'] ?? 'Email atau password salah!',
-                ]
+            'login' => $data['message'] ?? 'Email atau password salah!',
+        ])->with([
+            'swal' => [
+                'icon' => 'error',
+                'title' => 'Login Gagal!',
+                'text' => $data['message'] ?? 'Email atau password salah!',
             ]
-        );
+        ]);
     }
+    
 
     public function register(Request $request)
     {
