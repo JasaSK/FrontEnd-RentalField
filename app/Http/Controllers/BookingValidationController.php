@@ -25,19 +25,25 @@ class BookingValidationController extends Controller
         $response = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/booking/{$id}");
-            
-        if ($response->failed()) {
-            $booking = [];
-        } else {
-            $booking = $response->json() ?? [];
+
+        $data = $response->json();
+
+        // Pastikan API mengembalikan data booking
+        if (!isset($data['data'])) {
+            return back()->with('error', 'Format data booking tidak valid.');
         }
 
-        if (!empty($booking['field']) && isset($booking['field']['image'])) {
+        // Ambil data booking asli
+        $booking = $data['data'];
+
+        // Cek apakah field & image ada
+        if (isset($booking['field']) && isset($booking['field']['image'])) {
             $booking['field']['image_url'] = "{$this->imgUrl}/storage/{$booking['field']['image']}";
         }
 
         return view('beranda.bookingValidation', compact('booking'));
     }
+
 
     public function cancel($id)
     {

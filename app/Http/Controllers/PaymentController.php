@@ -29,9 +29,11 @@ class PaymentController extends Controller
             return back()->with('error', 'Gagal memuat data booking');
         }
 
+        
         $booking = $bookingResponse->json();
+        $booking = $booking['data'];
         $qrisUrl = $booking['qris_url'] ?? null;
-
+        // dd($booking);
 
         return view('beranda.payment', [
             'booking' => $booking,
@@ -71,8 +73,7 @@ class PaymentController extends Controller
         if (!$qrisUrl) {
             return back()->with('error', 'URL QRIS tidak ditemukan.');
         }
-        // session()->flash('success', 'QRIS Payment berhasil dibuat! Silakan lanjutkan pembayaran.');
-        // return view('beranda.payment', compact('booking', 'qrisUrl', 'booking_id'));
+        
         return redirect()->route('beranda.payment', ['id' => $booking_id])
             ->with([
                 'success' => 'QRIS Payment berhasil dibuat! Silakan lanjutkan pembayaran.',
