@@ -17,15 +17,28 @@ class HistoryController extends Controller
     // Menampilkan halaman history semua booking user
     public function index()
     {
-        $response = Http::withHeaders([
+        $bookingResponse = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token')
         ])->get("{$this->apiUrl}/booking-history");
 
         // Jika tidak 200, anggap saja data kosong
-        if ($response->status() !== 200) {
-            $bookings = [];
-        } else {
-            $bookings = $response->json()['data'] ?? [];
+        $bookings = ($bookingResponse->status() === 200) ? $bookingResponse->json()['data'] ?? [] : [];
+
+        $refundResponse = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token')
+        ])->get("{$this->apiUrl}/refund/user");
+
+        // Jika tidak 200, anggap saja data kosong
+        $refunds = ($refundResponse->status() === 200) ? $refundResponse->json()['data'] ?? [] : [];
+
+        foreach ($bookings as &$booking) {
+            $booking['refund'] = null;
+            foreach ($refunds as $refund) {
+                if ($refund['booking_id'] == $booking['id']) {
+                    $booking['refund'] = $refund;
+                    break;
+                }
+            }
         }
 
         return view('beranda.history', compact('bookings'));
