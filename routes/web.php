@@ -7,6 +7,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingValidationController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RefundController;
 use App\Http\Controllers\pendingController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\validationController;
@@ -40,6 +41,7 @@ Route::post('/booking', [BookingController::class, 'store'])->name('beranda.book
 Route::delete('/beranda/bookingValidation/cancel/{id}', [BookingValidationController::class, 'cancel'])->name('beranda.bookingValidation.cancel');
 Route::get('/beranda/bookingValidation/{id}', [BookingValidationController::class, 'show'])->name('beranda.bookingValidation');
 
+Route::get('/beranda/refund', [RefundController::class, 'index'])->name('beranda.refund');
 
 Route::get('/ticket/{id}', [TicketController::class, 'show'])->name('ticket.show');
 Route::get('/ticket/download/{id}', [TicketController::class, 'download'])->name('ticket.download');
