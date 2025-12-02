@@ -40,7 +40,8 @@ Route::post('/booking', [BookingController::class, 'store'])->name('beranda.book
 Route::delete('/beranda/bookingValidation/cancel/{id}', [BookingValidationController::class, 'cancel'])->name('beranda.bookingValidation.cancel');
 Route::get('/beranda/bookingValidation/{id}', [BookingValidationController::class, 'show'])->name('beranda.bookingValidation');
 
-Route::get('/beranda/refund', [RefundController::class, 'index'])->name('beranda.refund');
+Route::get('/beranda/refund/{id}', [RefundController::class, 'index'])->name('beranda.refund');
+Route::post('/beranda/refund', [RefundController::class, 'store'])->name('beranda.refund.store');
 
 Route::get('/ticket/{id}', [TicketController::class, 'show'])->name('ticket.show');
 Route::get('/ticket/download/{id}', [TicketController::class, 'download'])->name('ticket.download');

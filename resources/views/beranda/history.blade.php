@@ -60,8 +60,10 @@
                                 $booking['status'] === 'approved' &&
                                     $booking['status'] !== 'refunded' &&
                                     $booking['status'] !== 'cancelled' &&
-                                    (!isset($booking['refund']) || $booking['refund']['refund_status'] !== 'rejected'))
-                                <form action="{{ route('beranda.refund', $booking['id']) }}">
+                                    (!isset($booking['refund']) ||
+                                        $booking['refund']['refund_status'] !== 'rejected' &&
+                                        $booking['refund']['refund_status'] !== 'pending'))
+                                <form action="{{ route('beranda.refund', ['id' => $booking['id']]) }}">
                                     <button type="submit"
                                         class="inline-block bg-red-600 text-white px-5 py-2 rounded-full font-semibold transition-all duration-300 text-sm md:text-base shadow-md hover:shadow-lg hover:bg-red-700">
                                         Ajukan Refund
