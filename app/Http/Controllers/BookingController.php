@@ -57,6 +57,9 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+        // dd(session('token'));
+
+
         if (!session('user') || !session('token')) {
             return redirect()->route('PageLogin')->with([
                 'swal' => [
@@ -74,18 +77,24 @@ class BookingController extends Controller
             'end_time'   => 'required',
             'user_id'    => 'required|numeric'
         ]);
-
+        // dd($request->all());
         $response = Http::withHeaders([
+            "accept" => "application/json",
             "Authorization" => "Bearer " . session('token')
-        ])->post("{$this->apiUrl}/booking", $validated);
-
+        ])->withoutRedirecting()->post("{$this->apiUrl}/booking", $validated);
+        // dd($response->body(), $response->status());
         if (!$response->successful()) {
             return back()->withErrors([
                 'msg' => $response->json('message') ?? 'Booking gagal, silahkan coba lagi.'
             ]);
         }
+        // dd($response->body(), $response->status());
+        // dd("URL:", "{$this->apiUrl}/booking");
 
+        // dd($response->json());
         $booking = $response->json('data');
+        // dd($booking);
+
 
         if (isset($booking['field']['image'])) {
             $booking['field']['image_url'] = "{$this->imgUrl}/storage/{$booking['field']['image']}";

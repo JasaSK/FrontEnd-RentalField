@@ -29,7 +29,6 @@ Route::post('/Logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/beranda/payment/{id}', [PaymentController::class, 'paymentPage'])->name('beranda.payment');
 Route::post('/beranda/payment/{booking_id}', [PaymentController::class, 'create'])->name('beranda.payment.create');
-Route::get('/booking/status/{id}', [PaymentController::class, 'getStatus']);
 
 Route::get('/beranda/pending', [pendingController::class, 'index'])->name('beranda.pending');
 

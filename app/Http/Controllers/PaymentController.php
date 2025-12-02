@@ -29,7 +29,7 @@ class PaymentController extends Controller
             return back()->with('error', 'Gagal memuat data booking');
         }
 
-        
+
         $booking = $bookingResponse->json();
         $booking = $booking['data'];
         $qrisUrl = $booking['qris_url'] ?? null;
@@ -73,7 +73,7 @@ class PaymentController extends Controller
         if (!$qrisUrl) {
             return back()->with('error', 'URL QRIS tidak ditemukan.');
         }
-        
+
         return redirect()->route('beranda.payment', ['id' => $booking_id])
             ->with([
                 'success' => 'QRIS Payment berhasil dibuat! Silakan lanjutkan pembayaran.',
@@ -81,22 +81,4 @@ class PaymentController extends Controller
             ]);
     }
 
-    public function getStatus($booking_id)
-    {
-        if (!session('token')) {
-            return response()->json(['status' => 'error']);
-        }
-
-        $res = Http::withHeaders([
-            "Authorization" => "Bearer " . session('token')
-        ])->get("{$this->apiUrl}/booking/{$booking_id}");
-
-        if ($res->failed()) {
-            return response()->json(['status' => 'error']);
-        }
-
-        return response()->json([
-            'status' => $res->json()['status'] ?? 'pending'
-        ]);
-    }
 }

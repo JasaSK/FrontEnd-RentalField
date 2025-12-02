@@ -37,11 +37,14 @@
 
                         <!-- Action Buttons -->
                         <div class="flex flex-wrap items-center gap-4 mt-4">
+
+                            <!-- Lihat Tiket -->
                             <a href="{{ route('history.show', $booking['id']) }}"
                                 class="inline-block text-sm md:text-base text-blue-600 hover:text-blue-800 hover:underline font-medium transition-all duration-300">
                                 Lihat Tiket
                             </a>
 
+                            <!-- Bayar Sekarang -->
                             @if ($booking['status'] === 'pending')
                                 <form action="{{ route('beranda.payment.create', $booking['id']) }}" method="POST">
                                     @csrf
@@ -51,6 +54,18 @@
                                     </button>
                                 </form>
                             @endif
+
+                            <!-- 🔥 Tombol Refund (tambahannya) -->
+                            @if ($booking['status'] === 'approved' && !$booking['status'] === 'refunded')
+                                <form action="{{ route('history.refund', $booking['id']) }}" method="POST">
+                                    @csrf
+                                    <button type="submit"
+                                        class="inline-block bg-red-600 text-white px-5 py-2 rounded-full font-semibold transition-all duration-300 text-sm md:text-base shadow-md hover:shadow-lg hover:bg-red-700">
+                                        Ajukan Refund
+                                    </button>
+                                </form>
+                            @endif
+
                         </div>
                     </div>
                 @endforeach

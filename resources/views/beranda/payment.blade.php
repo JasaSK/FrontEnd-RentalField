@@ -82,13 +82,23 @@
     </div>
 
     <script>
-        // Auto check booking status every 5 seconds
         const bookingId = "{{ $booking_id }}";
+        const apiUrl = "{{ config('services.api_service.url') }}"; // dari config
 
         const checkStatus = () => {
-            fetch(`/booking/status/${bookingId}`)
-                .then(res => res.json())
+            fetch(`${apiUrl}/booking/status/${bookingId}`, {
+                    headers: {
+                        "Authorization": "Bearer {{ session('token') }}",
+                        "Accept": "application/json"
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to fetch booking status");
+                    return res.json();
+                })
                 .then(data => {
+                    console.log("Response JSON:", data); // pastikan tampil
+                    // langsung akses status
                     if (data.status === 'approved') {
                         Swal.fire({
                             icon: 'success',
@@ -99,13 +109,14 @@
                         });
 
                         setTimeout(() => {
-                            window.location.href = "/ticket/{{ $booking_id }}";
+                            window.location.href = `/ticket/${bookingId}`;
                         }, 2000);
                     }
                 })
-                .catch(err => console.error(err));
+                .catch(err => console.error("Error fetching status:", err));
         }
 
-        setInterval(checkStatus, 5000); // cek setiap 5 detik
+        setInterval(checkStatus, 5000);
     </script>
+
 @endsection
