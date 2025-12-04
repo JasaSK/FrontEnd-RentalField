@@ -80,7 +80,7 @@
                                     @endphp
                                     <button type="button"
                                         class="hour-slot px-4 py-2 rounded-lg border
-            {{ $isBooked ? 'bg-red-500 text-white cursor-not-allowed' : 'bg-green-100 text-green-800 hover:bg-green-300' }}"
+                                        {{ $isBooked ? 'bg-red-500 text-white cursor-not-allowed' : 'bg-green-100 text-green-800 hover:bg-green-300' }}"
                                         data-hour="{{ $hour }}" {{ $isBooked ? 'disabled' : '' }}>
                                         {{ $hour }}
                                     </button>
@@ -106,17 +106,31 @@
             const slots = document.querySelectorAll('.hour-slot');
             let selectedHours = [];
 
+            const now = new Date();
+            const currentHour = now.getHours();
+
             slots.forEach(slot => {
-                if (slot.disabled) return; // skip yang sudah booked
+                const hour = parseInt(slot.dataset.hour);
+
+                if (hour < currentHour) {
+                    slot.classList.add('bg-gray-300', 'cursor-not-allowed', 'text-gray-600');
+                    slot.disabled = true;
+                    return;
+                }
+
+                if (slot.disabled) return;
 
                 slot.addEventListener('click', function() {
                     const hour = slot.dataset.hour;
+
                     if (selectedHours.includes(hour)) {
                         selectedHours = selectedHours.filter(h => h !== hour);
+
                         slot.classList.remove('bg-green-500', 'text-white');
                         slot.classList.add('bg-green-100', 'text-green-800');
                     } else {
                         selectedHours.push(hour);
+
                         slot.classList.remove('bg-green-100', 'text-green-800');
                         slot.classList.add('bg-green-500', 'text-white');
                     }
