@@ -76,6 +76,12 @@ class BookingController extends Controller
             'start_time' => 'required',
             'end_time'   => 'required',
             'user_id'    => 'required|numeric'
+        ],[
+            'field_id.required'   => 'Field ID harus diisi.',
+            'date.required'       => 'Tanggal harus diisi.',
+            'start_time.required' => 'Waktu mulai harus diisi.',
+            'end_time.required'   => 'Waktu selesai harus diisi.',
+            'user_id.required'    => 'User ID harus diisi.',
         ]);
         // dd($request->all());
         $response = Http::withHeaders([
