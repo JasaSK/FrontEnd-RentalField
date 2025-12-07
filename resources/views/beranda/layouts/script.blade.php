@@ -2,6 +2,46 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    class Loader {
+        constructor(loaderId = 'globalLoader') {
+            this.loader = document.getElementById(loaderId);
+            if (!this.loader) {
+                console.warn(`Loader dengan id "${loaderId}" tidak ditemukan.`);
+            }
+        }
+
+        show() {
+            if (this.loader) this.loader.style.display = 'flex';
+        }
+
+        hide() {
+            if (this.loader) this.loader.style.display = 'none';
+        }
+    }
+
+    // Inisialisasi loader global
+    const loader = new Loader();
+
+    // Hide loader saat halaman selesai load
+    window.addEventListener('load', () => {
+        loader.hide();
+    });
+
+
+    // Form submit biasa
+    document.addEventListener('DOMContentLoaded', function() {
+        const myForm = document.getElementById('myForm');
+        const formLoader = document.getElementById('formLoader');
+
+        if (myForm && formLoader) {
+            myForm.addEventListener('submit', function() {
+                formLoader.classList.remove('hidden');
+            });
+        }
+    });
+
+
+
     // 🔹 Global SweetAlert
     document.addEventListener('DOMContentLoaded', function() {
 

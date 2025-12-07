@@ -37,7 +37,8 @@
                 <div class="lg:w-1/2 bg-white rounded-3xl shadow-lg p-8 flex flex-col justify-between">
                     <h3 class="text-2xl font-semibold text-[#13810A] mb-6 text-center">Form Booking</h3>
 
-                    <form action="{{ route('beranda.booking.show', $field['id']) }}" method="GET" class="space-y-6">
+                    <form id="myForm" action="{{ route('beranda.booking.show', $field['id']) }}" method="GET"
+                        class="space-y-6">
                         @csrf
                         <div>
                             <label for="date" class="block font-semibold mb-2">Tanggal Main</label>
@@ -48,10 +49,14 @@
                                 <p class="text-[#8B0C17] mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+                        <div id="formLoader"
+                            class="absolute inset-0 bg-white/70 flex items-center justify-center hidden z-10">
+                            <div class="spinner"></div>
+                        </div>
                     </form>
                     {{-- <pre>{{ print_r($bookedHours) }}</pre> --}}
 
-                    <form action="{{ route('beranda.booking.store') }}" method="POST" class="space-y-6">
+                    <form id="myForm" action="{{ route('beranda.booking.store') }}" method="POST" class="space-y-6">
                         @csrf
                         @if (session('user'))
                             <input type="hidden" name="user_id" value="{{ session('user')['id'] }}">
@@ -95,6 +100,10 @@
                             class="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#13810A] to-[#0f6e09] hover:from-[#0f6e09] hover:to-[#13810A] transition duration-300 mt-4">
                             Booking Sekarang
                         </button>
+                        <div id="formLoader"
+                            class="absolute inset-0 bg-white/70 flex items-center justify-center hidden z-10">
+                            <div class="spinner"></div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -106,19 +115,17 @@
             const slots = document.querySelectorAll('.hour-slot');
             let selectedHours = [];
 
-            const now = new Date();
-            const currentHour = now.getHours();
-
+            const selectedDate = new Date(document.getElementById('date').value);
             slots.forEach(slot => {
-                const hour = parseInt(slot.dataset.hour);
+                const [hourStr, minuteStr] = slot.dataset.hour.split(':');
+                const slotDate = new Date(selectedDate);
+                slotDate.setHours(parseInt(hourStr), parseInt(minuteStr), 0, 0);
 
-                if (hour < currentHour) {
+                if (slotDate < new Date()) {
                     slot.classList.add('bg-gray-300', 'cursor-not-allowed', 'text-gray-600');
                     slot.disabled = true;
                     return;
                 }
-
-                if (slot.disabled) return;
 
                 slot.addEventListener('click', function() {
                     const hour = slot.dataset.hour;

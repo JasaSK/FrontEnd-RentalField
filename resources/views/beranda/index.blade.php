@@ -27,7 +27,7 @@
         <!-- Card Search -->
         <section id="home" class="flex justify-center items-start mt-[300px] px-6 relative z-10">
             <div class="bg-gradient-to-r from-[#7A0010] to-[#B3001B] p-6 rounded-3xl shadow-2xl w-full max-w-[1500px]">
-                <form action="{{ route('beranda.search') }}" method="post"
+                <form id="myForm" action="{{ route('beranda.search') }}" method="post"
                     class="flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
                     @csrf
                     <!-- Tanggal & Jam -->
@@ -96,6 +96,10 @@
                             class="bg-[#13810A] hover:bg-[#0f6e09] text-white font-semibold px-9 py-4 rounded-xl text-xl shadow-md w-full transition-all duration-200">
                             Search
                         </button>
+                    </div>
+
+                    <div id="formLoader" class="absolute inset-0 bg-white/70 flex items-center justify-center hidden z-10">
+                        <div class="spinner"></div>
                     </div>
                 </form>
 
