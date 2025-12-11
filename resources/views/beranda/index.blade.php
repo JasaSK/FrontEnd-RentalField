@@ -26,7 +26,7 @@
 
         <!-- Card Search -->
         <section id="home" class="flex justify-center items-start mt-[300px] px-6 relative z-10">
-            <div class="bg-gradient-to-r from-[#7A0010] to-[#B3001B] p-6 rounded-3xl shadow-2xl w-full max-w-[1500px]">
+            <div class="bg-[#7A0010] p-6 rounded-3xl shadow-2xl w-full max-w-[1500px]">
                 <form id="myForm" action="{{ route('beranda.search') }}" method="post"
                     class="flex flex-wrap md:flex-nowrap items-center justify-between gap-4">
                     @csrf
@@ -161,14 +161,14 @@
         @if (!$showAll && $totalFields > 4)
             <div class="flex justify-center mt-6 mb-10">
                 <a href="{{ url()->current() . '?' . http_build_query(array_merge($request, ['show' => 'all'])) }}"
-                    class="px-6 py-3 bg-green-600 text-white rounded-xl">
+                    class="px-6 py-3 bg-[#13810A] hover:bg-[#0f6e09] text-white rounded-xl">
                     Lihat Semua
                 </a>
             </div>
         @endif
         @if ($showAll)
             <div class="flex justify-center mt-6 mb-10">
-                <a href="{{ url()->current() }}" class="px-6 py-3 bg-red-600 text-white rounded-xl">
+                <a href="{{ url()->current() }}" class="bg-[#BF0E26] px-6 py-3  text-white rounded-xl">
                     Tutup
                 </a>
             </div>
@@ -176,8 +176,8 @@
 
 
         <!-- Banner Section -->
-        @if (!$showAll && !$isSearch)
-            <section id="banner" class="py-24 md:py-32 px-6 md:px-12 bg-white text-center">
+        @if (!$isSearch)
+            <section id="banner" class="py-15 md:py-15 px-6 md:px-12 bg-gray text-center">
                 <h2 class="text-3xl md:text-5xl font-bold mb-10 text-[#000000]">Banner</h2>
                 <div class="relative max-w-6xl mx-auto overflow-hidden rounded-2xl shadow-xl w-[80%] max-w-[900px]">
                     <div id="banner-carousel" class="flex transition-transform duration-700 ease-in-out">
@@ -197,8 +197,8 @@
             </section>
 
             <!-- Galeri Section -->
-            <section id="galeri" class="py-15 md:py-15 px-6 md:px-12 bg-white text-center">
-                <h2 class="text-3xl md:5xl font-bold mb-10 text-[#000000]">Galeri</h2>
+            <section id="galeri" class="py-20 md:py-12 px-6 md:px-12 bg-gray text-center">
+                <h2 class="text-5xl md:5xl font-bold mb-10 text-[#000000]">Galeri</h2>
 
                 <div class="flex justify-center gap-4 mb-10 flex-wrap">
                     <button
@@ -231,7 +231,7 @@
             </section>
 
             <!-- Kontak Section -->
-            <section id="kontak" class="py-20 px-6 md:px-12 bg-gray-50 text-center">
+            <section id="kontak" class="py-20 px-6 md:py-12 md:px-12 bg-gray-50 text-center">
                 <h2 class="text-3xl md:text-5xl font-bold mb-10 text-[#000000]">Contact Us</h2>
                 <div class="bg-white rounded-2xl p-8 mx-auto w-[97%] max-w-[1500px] shadow-xl">
 
@@ -275,7 +275,7 @@
             </section>
 
             <!-- Maps Section -->
-            <section id="maps" class="py-20 px-6 md:px-12 bg-gray-50">
+            <section id="maps" class="py-20 px-6 md:py-12 md:px-12 bg-gray-50">
                 <h2 class="text-3xl md:text-5xl font-bold mb-10 text-center text-[#000000]">Maps</h2>
                 <div class="max-w-[1500px] mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
                     <iframe

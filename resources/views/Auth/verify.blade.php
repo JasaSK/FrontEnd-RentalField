@@ -57,7 +57,7 @@
 
             <!-- Kirim Ulang -->
             <div class="text-center">
-                <form action="{{ route('ResendCode') }}" method="POST">
+                <form action="{{ route('ResendCode') }}" method="POST" id="formResendCode">
                     @csrf
                     <input type="hidden" name="email" value="{{ session('email') }}">
                     <p id="statusPesan" class="text-black font-semibold text-sm mb-2">
@@ -70,10 +70,10 @@
 
                 </form>
             </div>
-            <!-- script -->
-            <script src="{{ asset('js/verifikasi.js') }}"></script>
         </div>
     </div>
+    <!-- script -->
+    <script src="{{ asset('js/verifikasi.js') }}"></script>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

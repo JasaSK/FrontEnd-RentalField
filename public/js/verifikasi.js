@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("form[action*='ResendCode']");
+    const form = document.getElementById("formResendCode");
     const tombol = document.getElementById("btnKirimUlang");
     const status = document.getElementById("statusPesan");
 

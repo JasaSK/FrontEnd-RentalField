@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\FakeUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
+
 
 class AuthController extends Controller
 {
@@ -84,7 +87,7 @@ class AuthController extends Controller
             ]
         ]);
     }
-    
+
 
     public function register(Request $request)
     {
@@ -244,5 +247,180 @@ class AuthController extends Controller
                 'timer' => 3000
             ]
         ]);
+    }
+    public function PageForgotPassword()
+    {
+        return view('auth.forgotpassword');
+    }
+
+    public function ForgotPassword(Request $request)
+    {
+        $request->validate(
+            [
+                'email' => 'required|email'
+            ],
+            [
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.'
+            ]
+        );
+
+        try {
+            http::withHeader('Accept', 'application/json');
+
+            $response = Http::post("{$this->apiUrl}/forgot-password", [
+                'email' => $request->email
+            ]);
+
+            $data = $response->json();
+
+            if (!$response->successful()) {
+                return back()->with('error', 'Gagal mengirim kode reset.');
+            }
+
+            session(['email' => $request->email]);
+            return redirect()->route('verifyresetcode')->with('success', 'Kode reset dikirim.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Server API tidak merespon.');
+        }
+    }
+
+
+    public function PageResetCode()
+    {
+        return view('auth.verifyresetcode');
+    }
+
+    public function VerifyResetCode(Request $request)
+    {
+        // Gabungkan array code[] → string
+        $mergedCode = implode('', $request->reset_code);
+
+        $request->merge([
+            'reset_code' => $mergedCode
+        ]);
+
+        $request->validate(
+            [
+                'email' => 'required|email',
+                'reset_code' => 'required|digits:6'
+            ],
+            [
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.',
+                'reset_code.required' => 'Kode reset wajib diisi.',
+                'reset_code.digits' => 'Kode reset harus 6 digit angka.'
+            ]
+        );
+        // dd($request->all());
+
+        // try {
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+        ])->post("{$this->apiUrl}/verify-reset-code", [
+            'email' => $request->email,
+            'reset_code' => $request->reset_code,
+        ]);
+
+        $email = $request->email;
+
+        Session::put('email', $email);
+        Session::put('email_verified_at', Carbon::now()->addMinutes(10));
+
+        if ($response->successful()) {
+            return redirect()->route('resetpassword')->with('success', 'Kode verifikasi benar. Silakan atur ulang password Anda.');
+        }
+        return back()->with('error', 'Kode salah atau kadaluarsa.');
+    }
+
+
+
+    public function ResendResetCode(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.'
+        ]);
+
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+        ])->post("{$this->apiUrl}/forgot-password", [
+            'email' => $request->email
+        ]);
+
+        if ($response->successful()) {
+            return back()->with([
+                'swal' => [
+                    'icon' => 'success',
+                    'title' => 'Kode Terkirim!',
+                    'text' => $data['message'] ?? 'Kode verifikasi telah dikirim ulang ke email Anda.',
+                    'timer' => 3000
+                ]
+            ]);
+        } else {
+            return back()->with([
+                'swal' => [
+                    'icon' => 'error',
+                    'title' => 'Gagal Mengirim Kode!',
+                    'text' => $data['message'] ?? 'Terjadi kesalahan saat mengirim ulang kode verifikasi.',
+                ]
+            ]);
+        }
+
+        return back()->with('success', 'Kode baru telah dikirim.');
+    }
+
+    public function PageResetPassword()
+    {
+        $verifiedAt = session('email_verified_at');
+
+        if (!$verifiedAt) {
+            return redirect()->route('forgotpassword')
+                ->with('error', 'Silakan lakukan verifikasi kode terlebih dahulu.');
+        }
+
+        if (Carbon::now()->greaterThan(Carbon::parse($verifiedAt))) {
+
+            Session::forget('email_verified_at');
+            Session::forget('email');
+
+            return redirect()->route('forgotpassword')
+                ->with('error', 'Waktu verifikasi sudah kadaluarsa. Silakan lakukan verifikasi ulang.');
+        }
+        return view('auth.resetpassword');
+    }
+
+    public function ResetPassword(Request $request)
+    {
+        $request->validate(
+            [
+                'email' => 'required|email',
+                'password' => 'required|min:6|confirmed'
+            ],
+            [
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.',
+                'password.required' => 'Password wajib diisi.',
+                'password.min' => 'Password minimal 6 karakter.',
+                'password.confirmed' => 'Konfirmasi password tidak cocok.'
+            ]
+        );
+
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+        ])->post("{$this->apiUrl}/reset-password", [
+            'email' => $request->email,
+            'password' => $request->password,
+            'password_confirmation' => $request->password_confirmation,
+        ]);
+        if (!$response->successful()) {
+            return back()->with('error', 'Gagal mereset password.');
+        }
+
+        Session::forget(['email', 'email_verified_at']);
+
+        return redirect()->route('PageLogin')->with('success', 'Password berhasil direset.');
     }
 }

@@ -48,3 +48,14 @@ Route::get('/ticket/download/{id}', [TicketController::class, 'download'])->name
 
 Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
 Route::get('/history/{id}', [HistoryController::class, 'show'])->name('history.show');
+
+Route::get('forgotpassword', [AuthController::class, 'PageForgotPassword'])->name('forgotpassword');
+Route::post('forgotpassword', [AuthController::class, 'ForgotPassword'])->name('forgotpassword.post');
+
+Route::get('verifyresetcode', [AuthController::class, 'PageResetCode'])->name('verifyresetcode');
+Route::post('verifyresetcode', [AuthController::class, 'VerifyResetCode'])->name('verifyresetcode.post');
+Route::post('verifyresetcode/resend', [AuthController::class, 'ResendResetCode'])->name('verifyresetcode.resend');
+
+Route::get('resetpassword', [AuthController::class, 'PageResetPassword'])->name('resetpassword');
+Route::post('resetpassword/resend', [AuthController::class, 'ResendResetCode'])->name('resetpassword.resend');
+Route::post('resetpassword', [AuthController::class, 'ResetPassword'])->name('resetpassword.post'); 

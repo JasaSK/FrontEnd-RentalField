@@ -77,7 +77,7 @@
                             <input type="checkbox" class="accent-green-500">
                             <span>Remember me</span>
                         </label>
-                        <a href="{{ url('beranda/forgotpassword') }}" class="hover:underline">Forgot password?</a>
+                        <a href="{{ url('forgotpassword') }}" class="hover:underline">Forgot password?</a>
                     </div>
 
                     <!-- Belum punya akun -->
