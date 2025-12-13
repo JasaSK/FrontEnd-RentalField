@@ -264,18 +264,22 @@ class AuthController extends Controller
                 'email.email' => 'Format email tidak valid.'
             ]
         );
-
+        // dd($request->all());
         try {
-            http::withHeader('Accept', 'application/json');
-
-            $response = Http::post("{$this->apiUrl}/forgot-password", [
+            $response = Http::withHeaders([
+                'Accept' => 'application/json'
+            ])->post("{$this->apiUrl}/forgot-password", [
                 'email' => $request->email
             ]);
 
+
+            // dd($response->json());
+
             $data = $response->json();
 
+
             if (!$response->successful()) {
-                return back()->with('error', 'Gagal mengirim kode reset.');
+                return back()->with('error', 'Tunggu beberapa saat untuk mengirim ulang kode reset.');
             }
 
             session(['email' => $request->email]);
@@ -325,15 +329,14 @@ class AuthController extends Controller
         $email = $request->email;
 
         Session::put('email', $email);
-        Session::put('email_verified_at', Carbon::now()->addMinutes(10));
+        Session::put('reset_code', $request->reset_code);
+        Session::put('expires_at', Carbon::now()->addMinutes(10));
 
         if ($response->successful()) {
             return redirect()->route('resetpassword')->with('success', 'Kode verifikasi benar. Silakan atur ulang password Anda.');
         }
         return back()->with('error', 'Kode salah atau kadaluarsa.');
     }
-
-
 
     public function ResendResetCode(Request $request)
     {
@@ -344,11 +347,13 @@ class AuthController extends Controller
             'email.email' => 'Format email tidak valid.'
         ]);
 
+
         $response = Http::withHeaders([
             'Accept' => 'application/json',
         ])->post("{$this->apiUrl}/forgot-password", [
             'email' => $request->email
         ]);
+
 
         if ($response->successful()) {
             return back()->with([
@@ -374,16 +379,17 @@ class AuthController extends Controller
 
     public function PageResetPassword()
     {
-        $verifiedAt = session('email_verified_at');
+        $expiresAt = session('expires_at');
 
-        if (!$verifiedAt) {
+
+        if (!$expiresAt) {
             return redirect()->route('forgotpassword')
                 ->with('error', 'Silakan lakukan verifikasi kode terlebih dahulu.');
         }
 
-        if (Carbon::now()->greaterThan(Carbon::parse($verifiedAt))) {
+        if (Carbon::now()->greaterThan(Carbon::parse($expiresAt))) {
 
-            Session::forget('email_verified_at');
+            Session::forget('expires_at');
             Session::forget('email');
 
             return redirect()->route('forgotpassword')
@@ -412,6 +418,7 @@ class AuthController extends Controller
             'Accept' => 'application/json',
         ])->post("{$this->apiUrl}/reset-password", [
             'email' => $request->email,
+            'reset_code' => $request->reset_code,
             'password' => $request->password,
             'password_confirmation' => $request->password_confirmation,
         ]);
@@ -419,7 +426,7 @@ class AuthController extends Controller
             return back()->with('error', 'Gagal mereset password.');
         }
 
-        Session::forget(['email', 'email_verified_at']);
+        Session::forget(['email', 'reset_code', 'expires_at']);
 
         return redirect()->route('PageLogin')->with('success', 'Password berhasil direset.');
     }

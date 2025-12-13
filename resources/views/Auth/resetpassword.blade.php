@@ -3,12 +3,13 @@
 @section('content')
     <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div class="max-w-[800px] mx-auto bg-white shadow-md rounded-2xl p-8 border border-gray-200">
-            {{-- @if (session('email'))
+            @if (session('email'))
                 <p>Email Anda adalah: <strong>{{ session('email') }}</strong></p>
-                <p>Email Anda adalah: <strong>{{ session('email_verified_at') }}</strong></p>
+                <p>Email Anda adalah: <strong>{{ session('expires_at') }}</strong></p>
+                <p>Email Anda adalah: <strong>{{ session('reset_code') }}</strong></p>
             @else
                 <p>Email belum tersedia di session.</p>
-            @endif --}}
+            @endif
             <h2 class="text-2xl font-bold text-center mb-6">Reset Password</h2>
             <p class="text-gray-600 text-center mb-6">
                 Masukkan password baru kamu untuk mengganti password lama.
@@ -23,6 +24,7 @@
                 </div>
 
                 <input type="hidden" name="email" value="{{ session('email') }}">
+                <input type="hidden" name="reset_code" value="{{ session('reset_code') }}">
 
                 <div class="mb-4">
                     <label class="block text-gray-700 font-semibold mb-2">Password Baru</label>

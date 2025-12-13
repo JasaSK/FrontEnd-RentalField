@@ -60,3 +60,41 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 500);
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const inputs = document.querySelectorAll(".code-input");
+
+    inputs.forEach((input, index) => {
+        // Hanya angka
+        input.addEventListener("input", function (e) {
+            this.value = this.value.replace(/[^0-9]/g, "");
+
+            // Auto next
+            if (this.value && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+
+        // Auto backspace
+        input.addEventListener("keydown", function (e) {
+            if (e.key === "Backspace" && !this.value && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+
+        // Paste 6 digit langsung
+        input.addEventListener("paste", function (e) {
+            const pasteData = e.clipboardData
+                .getData("text")
+                .replace(/\D/g, "");
+
+            if (pasteData.length === 6) {
+                pasteData.split("").forEach((num, i) => {
+                    if (inputs[i]) inputs[i].value = num;
+                });
+                inputs[5].focus(); // fokus ke input terakhir
+            }
+            e.preventDefault();
+        });
+    });
+});
