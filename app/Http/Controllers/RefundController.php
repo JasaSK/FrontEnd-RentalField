@@ -30,15 +30,10 @@ class RefundController extends Controller
             'id' => $bookingData['id'] ?? 0,
         ];
 
-        // Jika tidak 200, anggap saja data kosong
-        // $refunds = ($codeBooking->status() === 200) ? $refundResponse->json()['data'] ?? [] : [];
-
         return view('beranda.refund', compact('code_booking'));
     }
     public function store(Request $request)
     {
-
-
         if (!session('user') || !session('token')) {
             return redirect()->route('PageLogin')->with([
                 'swal' => [
@@ -49,7 +44,7 @@ class RefundController extends Controller
                 ]
             ]);
         }
-        // Validasi input dari form
+        
         $request->validate([
             'booking_id' => 'required|integer',
             'refund_method' => 'required|string',
@@ -72,7 +67,7 @@ class RefundController extends Controller
         $payload = [
             'user_id' => $user['id'] ?? null,
             'booking_id' => $request->booking_id,
-            'amount_paid' => $request->amount_paid ?? 0, // bisa dari booking atau input form
+            'amount_paid' => $request->amount_paid ?? 0, 
             'refund_method' => $request->refund_method,
             'account_number' => $request->account_number,
             'reason' => $request->reason,

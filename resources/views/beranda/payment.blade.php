@@ -83,27 +83,18 @@
 
     <script>
         const bookingId = "{{ $booking_id }}";
-        const apiUrl = "{{ config('services.api_service.url') }}"; // dari config
 
         const checkStatus = () => {
-            fetch(`${apiUrl}/booking/status/${bookingId}`, {
-                    headers: {
-                        "Authorization": "Bearer {{ session('token') }}",
-                        "Accept": "application/json"
-                    }
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error("Failed to fetch booking status");
-                    return res.json();
-                })
+            fetch(`/ajax/booking-status/${bookingId}`)
+                .then(res => res.json())
                 .then(data => {
-                    console.log("Response JSON:", data); // pastikan tampil
-                    // langsung akses status
+                    console.log("STATUS:", data);
+
                     if (data.status === 'approved') {
                         Swal.fire({
                             icon: 'success',
                             title: 'Pembayaran Berhasil',
-                            text: 'Transaksi Anda telah diverifikasi.',
+                            message: 'Silakan menunggu, Anda akan diarahkan ke halaman tiket.',
                             timer: 2000,
                             showConfirmButton: false
                         });
@@ -113,10 +104,11 @@
                         }, 2000);
                     }
                 })
-                .catch(err => console.error("Error fetching status:", err));
-        }
+                .catch(err => console.error("FETCH ERROR:", err));
+        };
 
         setInterval(checkStatus, 5000);
     </script>
+
 
 @endsection

@@ -9,13 +9,19 @@
             <!-- Header -->
             <div class="mb-12 text-center">
                 <h1 class="text-4xl font-bold tracking-wide mb-2">Tiket Booking</h1>
-                <span
-                    class="px-4 py-2 rounded-full text-lg font-semibold
-                {{ $booking['status'] === 'pending' ? 'bg-yellow-200 text-yellow-900' : '' }}
-                {{ $booking['status'] === 'confirmed' ? 'bg-white text-[#13810A]' : '' }}
-                {{ $booking['status'] === 'cancelled' ? 'bg-red-200 text-red-900' : '' }}">
-                    {{ ucfirst($booking['status']) }}
-                </span>
+                @if ($ticket)
+                    <span
+                        class="px-4 py-2 rounded-full text-lg font-semibold
+            {{ ($ticket['status_ticket'] ?? '') === 'unused' ? 'bg-yellow-200 text-yellow-900' : '' }}
+            {{ ($ticket['status_ticket'] ?? '') === 'used' ? 'bg-red-200 text-red-900' : '' }}">
+                        {{ ucfirst($ticket['status_ticket'] ?? '-') }}
+                    </span>
+                @else
+                    <span class="px-4 py-2 rounded-full bg-gray-200 text-gray-700">
+                        Status tidak tersedia
+                    </span>
+                @endif
+
             </div>
 
             <!-- Main Content -->
@@ -24,18 +30,33 @@
                 <!-- Info Tiket -->
                 <div class="md:w-1/2 space-y-6">
                     <div class="space-y-3 text-white text-lg">
-                        <p><span class="font-semibold">Nama Lapangan:</span> {{ $booking['field']['name'] }}</p>
-                        <p><span class="font-semibold">Tanggal:</span>
-                            {{ \Carbon\Carbon::parse($booking['date'])->format('d M Y') }}</p>
-                        <p><span class="font-semibold">Jam:</span> {{ $booking['start_time'] }} - {{ $booking['end_time'] }}
+                        <p>
+                            <span class="font-semibold">Kode Booking:</span>
+                            {{ $booking['code_booking'] ?? '-' }}
                         </p>
-                        <p><span class="font-semibold">Total Harga:</span> Rp
-                            {{ number_format($booking['total_price'], 0, ',', '.') }}</p>
+
+                        <p>
+                            <span class="font-semibold">Tanggal:</span>
+                            {{ isset($booking['date']) ? \Carbon\Carbon::parse($booking['date'])->format('d M Y') : '-' }}
+                        </p>
+
+                        <p>
+                            <span class="font-semibold">Jam:</span>
+                            {{ $booking['start_time'] ?? '-' }} - {{ $booking['end_time'] ?? '-' }}
+                        </p>
+
+                        <p>
+                            <span class="font-semibold">Total Harga:</span>
+                            Rp
+                            {{ isset($booking['total_price']) ? number_format($booking['total_price'], 0, ',', '.') : '0' }}
+                        </p>
                     </div>
+
+
 
                     <!-- Tombol Aksi -->
                     <div class="flex gap-4 mt-6">
-                        <a href="{{ route('ticket.download', ['id' => $booking['id']]) }}"
+                        <a href=""
                             class="flex-1 bg-white text-[#13810A] font-semibold px-6 py-3 rounded-full shadow-lg hover:bg-gray-100 text-center transition-all duration-300">
                             Download PDF
                         </a>

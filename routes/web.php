@@ -29,6 +29,7 @@ Route::post('/Logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/beranda/payment/{id}', [PaymentController::class, 'paymentPage'])->name('beranda.payment');
 Route::post('/beranda/payment/{booking_id}', [PaymentController::class, 'create'])->name('beranda.payment.create');
+Route::get('/ajax/booking-status/{id}', [PaymentController::class, 'ajaxStatus']);
 
 Route::get('/beranda/pending', [pendingController::class, 'index'])->name('beranda.pending');
 
@@ -47,7 +48,7 @@ Route::get('/ticket/{id}', [TicketController::class, 'show'])->name('ticket.show
 Route::get('/ticket/download/{id}', [TicketController::class, 'download'])->name('ticket.download');
 
 Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
-Route::get('/history/{id}', [HistoryController::class, 'show'])->name('history.show');
+// Route::get('/history/{id}', [HistoryController::class, 'show'])->name('history.show');
 
 Route::get('forgotpassword', [AuthController::class, 'PageForgotPassword'])->name('forgotpassword');
 Route::post('forgotpassword', [AuthController::class, 'ForgotPassword'])->name('forgotpassword.post');
@@ -58,4 +59,4 @@ Route::post('verifyresetcode/resend', [AuthController::class, 'ResendResetCode']
 
 Route::get('resetpassword', [AuthController::class, 'PageResetPassword'])->name('resetpassword');
 Route::post('resetpassword/resend', [AuthController::class, 'ResendResetCode'])->name('resetpassword.resend');
-Route::post('resetpassword', [AuthController::class, 'ResetPassword'])->name('resetpassword.post'); 
+Route::post('resetpassword', [AuthController::class, 'ResetPassword'])->name('resetpassword.post');

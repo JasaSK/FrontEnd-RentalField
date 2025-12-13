@@ -26,15 +26,21 @@ class PaymentController extends Controller
         ])->get("{$this->apiUrl}/booking/{$booking_id}");
 
         if ($bookingResponse->failed()) {
-            return back()->with('error', 'Gagal memuat data booking');
+            return back()->with('error', 'Gagal memuat data booking');  
         }
-
-
         $booking = $bookingResponse->json();
         $booking = $booking['data'];
-        $qrisUrl = $booking['qris_url'] ?? null;
-        // dd($booking);
 
+        $paymentResponse = Http::withHeaders([
+            "Authorization" => "Bearer " . session('token')
+        ])->get("{$this->apiUrl}/payment/{$booking_id}");
+        // dd($paymentResponse->json());
+        if ($paymentResponse->failed()) {
+            return back()->with('error', 'Gagal memuat data payment');
+        }
+
+        $qrisUrl = $paymentResponse->json()['data']['qris_url'];
+        // dd($qrisUrl);
         return view('beranda.payment', [
             'booking' => $booking,
             'booking_id' => $booking_id,
@@ -48,37 +54,24 @@ class PaymentController extends Controller
             return redirect()->route('PageLogin')->with('error', 'Login diperlukan');
         }
 
-        // Ambil booking
-        $bookingResponse = Http::withHeaders([
-            "Authorization" => "Bearer " . session('token')
-        ])->get("{$this->apiUrl}/booking/{$booking_id}");
-
-        if ($bookingResponse->failed()) {
-            return back()->with('error', 'Gagal memuat data booking');
-        }
-
-        $booking = $bookingResponse->json();
-
-        // QRIS PAYMENT ONLY
-        $qrisRes = Http::withHeaders([
+        $paymentResponse = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->post("{$this->apiUrl}/payment/create-qris/{$booking_id}");
 
-        if ($qrisRes->failed()) {
+        if ($paymentResponse->failed()) {
             return back()->with('error', 'Gagal membuat QRIS Payment');
         }
 
-        // Ambil url QR dari actions[0]
-        $qrisUrl = $qrisRes->json()['actions'][0]['url'] ?? null;
-        if (!$qrisUrl) {
-            return back()->with('error', 'URL QRIS tidak ditemukan.');
-        }
-
         return redirect()->route('beranda.payment', ['id' => $booking_id])
-            ->with([
-                'success' => 'QRIS Payment berhasil dibuat! Silakan lanjutkan pembayaran.',
-                'qrisUrl' => $qrisUrl
-            ]);
+            ->with(['success' => 'QRIS Payment berhasil dibuat! Silakan lanjutkan pembayaran.',]);
     }
 
+    public function ajaxStatus($id)
+    {
+        $res = Http::withHeaders([
+            "Authorization" => "Bearer " . session('token')
+        ])->get("{$this->apiUrl}/booking/status/{$id}");
+        // dd($res->json());
+        return response()->json($res->json()); 
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
 
@@ -19,8 +20,8 @@ class BookingController extends Controller
     public function show($fieldId)
     {
         $fieldResponse = Http::get("{$this->apiUrl}/fields/{$fieldId}");
+        // dd($fieldResponse);
         $field = $fieldResponse->successful() ? ($fieldResponse->json()['data'] ?? []) : [];
-
         if (!empty($field) && isset($field['image'])) {
             $field['image_url'] = "{$this->imgUrl}/storage/{$field['image']}";
         }
@@ -40,7 +41,7 @@ class BookingController extends Controller
 
         // Round booked hours ke jam penuh (misal 11:47 → 11:00)
         $bookedHours = array_map(function ($hour) {
-            return \Carbon\Carbon::parse($hour)->format('H:00');
+            return Carbon::parse($hour)->format('H:00');
         }, $bookedHoursRaw);
 
         // Hilangkan duplikat dan urutkan
@@ -76,7 +77,7 @@ class BookingController extends Controller
             'start_time' => 'required',
             'end_time'   => 'required',
             'user_id'    => 'required|numeric'
-        ],[
+        ], [
             'field_id.required'   => 'Field ID harus diisi.',
             'date.required'       => 'Tanggal harus diisi.',
             'start_time.required' => 'Waktu mulai harus diisi.',

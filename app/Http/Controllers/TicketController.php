@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use PHPUnit\Framework\Attributes\Ticket;
 
 class TicketController extends Controller
 {
@@ -14,7 +15,7 @@ class TicketController extends Controller
         $this->apiUrl = config('services.api_service.url'); // URL API backend
     }
 
-    public function show($id)
+    public function show($booking_id)
     {
         // Pastikan user login
         if (!session('token')) {
@@ -22,18 +23,21 @@ class TicketController extends Controller
         }
 
         // Panggil API backend untuk data booking + QR
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . session('token')
-        ])->get("{$this->apiUrl}/ticket/{$id}");
-
-        if ($response->failed()) {
+        $ticketResponse = Http::withHeaders([
+            'Authorization' => 'Bearer ' . session('token'),
+            'Accept' => 'application/json'
+        ])->get("{$this->apiUrl}/ticket/{$booking_id}");
+        // dd($ticketResponse);
+        if ($ticketResponse->failed()) {
             return back()->with('error', 'Gagal mengambil data tiket.');
         }
-
-        $data = $response->json();
-
+        $data = $ticketResponse->json()['data'];
+        // dd($data);
+        // $qrBase64 = $data['qrBase64'] ?? null;
+        // $booking  = $data['booking'] ?? null;
         return view('beranda.ticket', [
-            'booking' => $data['booking'],
+            'ticket'   => $data['ticket'],
+            'booking'  => $data['ticket']['booking'],
             'qrBase64' => $data['qrBase64'],
         ]);
     }

@@ -21,14 +21,12 @@ class HistoryController extends Controller
             'Authorization' => 'Bearer ' . session('token')
         ])->get("{$this->apiUrl}/booking-history");
 
-        // Jika tidak 200, anggap saja data kosong
         $bookings = ($bookingResponse->status() === 200) ? $bookingResponse->json()['data'] ?? [] : [];
 
         $refundResponse = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token')
         ])->get("{$this->apiUrl}/refund/user");
 
-        // Jika tidak 200, anggap saja data kosong
         $refunds = ($refundResponse->status() === 200) ? $refundResponse->json()['data'] ?? [] : [];
 
         foreach ($bookings as &$booking) {
@@ -41,29 +39,29 @@ class HistoryController extends Controller
             }
         }
 
-        return view('beranda.history', compact('bookings'));
+        return view('beranda.history', compact('bookings', 'refunds'));
     }
 
     // Menampilkan halaman ticket (detail)
-    public function show($id)
-    {
-        if (!session('token')) {
-            return redirect()->route('PageLogin')->with('error', 'Login diperlukan');
-        }
+    // public function show($id)
+    // {
+    //     if (!session('token')) {
+    //         return redirect()->route('PageLogin')->with('error', 'Login diperlukan');
+    //     }
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . session('token')
-        ])->get("{$this->apiUrl}/ticket/{$id}");
+    //     $response = Http::withHeaders([
+    //         'Authorization' => 'Bearer ' . session('token')
+    //     ])->get("{$this->apiUrl}/ticket/{$id}");
+    //     dd($response);
+    //     if ($response->failed()) {
+    //         return back()->with('error', 'Gagal mengambil data tiket.');
+    //     }
 
-        if ($response->failed()) {
-            return back()->with('error', 'Gagal mengambil data tiket.');
-        }
+    //     $data = $response->json();
 
-        $data = $response->json();
-
-        return view('beranda.ticket', [
-            'booking' => $data['booking'],
-            'qrBase64' => $data['qrBase64'],
-        ]);
-    }
+    //     return view('beranda.ticket', [
+    //         'booking' => $data['booking'],
+    //         'qrBase64' => $data['qrBase64'],
+    //     ]);
+    // }
 }
