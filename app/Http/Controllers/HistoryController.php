@@ -20,26 +20,29 @@ class HistoryController extends Controller
         $bookingResponse = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token')
         ])->get("{$this->apiUrl}/booking-history");
-
+        // dd($bookingResponse->json());
+        // dd($bookingResponse->json());
         $bookings = ($bookingResponse->status() === 200) ? $bookingResponse->json()['data'] ?? [] : [];
+        $approvedCount = collect($bookings)->where('status', 'approved')->count();
+        $pendingCount = collect($bookings)->where('status', 'pending')->count();
         // dd($bookings);
-        $refundResponse = Http::withHeaders([
-            'Authorization' => 'Bearer ' . session('token')
-        ])->get("{$this->apiUrl}/refund/user");
+        // $refundResponse = Http::withHeaders([
+        //     'Authorization' => 'Bearer ' . session('token')
+        // ])->get("{$this->apiUrl}/refund/user");
 
-        $refunds = ($refundResponse->status() === 200) ? $refundResponse->json()['data'] ?? [] : [];
+        // $refunds = ($refundResponse->status() === 200) ? $refundResponse->json()['data'] ?? [] : [];
 
-        foreach ($bookings as &$booking) {
-            $booking['refund'] = null;
-            foreach ($refunds as $refund) {
-                if ($refund['booking_id'] == $booking['id']) {
-                    $booking['refund'] = $refund;
-                    break;
-                }
-            }
-        }
+        // foreach ($bookings as &$booking) {
+        //     $booking['refund'] = null;
+        //     foreach ($refunds as $refund) {
+        //         if ($refund['booking_id'] == $booking['id']) {
+        //             $booking['refund'] = $refund;
+        //             break;
+        //         }
+        //     }
+        // }
 
-        return view('beranda.history', compact('bookings', 'refunds'));
+        return view('beranda.history', compact('bookings', 'approvedCount', 'pendingCount'));
     }
 
     // Menampilkan halaman ticket (detail)

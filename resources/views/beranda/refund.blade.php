@@ -10,7 +10,7 @@
                 @csrf
 
                 <!-- Booking ID (hidden) -->
-                <input type="" name="booking_id" value="{{ $code_booking['id'] ?? '' }}">
+                <input type="hidden" name="booking_id" value="{{ $code_booking['id'] ?? '' }}">
                 <!-- ID Pemesanan -->
                 <div>
                     <label class="block font-semibold text-gray-700 mb-2">Kode Pemesanan</label>
