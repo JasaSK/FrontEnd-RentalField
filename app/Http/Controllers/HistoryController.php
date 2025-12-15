@@ -22,6 +22,7 @@ class HistoryController extends Controller
         ])->get("{$this->apiUrl}/booking-history");
         // dd($bookingResponse->json());
         // dd($bookingResponse->json());
+        // dd($bookingResponse->json());
         $bookings = ($bookingResponse->status() === 200) ? $bookingResponse->json()['data'] ?? [] : [];
         $approvedCount = collect($bookings)->where('status', 'approved')->count();
         $pendingCount = collect($bookings)->where('status', 'pending')->count();

@@ -83,11 +83,14 @@
                         $refundStatus = $refund['refund_status'] ?? null;
 
                         $isApproved = $booking['status'] === 'approved';
-                        $ticketUsed = $booking['ticket']['status_ticket'] === 'used';
 
-                        $canViewTicket = $isApproved && $refundStatus !== 'pending';
+                        $ticket = $booking['ticket'] ?? null;
+                        $ticketUsed = $ticket ? $ticket['status_ticket'] === 'used' : false;
+
+                        $canViewTicket = $isApproved && $ticket && $refundStatus !== 'pending';
                         $canRefund = $isApproved && !in_array($refundStatus, ['pending', 'approved']) && !$ticketUsed;
                     @endphp
+
 
                     <div
                         class="group bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:border-emerald-100 transition-all duration-300">
@@ -285,4 +288,3 @@
     </section>
 
 @endsection
-

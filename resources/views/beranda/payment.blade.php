@@ -424,20 +424,19 @@
         const bookingId = "{{ $booking_id }}";
         let timerInterval;
 
-        // Initialize countdown timer (1 hour)
+        // Initialize countdown timer (15 menit)
         function startTimer() {
-            let timeLeft = 3600; // 1 hour in seconds
+            let timeLeft = 900; // 15 menit = 900 detik
             const timerDisplay = document.querySelector('.text-2xl.font-bold');
 
             if (!timerDisplay) return;
 
             timerInterval = setInterval(() => {
-                const hours = Math.floor(timeLeft / 3600);
-                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const minutes = Math.floor(timeLeft / 60);
                 const seconds = timeLeft % 60;
 
                 timerDisplay.textContent =
-                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    `00:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
