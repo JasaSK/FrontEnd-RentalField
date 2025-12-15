@@ -22,7 +22,7 @@ class HistoryController extends Controller
         ])->get("{$this->apiUrl}/booking-history");
 
         $bookings = ($bookingResponse->status() === 200) ? $bookingResponse->json()['data'] ?? [] : [];
-
+        // dd($bookings);
         $refundResponse = Http::withHeaders([
             'Authorization' => 'Bearer ' . session('token')
         ])->get("{$this->apiUrl}/refund/user");

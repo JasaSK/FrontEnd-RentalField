@@ -14,9 +14,12 @@
                         $isApproved = $booking['status'] === 'approved';
                         $refundStatus = $booking['refund']['refund_status'] ?? null;
 
+                        $ticketUsed = $booking['ticket']['status_ticket'] === 'used';
+
                         $canViewTicket = $isApproved && $refundStatus !== 'pending';
-                        $canRefund = $isApproved && !in_array($refundStatus, ['pending', 'approved']);
+                        $canRefund = $isApproved && !in_array($refundStatus, ['pending', 'approved']) && !$ticketUsed;
                     @endphp
+
 
                     <div
                         class="bg-white shadow-md rounded-2xl p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">

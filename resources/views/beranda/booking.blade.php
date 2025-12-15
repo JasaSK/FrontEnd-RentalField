@@ -79,28 +79,24 @@
                                     $bookedHours = $bookedHours ?? [];
                                 @endphp
 
-                                @for ($time = $open->copy(); $time < $close; $time->addHour())
+                                @for ($time = $open->copy(), $i = 0; $time < $close; $time->addHour(), $i++)
                                     @php
                                         $start = $time->format('H:i');
                                         $end = $time->copy()->addHour()->format('H:i');
-
-                                        $range = $start . '-' . $end;
                                         $isBooked = in_array($start, $bookedHours);
                                     @endphp
 
                                     <button type="button"
-                                        class="hour-slot
-                                        px-3 py-2 rounded-xl text-sm font-semibold border transition-all duration-200
-                                        focus:outline-none focus:ring-2 focus:ring-[#13810A]
-
-                                        {{ $isBooked
-                                            ? 'bg-red-100 border-red-400 text-red-700 cursor-not-allowed'
-                                            : 'bg-green-50 border-green-400 text-[#13810A] hover:bg-[#13810A] hover:text-white hover:scale-[1.02]' }}"
-                                        data-start="{{ $start }}" data-end="{{ $end }}"
-                                        {{ $isBooked ? 'disabled' : '' }}>
+                                        class="hour-slot px-3 py-2 rounded-xl text-sm font-semibold border transition-all duration-200
+        {{ $isBooked
+            ? 'bg-red-100 border-red-400 text-red-700 cursor-not-allowed'
+            : 'bg-green-50 border-green-400 text-[#13810A]' }}"
+                                        data-index="{{ $i }}" data-start="{{ $start }}"
+                                        data-end="{{ $end }}" {{ $isBooked ? 'disabled' : '' }}>
                                         {{ $start }} - {{ $end }}
                                     </button>
                                 @endfor
+
 
                             </div>
 
@@ -128,44 +124,59 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const slots = document.querySelectorAll('.hour-slot');
+            const slots = Array.from(document.querySelectorAll('.hour-slot'));
+            let startIndex = null;
+            let endIndex = null;
 
-            const selectedDate = new Date(document.getElementById('date').value);
+            function resetSlots() {
+                slots.forEach(slot => {
+                    if (!slot.disabled) {
+                        slot.classList.remove('bg-[#13810A]', 'text-white', 'scale-105');
+                        slot.classList.add('bg-green-50', 'text-[#13810A]');
+                    }
+                });
+            }
 
-            slots.forEach(slot => {
-                const start = slot.dataset.start;
-                const end = slot.dataset.end;
+            function highlightRange(from, to) {
+                resetSlots();
 
-                const [hourStr, minuteStr] = start.split(':');
-                const slotDate = new Date(selectedDate);
-                slotDate.setHours(parseInt(hourStr), parseInt(minuteStr), 0, 0);
+                for (let i = from; i <= to; i++) {
+                    if (slots[i].disabled) return false;
 
-                // Disable jam yang sudah lewat
-                if (slotDate < new Date()) {
-                    slot.classList.add(
-                        'bg-gray-100',
-                        'border-gray-300',
-                        'text-gray-400',
-                        'cursor-not-allowed',
-                        'opacity-70'
-                    );
-
-                    slot.disabled = true;
-                    return;
+                    slots[i].classList.remove('bg-green-50', 'text-[#13810A]');
+                    slots[i].classList.add('bg-[#13810A]', 'text-white', 'scale-105');
                 }
+                return true;
+            }
 
+            slots.forEach((slot, index) => {
                 slot.addEventListener('click', function() {
-                    // reset semua slot
-                    slots.forEach(s => {
-                        s.classList.remove('bg-[#13810A]', 'text-white', 'scale-105');
-                        s.classList.add('bg-green-50', 'text-[#13810A]');
-                    });
-                    slot.classList.remove('bg-green-50', 'text-[#13810A]');
-                    slot.classList.add('bg-[#13810A]', 'text-white', 'scale-105');
+                    if (slot.disabled) return;
 
+                    if (startIndex === null) {
+                        startIndex = index;
+                        highlightRange(startIndex, startIndex);
+                    } else {
+                        endIndex = index;
 
-                    document.getElementById('start_time').value = start;
-                    document.getElementById('end_time').value = end;
+                        if (endIndex < startIndex) {
+                            [startIndex, endIndex] = [endIndex, startIndex];
+                        }
+
+                        const valid = highlightRange(startIndex, endIndex);
+                        if (!valid) {
+                            alert('Tidak boleh melewati jam yang sudah dibooking');
+                            startIndex = null;
+                            endIndex = null;
+                            resetSlots();
+                            return;
+                        }
+
+                        document.getElementById('start_time').value =
+                            slots[startIndex].dataset.start;
+                        document.getElementById('end_time').value =
+                            slots[endIndex].dataset.end;
+                    }
                 });
             });
         });
