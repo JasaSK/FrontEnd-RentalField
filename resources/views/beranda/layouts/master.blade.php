@@ -3,10 +3,7 @@
 
 @include('beranda.layouts.head')
 <!-- Loader -->
-<div id="globalLoader"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; display:flex; align-items:center; justify-content:center; z-index:9999;">
-    <div class="spinner"></div>
-</div>
+
 
 
 <body class="text-black relative overflow-x-hidden font-sans bg-gray-50">

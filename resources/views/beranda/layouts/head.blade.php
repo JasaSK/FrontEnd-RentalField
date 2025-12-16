@@ -38,6 +38,21 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Scope animate.css hanya untuk SweetAlert */
+        .swal2-container .animate__animated,
+        .swal2-container .animate__fadeInDown,
+        .swal2-container .animate__fadeOutUp,
+        .swal2-container .animate__faster {
+            /* Biarkan animasi hanya di dalam SweetAlert */
+        }
+
+        /* Nonaktifkan animasi untuk elemen lain */
+        img:not(.swal2-container img),
+        .card:not(.swal2-container .card),
+        .btn:not(.swal2-container .btn) {
+            animation: none !important;
+        }
     </style>
 
 </head>

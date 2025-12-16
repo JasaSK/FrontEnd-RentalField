@@ -15,36 +15,44 @@ class BookingValidationController extends Controller
         $this->apiUrl = config('services.api_service.url');
         $this->imgUrl = config('services.api_image.url');
     }
-    public function show($id)
+    public function show($booking_id)
     {
-        // pastikan user login
         if (!session('token')) {
             return redirect()->route('PageLogin')->with('error', 'Login diperlukan');
         }
 
-        $response = Http::withHeaders([
+        // Ambil detail booking
+        $bookingResponse = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
-        ])->get("{$this->apiUrl}/booking/{$id}");
+        ])->get("{$this->apiUrl}/booking/{$booking_id}");
 
-        $data = $response->json();
-
-        // Pastikan API mengembalikan data booking
-        if (!isset($data['data'])) {
-            return back()->with('error', 'Format data booking tidak valid.');
+        if ($bookingResponse->failed()) {
+            return back()->with('error', 'Gagal memuat data booking');
         }
+        $booking = $bookingResponse->json();
+        $booking = $booking['data'];
 
-        // Ambil data booking asli
-        $booking = $data['data'];
-
-        // Cek apakah field & image ada
-        if (isset($booking['field']) && isset($booking['field']['image'])) {
-            $booking['field']['image_url'] = "{$this->imgUrl}/storage/{$booking['field']['image']}";
+        $paymentResponse = Http::withHeaders([
+            "Authorization" => "Bearer " . session('token')
+        ])->get("{$this->apiUrl}/payment/{$booking_id}");
+        // dd($paymentResponse->json());
+        if ($paymentResponse->failed()) {
+            return back()->with('error', 'Gagal memuat data payment');
         }
-
-        return view('beranda.bookingValidation', compact('booking'));
+        $paymentData = $paymentResponse->json()['data'];
+        $qrisUrl = $paymentData['qris_url'] ?? null;
+        $expiresAt = $paymentData['expires_at'] ?? null;
+        // dd($qrisUrl);
+        return view('beranda.bookingValidation', [
+            'booking' => $booking,
+            'booking_id' => $booking_id,
+            'qrisUrl' => $qrisUrl,
+            'expiresAt' => $expiresAt,
+            'apiUrl' => $this->apiUrl,
+        ]);
     }
 
-
+    public function paymentPage($booking_id) {}
     public function cancel($id)
     {
         $response = Http::withHeaders([

@@ -26,7 +26,7 @@ class PaymentController extends Controller
         ])->get("{$this->apiUrl}/booking/{$booking_id}");
 
         if ($bookingResponse->failed()) {
-            return back()->with('error', 'Gagal memuat data booking');  
+            return back()->with('error', 'Gagal memuat data booking');
         }
         $booking = $bookingResponse->json();
         $booking = $booking['data'];
@@ -38,13 +38,16 @@ class PaymentController extends Controller
         if ($paymentResponse->failed()) {
             return back()->with('error', 'Gagal memuat data payment');
         }
-
-        $qrisUrl = $paymentResponse->json()['data']['qris_url'];
+        $paymentData = $paymentResponse->json()['data'];
+        $qrisUrl = $paymentData['qris_url'] ?? null;
+        $expiresAt = $paymentData['expires_at'] ?? null;
         // dd($qrisUrl);
         return view('beranda.payment', [
             'booking' => $booking,
             'booking_id' => $booking_id,
-            'qrisUrl' => $qrisUrl
+            'qrisUrl' => $qrisUrl,
+            'expiresAt' => $expiresAt,
+            'apiUrl' => $this->apiUrl,
         ]);
     }
 
@@ -72,6 +75,6 @@ class PaymentController extends Controller
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/booking/status/{$id}");
         // dd($res->json());
-        return response()->json($res->json()); 
+        return response()->json($res->json());
     }
 }

@@ -5,6 +5,7 @@
     <!-- Progress Bar -->
     <div class="w-full max-w-4xl mx-auto mt-28 mb-16 px-4">
         <div class="relative mb-4">
+
             <!-- Progress Line -->
             <div class="absolute top-1/2 left-0 right-0 h-2 bg-gray-200 transform -translate-y-1/2 rounded-full"></div>
             <div class="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-[#13810A] to-emerald-500 transform -translate-y-1/2 transition-all duration-700 rounded-full shadow-lg shadow-emerald-200"
@@ -268,4 +269,127 @@
             </div>
         </div>
     </div>
+    <script>
+        const bookingId = "{{ $booking_id }}";
+        const apiUrl = "{{ rtrim($apiUrl, '/') }}";
+        const expiresAt = "{{ $expiresAt }}".replace(' ', 'T');
+        let timerInterval;
+        let expiredHandled = false; // ⬅️ PENTING
+
+        function startTimer() {
+            const timerDisplay = document.querySelector('.text-2xl.font-bold');
+            if (!timerDisplay) return;
+
+            function updateTimer() {
+                const now = Date.now();
+                const expireTime = new Date(expiresAt).getTime();
+                let timeLeft = Math.floor((expireTime - now) / 1000);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "00:00:00";
+
+                    if (!expiredHandled) {
+                        expiredHandled = true;
+                        handleExpiredPayment();
+                    }
+                    return;
+                }
+
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+
+                timerDisplay.textContent =
+                    `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            }
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function handleExpiredPayment() {
+            console.group('🔥 EXPIRE PAYMENT DEBUG');
+            console.log('API URL:', apiUrl);
+            console.log('Booking ID:', bookingId);
+            console.log('Token:', "{{ session('token') ? 'ADA' : 'KOSONG' }}");
+
+            fetch(`${apiUrl}/payment/${bookingId}/expire`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer {{ session('token') }}'
+                    },
+                    body: JSON.stringify({
+                        reason: 'timeout'
+                    })
+                })
+                .then(async res => {
+                    console.log('STATUS CODE:', res.status);
+                    console.log('RESPONSE HEADERS:', [...res.headers.entries()]);
+
+                    const text = await res.text();
+                    console.log('RAW RESPONSE:', text);
+
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status} - ${text}`);
+                    }
+
+                    return text ? JSON.parse(text) : {};
+                })
+                .then(data => {
+                    console.log('PARSED RESPONSE:', data);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Waktu Habis',
+                        text: data.message ?? 'Pembayaran expired',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        window.location.href = '/';
+                    });
+                })
+                .catch(err => {
+                    console.error('❌ EXPIRE ERROR:', err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Expire Gagal',
+                        text: err.message
+                    });
+                })
+                .finally(() => {
+                    console.groupEnd();
+                });
+        }
+
+
+        const checkStatus = () => {
+            fetch(`/ajax/booking-status/${bookingId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'approved') {
+                        clearInterval(timerInterval);
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pembayaran Berhasil!',
+                            text: 'Anda akan diarahkan ke halaman tiket.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(() => {
+                            window.location.href = `/ticket/${bookingId}`;
+                        }, 2000);
+                    }
+                })
+                .catch(err => console.error(err));
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startTimer();
+            setInterval(checkStatus, 5000);
+        });
+    </script>
 @endsection

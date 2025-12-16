@@ -58,7 +58,7 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
-        // dd(session('token'));
+        // dd($request->all());
 
 
         if (!session('user') || !session('token')) {

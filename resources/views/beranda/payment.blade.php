@@ -422,73 +422,160 @@
 
     <script>
         const bookingId = "{{ $booking_id }}";
+        const apiUrl = "{{ rtrim($apiUrl, '/') }}";
+        const expiresAt = "{{ $expiresAt }}".replace(' ', 'T');
         let timerInterval;
+        let expiredHandled = false;
+        let statusInterval = null;
 
-        // Initialize countdown timer (15 menit)
         function startTimer() {
-            let timeLeft = 900; // 15 menit = 900 detik
             const timerDisplay = document.querySelector('.text-2xl.font-bold');
-
             if (!timerDisplay) return;
 
-            timerInterval = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-
-                timerDisplay.textContent =
-                    `00:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            function updateTimer() {
+                const now = Date.now();
+                const expireTime = new Date(expiresAt).getTime();
+                let timeLeft = Math.floor((expireTime - now) / 1000);
 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    showTimeUpAlert();
+                    timerDisplay.textContent = "00:00:00";
+
+                    if (!expiredHandled) {
+                        expiredHandled = true;
+                        handleExpiredPayment();
+                    }
+                    return;
                 }
-                timeLeft--;
-            }, 1000);
+
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+
+                timerDisplay.textContent =
+                    `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            }
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
         }
 
-        function showTimeUpAlert() {
-            Swal.fire({
-                icon: 'error',
-                title: 'Waktu Habis',
-                text: 'Batas waktu pembayaran telah habis. Silakan buat pesanan baru.',
-                confirmButtonText: 'OK',
-                allowOutsideClick: false
-            }).then(() => {
-                window.location.href = '/';
-            });
+        function handleExpiredPayment() {
+            fetch(`${apiUrl}/payment/${bookingId}/expire`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer {{ session('token') }}'
+                    },
+                    body: JSON.stringify({
+                        reason: 'timeout'
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // Menggunakan GlobalAlertHijau untuk error
+                    if (window.globalAlert) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Waktu Habis',
+                            text: data.message ?? 'Batas waktu pembayaran telah habis.',
+                            allowOutsideClick: false,
+                            confirmButtonText: 'Mengerti',
+                            customClass: {
+                                popup: 'swal2-popup-hijau error-popup-hijau',
+                                confirmButton: 'swal2-confirm-button-hijau error-btn',
+                                title: 'swal2-title-hijau',
+                                htmlContainer: 'swal2-html-container-hijau'
+                            }
+                        }).then(() => {
+                            window.location.href = '/';
+                        });
+                    } else {
+                        // Fallback jika GlobalAlert belum tersedia
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Waktu Habis',
+                            text: data.message ?? 'Batas waktu pembayaran telah habis.',
+                            allowOutsideClick: false,
+                            confirmButtonColor: '#ef4444'
+                        }).then(() => {
+                            window.location.href = '/';
+                        });
+                    }
+                })
+                .catch(err => {
+                    // Menggunakan GlobalAlertHijau untuk error
+                    if (window.globalAlert) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Expire Gagal',
+                            text: err.message,
+                            confirmButtonText: 'Mengerti',
+                            customClass: {
+                                popup: 'swal2-popup-hijau error-popup-hijau',
+                                confirmButton: 'swal2-confirm-button-hijau error-btn',
+                                title: 'swal2-title-hijau',
+                                htmlContainer: 'swal2-html-container-hijau'
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Expire Gagal',
+                            text: err.message,
+                            confirmButtonColor: '#8B0C17'
+                        });
+                    }
+                });
         }
 
         const checkStatus = () => {
             fetch(`/ajax/booking-status/${bookingId}`)
                 .then(res => res.json())
                 .then(data => {
-                    console.log("STATUS:", data);
-
                     if (data.status === 'approved') {
                         clearInterval(timerInterval);
+                        clearInterval(statusInterval);
 
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Pembayaran Berhasil!',
-                            text: 'Pembayaran Anda telah dikonfirmasi. Anda akan diarahkan ke halaman tiket.',
-                            timer: 2000,
-                            showConfirmButton: false,
-                            background: '#f0fdf4',
-                            color: '#065f46'
-                        });
-
-                        setTimeout(() => {
-                            window.location.href = `/ticket/${bookingId}`;
-                        }, 2000);
+                        // Menggunakan GlobalAlertHijau untuk success
+                        if (window.globalAlert) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Pembayaran Berhasil!',
+                                text: 'Anda akan diarahkan ke halaman tiket.',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true,
+                                customClass: {
+                                    popup: 'swal2-popup-hijau success-popup-hijau',
+                                    title: 'swal2-title-hijau',
+                                    htmlContainer: 'swal2-html-container-hijau'
+                                }
+                            }).then(() => {
+                                window.location.href = `/ticket/${bookingId}`;
+                            });
+                        } else {
+                            // Fallback
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Pembayaran Berhasil!',
+                                text: 'Anda akan diarahkan ke halaman tiket.',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                window.location.href = `/ticket/${bookingId}`;
+                            });
+                        }
                     }
                 })
-                .catch(err => console.error("FETCH ERROR:", err));
+                .catch(err => console.error(err));
         };
 
-        // Start timer and status check
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             startTimer();
-            setInterval(checkStatus, 5000);
+            statusInterval = setInterval(checkStatus, 5000);
         });
     </script>
+
+
 @endsection

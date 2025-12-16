@@ -1,126 +1,25 @@
+<!-- Di bagian sebelum </body> -->
 <script src="{{ asset('js/main.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- Pass data dari Laravel ke JavaScript -->
 <script>
-    class Loader {
-        constructor(loaderId = 'globalLoader') {
-            this.loader = document.getElementById(loaderId);
-            if (!this.loader) {
-                console.warn(`Loader dengan id "${loaderId}" tidak ditemukan.`);
-            }
-        }
+    // Send flash messages to JavaScript
+    window.successMessage = @json(session('success'));
+    window.errorMessage = @json(session('error'));
+    window.verifiedSuccessMessage = @json(session('verified_success'));
+    window.loginUrl = @json(route('PageLogin'));
 
-        show() {
-            if (this.loader) this.loader.style.display = 'flex';
-        }
+    @if (session('swal'))
+        window.swalData = @json(session('swal'));
+    @endif
 
-        hide() {
-            if (this.loader) this.loader.style.display = 'none';
-        }
-    }
-
-    // Inisialisasi loader global
-    const loader = new Loader();
-
-    // Hide loader saat halaman selesai load
-    window.addEventListener('load', () => {
-        loader.hide();
-    });
-
-
-    // Form submit biasa
-    document.addEventListener('DOMContentLoaded', function() {
-        const myForm = document.getElementById('myForm');
-        const formLoader = document.getElementById('formLoader');
-
-        if (myForm && formLoader) {
-            myForm.addEventListener('submit', function() {
-                formLoader.classList.remove('hidden');
-            });
-        }
-    });
-
-
-
-    // 🔹 Global SweetAlert
-    document.addEventListener('DOMContentLoaded', function() {
-
-        // ✅ Success flash message
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: '{{ session('success') }}',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        @endif
-
-        // ✅ Error flash message
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: '{{ session('error') }}',
-            });
-        @endif
-
-        // ✅ Custom Swal
-        @if (session('swal'))
-            Swal.fire({
-                icon: "{{ session('swal.icon') ?? 'info' }}",
-                title: "{{ session('swal.title') ?? '' }}",
-                text: "{{ session('swal.text') ?? '' }}",
-                @if (session('swal.timer'))
-                    timer: {{ session('swal.timer') }},
-                    showConfirmButton: false
-                @endif
-            });
-        @endif
-
-        // ✅ Menampilkan semua error validasi
-        @if ($errors->any())
-            Swal.fire({
-                icon: 'error',
-                title: 'Validasi Gagal!',
-                html: `
-                    <ul style="text-align: left;">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                `,
-            });
-        @endif
-    });
-
-    document.getElementById('logoutButton')?.addEventListener('click', function(e) {
-        e.preventDefault(); // cegah submit langsung
-        Swal.fire({
-            title: 'Apakah Anda yakin ingin logout?',
-            text: "Anda bisa login kembali nanti.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#13810A',
-            cancelButtonColor: '#8B0C17',
-            confirmButtonText: 'Ya, Logout!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('logoutForm').submit();
-            }
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        @if (session('verified_success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Verifikasi Berhasil!',
-                text: '{{ session('verified_success') }}',
-                confirmButtonText: 'Login'
-            }).then(() => {
-                window.location.href = "{{ route('PageLogin') }}";
-            });
-        @endif
-    });
+    @if ($errors->any())
+        window.validationErrors = @json($errors->all());
+    @endif
 </script>
+
+<!-- Load the minimal green alert -->
+<script src="{{ asset('js/global-alert.js') }}" type="module"></script>
+<!-- Fallback for older browsers -->
+<script nomodule src="{{ asset('js/global-alert-initializer.js') }}"></script>
