@@ -37,22 +37,25 @@ class AuthController extends Controller
     {
         // 1. VALIDASI
         $validated = $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|email|exists:users',
             'password' => 'required|min:6',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.exists' => 'Email tidak terdaftar.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 6 karakter.',
         ]);
-
+        // dd($request->all());
         // 2. REQUEST KE API BACKEND
-        $response = Http::post("{$this->apiUrl}/login", [
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-        ]);
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+        ])->post("{$this->apiUrl}/login");
+        // dd($response->json());
 
         $data = $response->json();
-
-        // 3. JIKA LOGIN SUKSES
+        // dd($data);
         if ($response->successful() && $data['status'] === true) {
-
-            // User sebenarnya berada di `data`
             $dataUser = $data['data'];
 
             // Simpan session
@@ -62,7 +65,6 @@ class AuthController extends Controller
                 'role' => $data['role'] ?? null,
             ]);
 
-            // Login user palsu agar Auth::check() bisa bekerja
             $user = new User($dataUser);
             Auth::login($user);
 
