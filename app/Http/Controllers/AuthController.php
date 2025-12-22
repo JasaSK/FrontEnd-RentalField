@@ -37,7 +37,7 @@ class AuthController extends Controller
     {
         // 1. VALIDASI
         $validated = $request->validate([
-            'email' => 'required|email|exists:users',
+            'email' => 'required|email',
             'password' => 'required|min:6',
         ], [
             'email.required' => 'Email wajib diisi.',
@@ -50,23 +50,25 @@ class AuthController extends Controller
         // 2. REQUEST KE API BACKEND
         $response = Http::withHeaders([
             'Accept' => 'application/json',
-        ])->post("{$this->apiUrl}/login");
-        // dd($response->json());
+        ])->post("{$this->apiUrl}/login", [
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+        ]);
+        // dd($response->json(), $response->status());
 
         $data = $response->json();
         // dd($data);
         if ($response->successful() && $data['status'] === true) {
-            $dataUser = $data['data'];
-
             // Simpan session
             session([
                 'token' => $data['token'],
-                'user' => $dataUser,
+                'user' => [
+                    'id' => $data['data']['id'],
+                    'name' => $data['data']['name'],
+                    'email' => $data['data']['email'],
+                ],
                 'role' => $data['role'] ?? null,
             ]);
-
-            $user = new User($dataUser);
-            Auth::login($user);
 
             return redirect()->route('beranda.index')->with([
                 'swal' => [
