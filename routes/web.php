@@ -34,8 +34,8 @@ Route::get('/ajax/booking-status/{id}', [PaymentController::class, 'ajaxStatus']
 Route::get('/beranda/pending', [pendingController::class, 'index'])->name('beranda.pending');
 
 Route::get('/beranda/validasi', [validationController::class, 'index'])->name('beranda.validasi');
-
 Route::get('/booking/{id}', [BookingController::class, 'show'])->name('beranda.booking.show');
+
 Route::post('/booking', [BookingController::class, 'store'])->name('beranda.booking.store');
 
 Route::delete('/beranda/bookingValidation/cancel/{id}', [BookingValidationController::class, 'cancel'])->name('beranda.bookingValidation.cancel');

@@ -239,7 +239,14 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        if (session()->has('token')) {
+            Http::withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . session('token'),
+            ])->post("{$this->apiUrl}/logout");
+        }
+
+        $request->session()->flush();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -252,6 +259,7 @@ class AuthController extends Controller
             ]
         ]);
     }
+
     public function PageForgotPassword()
     {
         return view('auth.forgotpassword');
