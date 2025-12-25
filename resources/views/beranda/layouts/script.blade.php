@@ -2,6 +2,22 @@
 <script src="{{ asset('js/main.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+    window.addEventListener('load', function() {
+        const loader = document.getElementById('loader');
+
+        // Tunggu 2 detik untuk animasi selesai
+        setTimeout(function() {
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.5s ease-out';
+
+            setTimeout(function() {
+                loader.style.display = 'none';
+            }, 500);
+        }, 1000);
+    });
+</script>
+
 <!-- Pass data dari Laravel ke JavaScript -->
 <script>
     // Send flash messages to JavaScript
