@@ -170,19 +170,6 @@
                 }, 500);
             }, 1500); // Durasi loading dalam milidetik
         });
-
-        // Logout confirmation
-        document.addEventListener('DOMContentLoaded', function() {
-            const logoutButton = document.getElementById('logoutButton');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (confirm('Apakah Anda yakin ingin logout?')) {
-                        document.getElementById('logoutForm').submit();
-                    }
-                });
-            }
-        });
     </script>
 </body>
 

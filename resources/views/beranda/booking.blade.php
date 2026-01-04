@@ -115,6 +115,71 @@
                                 <p class="text-gray-500">Silakan pilih lapangan terlebih dahulu</p>
                             </div>
                         @endif
+                        @if (!empty($field) && !empty($schedules) && count($schedules) > 0)
+                            <div class="p-6 md:p-8">
+                                <!-- TITLE -->
+                                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+                                    Maintenance
+                                </h3>
+
+                                <!-- LIST -->
+                                <div class="space-y-4">
+                                    @foreach ($schedules as $schedule)
+                                        <div
+                                            class="flex items-start gap-4 bg-emerald-50 border border-emerald-100 p-4 rounded-xl shadow-sm">
+
+                                            <!-- ICON -->
+                                            <div
+                                                class="flex-shrink-0 w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-emerald-600" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+
+                                            <!-- CONTENT -->
+                                            <div class="flex-1 text-gray-700">
+                                                <div class="font-semibold text-gray-900">
+                                                    {{ $schedule['date'] }}
+                                                </div>
+
+                                                <div class="text-sm text-gray-600 mt-1">
+                                                    🕒 {{ $schedule['start_time'] }} - {{ $schedule['end_time'] }}
+                                                </div>
+
+                                                @if (!empty($schedule['reason']))
+                                                    <div
+                                                        class="text-xs text-gray-500 mt-2 italic border-l-2 border-emerald-300 pl-2">
+                                                        {{ $schedule['reason'] }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            <!-- EMPTY STATE -->
+                            <div class="h-80 flex flex-col items-center justify-center p-8 text-center">
+                                <div
+                                    class="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center mb-6">
+                                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </div>
+
+                                <p class="text-xl font-semibold text-gray-400 mb-2">
+                                    Tidak ada jadwal maintenance
+                                </p>
+                                <p class="text-gray-500">
+                                    Lapangan tersedia tanpa maintenance
+                                </p>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -147,7 +212,8 @@
                             <div class="relative">
                                 <label for="date" class="block text-sm font-semibold text-gray-700 mb-3">
                                     <span class="flex items-center">
-                                        <svg class="w-5 h-5 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-5 h-5 text-emerald-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
                                                 clip-rule="evenodd" />
@@ -231,8 +297,11 @@
                                 <!-- Time Slots Grid -->
                                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"
                                     id="hourSlots">
+
                                     @php
                                         $bookedHours = $bookedHours ?? [];
+                                        $maintenanceHours = $maintenanceHours ?? [];
+
                                         $open = \Carbon\Carbon::parse($field['open_time']);
                                         $close = \Carbon\Carbon::parse($field['close_time']);
                                     @endphp
@@ -241,32 +310,50 @@
                                         @php
                                             $start = $time->format('H:i');
                                             $end = $time->copy()->addHour()->format('H:i');
+
                                             $isBooked = in_array($start, $bookedHours);
+                                            $isMaintenance = in_array($start, $maintenanceHours);
                                         @endphp
 
                                         <button type="button"
                                             class="hour-slot relative px-4 py-4 rounded-xl text-sm font-semibold 
-                                                       border-2 transition-all duration-200 group
-                                                       {{ $isBooked
-                                                           ? 'bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200 text-rose-700 cursor-not-allowed hover:shadow-none'
-                                                           : 'bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200 text-emerald-700 hover:border-emerald-300 hover:shadow-md' }}
-                                                       active:scale-95"
+                   border-2 transition-all duration-200 group
+                   {{ $isMaintenance
+                       ? 'bg-gradient-to-br from-gray-100 to-gray-200 border-gray-300 text-gray-500 cursor-not-allowed'
+                       : ($isBooked
+                           ? 'bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200 text-rose-700 cursor-not-allowed'
+                           : 'bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200 text-emerald-700 hover:border-emerald-300 hover:shadow-md') }}
+                   active:scale-95"
                                             data-index="{{ $i }}" data-start="{{ $start }}"
-                                            data-end="{{ $end }}" {{ $isBooked ? 'disabled' : '' }}>
-                                            @if ($isBooked)
+                                            data-end="{{ $end }}"
+                                            {{ $isBooked || $isMaintenance ? 'disabled' : '' }}>
+
+                                            {{-- BADGE --}}
+                                            @if ($isMaintenance)
                                                 <div class="absolute -top-2 -right-2">
                                                     <div
-                                                        class="bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full shadow-lg">
+                                                        class="bg-gradient-to-r from-gray-600 to-gray-700 text-white text-xs px-2 py-1 rounded-full shadow">
+                                                        Maintenance
+                                                    </div>
+                                                </div>
+                                            @elseif ($isBooked)
+                                                <div class="absolute -top-2 -right-2">
+                                                    <div
+                                                        class="bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full shadow">
                                                         Booked
                                                     </div>
                                                 </div>
                                             @endif
+
+                                            {{-- CONTENT --}}
                                             <div class="flex flex-col items-center">
                                                 <div class="text-lg font-bold mb-1">{{ $start }}</div>
                                                 <div class="text-xs text-gray-500 opacity-75">sampai</div>
                                                 <div class="text-lg font-bold mt-1">{{ $end }}</div>
                                             </div>
-                                            @if (!$isBooked)
+
+                                            {{-- HOVER OVERLAY --}}
+                                            @if (!$isBooked && !$isMaintenance)
                                                 <div
                                                     class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-green-500 opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-300">
                                                 </div>
@@ -274,6 +361,7 @@
                                         </button>
                                     @endfor
                                 </div>
+
 
                                 <input type="hidden" name="start_time" id="start_time">
                                 <input type="hidden" name="end_time" id="end_time">
