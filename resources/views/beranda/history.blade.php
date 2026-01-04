@@ -83,13 +83,27 @@
                         $refundStatus = $refund['refund_status'] ?? null;
 
                         $isApproved = $booking['status'] === 'approved';
+                        $refundApproved = $refundStatus === 'approved';
 
                         $ticket = $booking['ticket'] ?? null;
                         $ticketUsed = $ticket ? $ticket['status_ticket'] === 'used' : false;
 
                         $canViewTicket = $isApproved && $ticket && $refundStatus !== 'pending';
-                        $canRefund = $isApproved && !in_array($refundStatus, ['pending', 'approved']) && !$ticketUsed;
+
+                        // ===== REFUND TIME LOGIC =====
+                        $bookingDateTime = Carbon\Carbon::parse($booking['date'] . ' ' . $booking['start_time']);
+                        $refundDeadline = $bookingDateTime->copy()->subHour();
+                        $now = now();
+
+                        $refundTimeExpired = $now->greaterThanOrEqualTo($refundDeadline);
+
+                        $canRefund =
+                            $isApproved &&
+                            !in_array($refundStatus, ['pending', 'approved']) &&
+                            !$ticketUsed &&
+                            !$refundTimeExpired;
                     @endphp
+
 
 
                     <div
@@ -203,60 +217,209 @@
 
                         <!-- Action Buttons -->
                         <div class="flex flex-wrap items-center gap-3 pt-5 border-t border-gray-100">
-
-                            <!-- Lihat Tiket -->
-                            @if ($canViewTicket)
-                                <a href="{{ route('ticket.show', $booking['id']) }}"
-                                    class="inline-flex items-center px-5 py-2.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium hover:bg-emerald-100 hover:text-emerald-800 transition-all duration-200 group/btn">
-                                    <svg class="w-5 h-5 mr-2 group-hover/btn:translate-x-1 transition-transform"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
+                            @if ($refundApproved)
+                                <button type="button" onclick="openRefundModal({{ $booking['id'] }})"
+                                    class="inline-flex items-center px-5 py-2.5 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100 transition">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                        </path>
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
-                                    Lihat Tiket
-                                </a>
-                            @endif
-
-                            <!-- Bayar Sekarang -->
-                            @if ($booking['status'] === 'pending')
-                                <form action="{{ route('beranda.payment.create', $booking['id']) }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                        class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    Lihat Detail Refund
+                                </button>
+                            @else
+                                <!-- Lihat Tiket -->
+                                @if ($canViewTicket)
+                                    <a href="{{ route('ticket.show', $booking['id']) }}"
+                                        class="inline-flex items-center px-5 py-2.5 bg-emerald-50 text-emerald-700 rounded-lg font-medium hover:bg-emerald-100 hover:text-emerald-800 transition-all duration-200 group/btn">
+                                        <svg class="w-5 h-5 mr-2 group-hover/btn:translate-x-1 transition-transform"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
                                             </path>
                                         </svg>
-                                        Bayar Sekarang
-                                    </button>
-                                </form>
-                            @endif
+                                        Lihat Tiket
+                                    </a>
+                                @endif
 
-                            <!-- Refund Button -->
-                            @if ($canRefund)
-                                <a href="{{ route('beranda.refund', $booking['id']) }}"
-                                    class="inline-flex items-center px-5 py-2.5 bg-red-50 text-red-700 rounded-lg font-medium hover:bg-red-100 hover:text-red-800 transition-all duration-200 group/btn">
-                                    <svg class="w-5 h-5 mr-2 group-hover/btn:rotate-12 transition-transform"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                        </path>
-                                    </svg>
-                                    Ajukan Refund
-                                </a>
-                            @endif
+                                <!-- Bayar Sekarang -->
+                                @if ($booking['status'] === 'pending')
+                                    <form action="{{ route('beranda.payment.create', $booking['id']) }}" method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                            class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                                </path>
+                                            </svg>
+                                            Bayar Sekarang
+                                        </button>
+                                    </form>
+                                @endif
 
+                                <!-- Refund Button -->
+                                @if ($isApproved && !in_array($refundStatus, ['pending', 'approved']) && !$ticketUsed)
+                                    @if ($refundTimeExpired)
+                                        <!-- DISABLED REFUND -->
+                                        <button type="button" disabled
+                                            class="inline-flex items-center px-5 py-2.5 bg-gray-100 text-gray-400 rounded-lg font-medium cursor-not-allowed">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Refund Ditutup
+                                        </button>
+
+                                        <span class="text-xs text-gray-400 ml-2">
+                                            (Refund hanya bisa dilakukan &lt; 1 jam sebelum jadwal)
+                                        </span>
+                                    @else
+                                        <!-- ACTIVE REFUND -->
+                                        <a href="{{ route('beranda.refund', $booking['id']) }}"
+                                            class="inline-flex items-center px-5 py-2.5 bg-red-50 text-red-700 rounded-lg font-medium hover:bg-red-100 hover:text-red-800 transition-all duration-200 group/btn">
+                                            <svg class="w-5 h-5 mr-2 group-hover/btn:rotate-12 transition-transform"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Ajukan Refund
+                                        </a>
+                                    @endif
+                                @endif
+                            @endif
                         </div>
                     </div>
+                    <div id="refundModal-{{ $booking['id'] }}"
+                        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+
+                        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 animate-fadeIn">
+                            <!-- HEADER -->
+                            <div class="flex items-center justify-between p-5 border-b">
+                                <h3 class="text-lg font-bold text-gray-800">
+                                    Detail Refund
+                                </h3>
+                                <button onclick="closeRefundModal({{ $booking['id'] }})"
+                                    class="text-gray-400 hover:text-gray-600">
+                                    ✕
+                                </button>
+                            </div>
+
+                            <!-- BODY -->
+                            <div class="p-6">
+                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-4">
+
+                                    <!-- ICON -->
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+
+                                    <!-- CONTENT -->
+                                    <div class="text-sm text-blue-800 space-y-2 w-full">
+                                        <div class="font-semibold text-base">
+                                            Refund Berhasil
+                                        </div>
+
+                                        {{-- Jumlah Dibayar --}}
+                                        @if (!empty($refund['amount_paid']))
+                                            <div>
+                                                <span class="font-medium">Jumlah Dibayar:</span><br>
+                                                Rp {{ number_format($refund['amount_paid'], 0, ',', '.') }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Jumlah Refund --}}
+                                        @if (!empty($refund['refund_amount']))
+                                            <div>
+                                                <span class="font-medium">Jumlah Refund:</span><br>
+                                                Rp {{ number_format($refund['refund_amount'], 0, ',', '.') }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Metode --}}
+                                        @if (!empty($refund['refund_method']))
+                                            <div>
+                                                <span class="font-medium">Metode Refund:</span><br>
+                                                {{ $refund['refund_method'] }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Rekening --}}
+                                        @if (!empty($refund['account_number']))
+                                            <div>
+                                                <span class="font-medium">No. Rekening:</span><br>
+                                                {{ $refund['account_number'] }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Alasan --}}
+                                        @if (!empty($refund['reason']))
+                                            <div>
+                                                <span class="font-medium">Alasan:</span><br>
+                                                {{ $refund['reason'] }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Bukti --}}
+                                        @if (!empty($refund['proof_url']))
+                                            <img src="{{ $refund['proof_url'] }}"
+                                                onclick="openImagePreview('{{ $refund['proof_url'] }}')"
+                                                class="w-32 h-32 object-cover rounded-lg cursor-zoom-in
+                                                hover:opacity-90 transition"
+                                                alt="Bukti Refund">
+                                        @endif
+
+                                        {{-- Waktu Disetujui --}}
+                                        @if (!empty($refund['updated_at']))
+                                            <div class="text-xs text-blue-600 pt-2 border-t border-blue-200">
+                                                Disetujui pada
+                                                {{ \Carbon\Carbon::parse($refund['updated_at'])->format('d M Y H:i') }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FOOTER -->
+                            <div class="p-4 border-t text-right">
+                                <button onclick="closeRefundModal({{ $booking['id'] }})"
+                                    class="px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200">
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 @endforeach
+                <div id="imagePreviewModal"
+                    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
+
+                    <div class="relative max-w-4xl max-h-[90vh] p-4">
+                        <button onclick="closeImagePreview()"
+                            class="absolute -top-4 -right-4 bg-white rounded-full w-9 h-9
+                   flex items-center justify-center shadow hover:bg-gray-100">
+                            ✕
+                        </button>
+
+                        <img id="imagePreview" src=""
+                            class="max-w-full max-h-[85vh] rounded-xl shadow-lg object-contain"
+                            alt="Preview Bukti Refund">
+                    </div>
+                </div>
+
             </div>
+
 
             <!-- Empty State -->
             @if (count($bookings) === 0)
@@ -285,6 +448,7 @@
             @endif
 
         </div>
+
     </section>
 
 @endsection

@@ -83,3 +83,28 @@ filterButtons.forEach((btn) => {
         });
     });
 });
+
+function openRefundModal(id) {
+    document.getElementById("refundModal-" + id).classList.remove("hidden");
+    document.getElementById("refundModal-" + id).classList.add("flex");
+}
+
+function closeRefundModal(id) {
+    document.getElementById("refundModal-" + id).classList.add("hidden");
+    document.getElementById("refundModal-" + id).classList.remove("flex");
+}
+
+function openImagePreview(src) {
+    const modal = document.getElementById("imagePreviewModal");
+    const img = document.getElementById("imagePreview");
+
+    img.src = src;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+
+function closeImagePreview() {
+    const modal = document.getElementById("imagePreviewModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
