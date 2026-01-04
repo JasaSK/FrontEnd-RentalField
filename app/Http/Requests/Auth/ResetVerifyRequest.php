@@ -4,7 +4,7 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class VerifyRequest extends FormRequest
+class ResetVerifyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,11 +14,17 @@ class VerifyRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+
     protected function prepareForValidation()
     {
-        if (is_array($this->code)) {
+        if (is_array($this->reset_code)) {
             $this->merge([
-                'code' => implode('', $this->code),
+                'reset_code' => implode('', $this->reset_code),
             ]);
         }
     }
@@ -26,7 +32,7 @@ class VerifyRequest extends FormRequest
     {
         return [
             'email' => 'required|string|email',
-            'code' => 'required|digits:6',
+            'reset_code' => 'required|digits:6',
         ];
     }
 
@@ -35,8 +41,8 @@ class VerifyRequest extends FormRequest
         return [
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
-            'code.required' => 'Kode verifikasi wajib diisi.',
-            'code.digits' => 'Kode verifikasi harus 6 digit angka.',
+            'reset_code.required' => 'Kode verifikasi wajib diisi.',
+            'reset_code.digits' => 'Kode verifikasi harus 6 digit angka.',
         ];
     }
 }

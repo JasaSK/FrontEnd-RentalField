@@ -6,6 +6,7 @@ use App\Http\Requests\Auth\EmailRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\ResetVerifyRequest;
 use App\Http\Requests\Auth\VerifyRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -120,13 +121,6 @@ class AuthController extends Controller
 
     public function verify(VerifyRequest $request)
     {
-
-        $mergedCode = implode('', $request->code);
-
-        $request->merge([
-            'code' => $mergedCode
-        ]);
-
         $request->validated();
 
         $response = Http::post("{$this->apiUrl}/verify-code", [
@@ -233,21 +227,15 @@ class AuthController extends Controller
         return view('auth.verifyresetcode');
     }
 
-    public function VerifyResetCode(VerifyRequest $request)
+    public function VerifyResetCode(ResetVerifyRequest $request)
     {
-        $mergedCode = implode('', $request->reset_code);
-
-        $request->merge([
-            'reset_code' => $mergedCode
-        ]);
-
         $request->validated();
-
+        // dd($request->all());
         $response = Http::withHeaders([
             'Accept' => 'application/json',
         ])->post("{$this->apiUrl}/verify-reset-code", [
             'email' => $request->email,
-            'reset_code' => $request->reset_code,
+            'code' => $request->reset_code,
         ]);
 
         $email = $request->email;
@@ -318,13 +306,14 @@ class AuthController extends Controller
 
     public function ResetPassword(ResetPasswordRequest $request)
     {
+        // dd($request->all());
         $request->validated();
 
         $response = Http::withHeaders([
             'Accept' => 'application/json',
         ])->post("{$this->apiUrl}/reset-password", [
             'email' => $request->email,
-            'reset_code' => $request->reset_code,
+            'code' => $request->reset_code,
             'password' => $request->password,
             'password_confirmation' => $request->password_confirmation,
         ]);
