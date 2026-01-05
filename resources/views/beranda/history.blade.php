@@ -435,7 +435,7 @@
                     <h3 class="text-xl font-bold text-gray-700 mb-2">Belum Ada Riwayat Pemesanan</h3>
                     <p class="text-gray-500 max-w-md mx-auto mb-8">Anda belum memiliki riwayat pemesanan lapangan futsal
                     </p>
-                    <a href="{{ route('beranda.fields') }}"
+                    <a href="{{ route('beranda.index') }}"
                         class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
