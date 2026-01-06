@@ -441,20 +441,21 @@
                                 <ul class="space-y-2 text-sm text-gray-600">
                                     <li class="flex items-start">
                                         <span class="text-blue-500 mr-2">•</span>
-                                        Booking dapat dibatalkan maksimal 2 jam sebelum waktu main
+                                        Pemesanan hanya dapat dilakukan pada jadwal waktu yang tersedia
                                     </li>
                                     <li class="flex items-start">
                                         <span class="text-blue-500 mr-2">•</span>
-                                        Konfirmasi booking akan dikirim via WhatsApp
+                                        Pembayaran harus diselesaikan maksimal 15 menit setelah pemesanan dibuat
                                     </li>
                                     <li class="flex items-start">
                                         <span class="text-blue-500 mr-2">•</span>
-                                        Pembayaran dilakukan di tempat sebelum mulai bermain
+                                        Pemesanan tidak dapat dilakukan untuk waktu yang telah melewati jam saat ini
                                     </li>
                                     <li class="flex items-start">
                                         <span class="text-blue-500 mr-2">•</span>
-                                        Durasi bermain minimal 1 jam
+                                        Durasi pemakaian minimal adalah 1 jam
                                     </li>
+
                                 </ul>
                             </div>
                         </div>

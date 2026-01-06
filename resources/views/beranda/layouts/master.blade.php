@@ -5,37 +5,73 @@
 
 <body class="text-black relative overflow-x-hidden font-sans bg-gray-50">
     <!-- Loader -->
+    <!-- Loader -->
     <div id="loader"
-        class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white transition-opacity duration-500">
+        class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white transition-opacity duration-500 px-4">
+
         <!-- Field futsal mini -->
         <div
-            class="relative w-80 h-48 mb-12 border-4 border-[#13810A] rounded-xl bg-gradient-to-b from-green-100 to-green-50 overflow-hidden">
+            class="relative 
+               w-64 h-40 
+               sm:w-72 sm:h-44 
+               md:w-80 md:h-48 
+               mb-10 sm:mb-12 
+               border-4 border-[#13810A] 
+               rounded-xl 
+               bg-gradient-to-b from-green-100 to-green-50 
+               overflow-hidden">
+
             <!-- Garis tengah -->
-            <div class="absolute top-1/2 left-0 w-full h-1 bg-[#13810A] -translate-y-1/2"></div>
+            <div
+                class="absolute top-1/2 left-0 w-full 
+                   h-1 sm:h-[5px] 
+                   bg-[#13810A] 
+                   -translate-y-1/2">
+            </div>
 
             <!-- Lingkaran tengah -->
             <div
-                class="absolute top-1/2 left-1/2 w-16 h-16 border-2 border-[#13810A] rounded-full -translate-x-1/2 -translate-y-1/2">
+                class="absolute top-1/2 left-1/2 
+                   w-12 h-12 
+                   sm:w-14 sm:h-14 
+                   md:w-16 md:h-16 
+                   border-2 border-[#13810A] 
+                   rounded-full 
+                   -translate-x-1/2 -translate-y-1/2">
             </div>
 
             <!-- Bola animasi -->
             <div
-                class="absolute top-1/2 left-0 w-8 h-8 bg-gradient-to-r from-[#13810A] to-[#0f6508] rounded-full -translate-y-1/2 animate-[ballMove_2s_linear_infinite]">
+                class="absolute top-1/2 left-0 
+                   w-6 h-6 
+                   sm:w-7 sm:h-7 
+                   md:w-8 md:h-8 
+                   bg-gradient-to-r from-[#13810A] to-[#0f6508] 
+                   rounded-full 
+                   -translate-y-1/2 
+                   animate-[ballMove_2s_linear_infinite]">
+
                 <!-- Pola bola -->
                 <div class="absolute inset-1 border-2 border-white rounded-full"></div>
+
                 <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-4 h-0.5 bg-white rotate-45"></div>
-                    <div class="w-4 h-0.5 bg-white -rotate-45 absolute"></div>
+                    <div class="w-3 h-0.5 bg-white rotate-45"></div>
+                    <div class="w-3 h-0.5 bg-white -rotate-45 absolute"></div>
                 </div>
             </div>
         </div>
 
         <!-- Text -->
         <div class="text-center">
-            <h1 class="text-3xl font-bold text-[#13810A] mb-2 animate-pulse">EZFutsal</h1>
-            <p class="text-gray-600">Menyiapkan lapangan terbaik untuk Anda...</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#13810A] mb-2 animate-pulse">
+                EZFutsal
+            </h1>
+            <p class="text-sm sm:text-base text-gray-600 max-w-xs sm:max-w-md">
+                Menyiapkan lapangan terbaik untuk Anda...
+            </p>
         </div>
     </div>
+
 
     <!-- Top Bar -->
     <div class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-lg">

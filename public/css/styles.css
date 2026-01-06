@@ -1,10 +1,144 @@
-/* Custom animations */
+/* =====================
+   GLOBAL
+===================== */
+body {
+    font-family: "Poppins", sans-serif;
+}
+
+/* =====================
+   BANNER DOT
+===================== */
+.dot-active {
+    background-color: #13810a !important;
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+/* =====================
+   LOADER / SPINNER
+===================== */
+.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loader visibility dikontrol JS */
+#loader {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+#loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* =====================
+   SWEETALERT SCOPE
+===================== */
+.swal2-container .animate__animated,
+.swal2-container .animate__fadeInDown,
+.swal2-container .animate__fadeOutUp,
+.swal2-container .animate__faster {
+    /* Animasi hanya untuk SweetAlert */
+}
+
+/* =====================
+   MATIKAN ANIMASI GLOBAL
+   (KECUALI LOADER)
+===================== */
+img:not(.swal2-container img):not(#loader img),
+.card:not(.swal2-container .card),
+.btn:not(.swal2-container .btn) {
+    animation: none !important;
+}
+
+/* =====================
+   BALL ANIMATION
+===================== */
+@keyframes ballMove {
+    0% {
+        left: 0;
+        transform: translateY(-50%) scale(1);
+    }
+    25% {
+        transform: translateY(-50%) scale(1.1);
+    }
+    50% {
+        left: 50%;
+        transform: translateY(-50%) translateX(-50%) scale(1);
+    }
+    75% {
+        transform: translateY(-50%) translateX(-50%) scale(1.1);
+    }
+    100% {
+        left: 100%;
+        transform: translateY(-50%) translateX(-100%) scale(1);
+    }
+}
+
+/* =====================
+   UTILITIES
+===================== */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+/* =====================
+   SELECT & DATE INPUT
+===================== */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 3rem;
+}
+
+select::-ms-expand {
+    display: none;
+}
+
+@-moz-document url-prefix() {
+    select {
+        text-indent: 0.01px;
+        text-overflow: "";
+    }
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* =====================
+   FADE & SLIDE
+===================== */
 @keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(20px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -16,15 +150,30 @@
     animation-delay: calc(var(--index, 0) * 0.1s);
 }
 
-/* Gradient text for heading */
-.text-gradient {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Smooth shadow transitions */
+.rounded-3xl {
+    animation: slideUp 0.5s ease-out;
+}
+
+/* =====================
+   GRADIENT & EFFECT
+===================== */
+.text-gradient {
+    background: linear-gradient(135deg, #10b981, #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 .shadow-lg {
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
@@ -33,15 +182,16 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-/* Status badge pulse animation */
+/* =====================
+   PULSE & FLOAT
+===================== */
 @keyframes pulse {
     0%,
     100% {
         opacity: 1;
     }
-
     50% {
-        opacity: 0.7;
+        opacity: 0.8;
     }
 }
 
@@ -49,24 +199,29 @@
     animation: pulse 2s infinite;
 }
 
-/* Custom animations */
 @keyframes float {
     0%,
     100% {
-        transform: translateY(0px);
+        transform: translateY(0);
     }
-
     50% {
         transform: translateY(-10px);
     }
 }
 
+/* QR Code only */
+.relative img {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* =====================
+   SHIMMER EFFECT
+===================== */
 @keyframes shimmer {
-    0% {
+    from {
         background-position: -1000px 0;
     }
-
-    100% {
+    to {
         background-position: 1000px 0;
     }
 }
@@ -79,58 +234,19 @@
 .bg-gradient-to-br::before {
     content: "";
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
+    inset: -50%;
     background: linear-gradient(
         45deg,
         transparent 30%,
         rgba(255, 255, 255, 0.1) 50%,
         transparent 70%
     );
-    animation: shimmer 3s infinite linear;
+    animation: shimmer 3s linear infinite;
 }
 
-/* QR Code animation */
-.relative img {
-    animation: float 3s ease-in-out infinite;
-}
-
-/* Status badge pulse */
-@keyframes pulse {
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.8;
-    }
-}
-
-.bg-amber-100 {
-    animation: pulse 2s infinite;
-}
-
-/* Smooth card entrance */
-.rounded-3xl {
-    animation: slideUp 0.5s ease-out;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Hover effects for info cards */
+/* =====================
+   HOVER CARD
+===================== */
 .bg-emerald-50 {
     transition: all 0.3s ease;
 }
@@ -138,4 +254,26 @@
 .bg-emerald-50:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1);
+}
+
+/* Hide horizontal scrollbar (mobile nav) */
+.nav-item {
+    @apply relative text-white/80 font-medium transition-colors duration-300;
+}
+.nav-item:hover {
+    @apply text-white;
+}
+.nav-item::after {
+    content: "";
+    @apply absolute bottom-0 left-1/2 w-0 h-0.5 bg-[#13810A]
+           -translate-x-1/2 transition-all duration-300;
+}
+.nav-item:hover::after {
+    @apply w-3/4;
+}
+
+/* Mobile */
+.mobile-nav-item {
+    @apply px-4 py-2 rounded-lg text-white/90
+           hover:bg-white/10 transition-all;
 }

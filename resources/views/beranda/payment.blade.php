@@ -67,6 +67,61 @@
         </div>
     </div>
 
+    <!-- Timer Section -->
+    <div class="mx-auto max-w-2xl px-4 mb-8">
+        <div class="bg-gradient-to-r from-rose-50 to-red-50 border border-rose-200 rounded-2xl shadow-lg p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="bg-gradient-to-r from-rose-500 to-red-500 p-3 rounded-xl shadow-sm mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Selesaikan Pembayaran</h3>
+                        <p class="text-sm text-gray-600">Segera lakukan pembayaran sebelum waktu habis</p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-xs font-semibold text-rose-600 mb-1">WAKTU TERSISA</div>
+                    <div class="flex items-center justify-center space-x-2">
+                        <div class="relative">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-r from-rose-500 to-red-500 rounded-lg blur opacity-30">
+                            </div>
+                            <div class="relative bg-white px-4 py-3 rounded-lg shadow-inner border border-rose-200">
+                                <div id="countdown-timer" class="text-2xl font-bold text-rose-700 tabular-nums">
+                                    00:00:00
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-rose-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar Timer -->
+            <div class="mt-4">
+                <div class="h-2 bg-rose-100 rounded-full overflow-hidden">
+                    <div id="timer-progress"
+                        class="h-full bg-gradient-to-r from-rose-500 to-red-500 rounded-full transition-all duration-1000">
+                    </div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>Sisa waktu</span>
+                    <span id="timer-percentage">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div class="mx-auto space-y-8 w-[97%] max-w-[1200px] mb-12 px-4">
         <!-- Left Column - Order Details -->
@@ -278,7 +333,7 @@
                         </div>
                     @endif
 
-                    <!-- Timer -->
+                    <!-- Timer (old) - Keep for compatibility -->
                     <div class="mt-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
@@ -427,9 +482,13 @@
         let timerInterval;
         let expiredHandled = false;
         let statusInterval = null;
+        let totalDuration = 15 * 60; // 15 menit dalam detik
 
         function startTimer() {
-            const timerDisplay = document.querySelector('.text-2xl.font-bold');
+            const timerDisplay = document.getElementById('countdown-timer');
+            const progressBar = document.getElementById('timer-progress');
+            const percentageDisplay = document.getElementById('timer-percentage');
+
             if (!timerDisplay) return;
 
             function updateTimer() {
@@ -440,6 +499,8 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     timerDisplay.textContent = "00:00:00";
+                    progressBar.style.width = "0%";
+                    percentageDisplay.textContent = "0%";
 
                     if (!expiredHandled) {
                         expiredHandled = true;
@@ -448,12 +509,27 @@
                     return;
                 }
 
+                // Update timer display
                 const hours = Math.floor(timeLeft / 3600);
                 const minutes = Math.floor((timeLeft % 3600) / 60);
                 const seconds = timeLeft % 60;
 
                 timerDisplay.textContent =
                     `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+                // Update progress bar
+                const timeElapsed = totalDuration - timeLeft;
+                const percentage = (timeElapsed / totalDuration) * 100;
+                progressBar.style.width = `${percentage}%`;
+                percentageDisplay.textContent = `${Math.round(percentage)}%`;
+
+                // Change color based on time left
+                if (timeLeft < 300) { // Less than 5 minutes
+                    timerDisplay.classList.remove('text-rose-700');
+                    timerDisplay.classList.add('text-red-600');
+                    progressBar.classList.remove('from-rose-500', 'to-red-500');
+                    progressBar.classList.add('from-red-500', 'to-orange-500');
+                }
             }
 
             updateTimer();
