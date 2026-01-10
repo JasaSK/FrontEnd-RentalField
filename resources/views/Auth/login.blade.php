@@ -71,13 +71,9 @@
                         @enderror
                     </div>
 
-                    <!-- Remember me & Forgot password -->
-                    <div class="flex justify-between items-center text-sm mt-1 w-full px-1 gap-4">
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" class="accent-green-500">
-                            <span>Remember me</span>
-                        </label>
-                        <a href="{{ url('forgotpassword') }}" class="hover:underline">Forgot password?</a>
+                    <!-- Forgot password saja -->
+                    <div class="flex justify-end items-center text-sm mt-1 w-full px-1">
+                        <a href="{{ route('forgotpassword') }}" class="hover:underline">Forgot password?</a>
                     </div>
 
                     <!-- Belum punya akun -->

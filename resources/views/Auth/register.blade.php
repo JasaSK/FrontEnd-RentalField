@@ -97,7 +97,7 @@
                     Daftar
                 </button>
 
-                <p class="text-center text-sm mt-3">
+                <p class="text-center text-sm m t-3">
                     Sudah memiliki akun?
                     <a href="{{ route('PageLogin') }}"
                         class="text-red-600 hover:text-red-500 hover:underline transition">
