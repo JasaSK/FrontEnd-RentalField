@@ -475,5 +475,5 @@
         </div>
     </div>
 
-@include('beranda.layouts.payment-timer')
+    @include('beranda.fetch.payment-timer')
 @endsection
