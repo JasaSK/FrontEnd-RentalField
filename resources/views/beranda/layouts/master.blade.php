@@ -5,7 +5,6 @@
 
 <body class="text-black relative overflow-x-hidden font-sans bg-gray-50">
     <!-- Loader -->
-    <!-- Loader -->
     <div id="loader"
         class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white transition-opacity duration-500 px-4">
 
@@ -71,7 +70,6 @@
             </p>
         </div>
     </div>
-
 
     <!-- Top Bar -->
     <div class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-lg">
@@ -190,23 +188,6 @@
 
     <!-- Scripts -->
     @include('beranda.layouts.script')
-
-    <script>
-        // Loader script
-        window.addEventListener('load', function() {
-            const loader = document.getElementById('loader');
-
-            // Delay untuk efek smooth
-            setTimeout(function() {
-                loader.style.opacity = '0';
-
-                // Hapus dari DOM setelah animasi selesai
-                setTimeout(function() {
-                    loader.style.display = 'none';
-                }, 500);
-            }, 1500); // Durasi loading dalam milidetik
-        });
-    </script>
 </body>
 
 </html>
