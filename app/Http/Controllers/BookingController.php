@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Booking\BookingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -91,52 +92,20 @@ class BookingController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(BookingRequest $request)
     {
-        // dd($request->all());
-
-
-        if (!session('user') || !session('token')) {
-            return redirect()->route('PageLogin')->with([
-                'swal' => [
-                    'icon'  => 'warning',
-                    'title' => 'Login Diperlukan!',
-                    'text'  => 'Silakan login terlebih dahulu untuk melakukan booking.',
-                    'timer' => 3000
-                ]
-            ]);
-        }
-        $validated = $request->validate([
-            'field_id'   => 'required|numeric',
-            'date'       => 'required|date',
-            'start_time' => 'required',
-            'end_time'   => 'required',
-            'user_id'    => 'required|numeric'
-        ], [
-            'field_id.required'   => 'Field ID harus diisi.',
-            'date.required'       => 'Tanggal harus diisi.',
-            'start_time.required' => 'Waktu mulai harus diisi.',
-            'end_time.required'   => 'Waktu selesai harus diisi.',
-            'user_id.required'    => 'User ID harus diisi.',
-        ]);
-        // dd($request->all());
+        $validated = $request->validated();
         $response = Http::withHeaders([
             "accept" => "application/json",
             "Authorization" => "Bearer " . session('token')
         ])->withoutRedirecting()->post("{$this->apiUrl}/booking", $validated);
-        // dd($response->body(), $response->status());
         if (!$response->successful()) {
             return back()->withErrors([
                 'msg' => $response->json('message') ?? 'Booking gagal, silahkan coba lagi.'
             ]);
         }
-        // dd($response->body(), $response->status());
-        // dd("URL:", "{$this->apiUrl}/booking");
 
-        // dd($response->json());
         $booking = $response->json('data');
-        // dd($booking);
-
 
         if (isset($booking['field']['image'])) {
             $booking['field']['image_url'] = "{$this->imgUrl}/storage/{$booking['field']['image']}";

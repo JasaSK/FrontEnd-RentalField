@@ -2,26 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\BookingAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class BookingValidationController extends Controller
 {
     private string $apiUrl;
-    private string $imgUrl;
 
     public function __construct()
     {
         $this->apiUrl = config('services.api_service.url');
-        $this->imgUrl = config('services.api_image.url');
     }
-    public function show($booking_id)
-    {
-        if (!session('token')) {
-            return redirect()->route('PageLogin')->with('error', 'Login diperlukan');
-        }
 
-        // Ambil detail booking
+    public function show(BookingAuth $request, $booking_id)
+    {
+
         $bookingResponse = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/booking/{$booking_id}");
@@ -35,14 +31,12 @@ class BookingValidationController extends Controller
         $paymentResponse = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/payment/{$booking_id}");
-        // dd($paymentResponse->json());
         if ($paymentResponse->failed()) {
             return back()->with('error', 'Gagal memuat data payment');
         }
         $paymentData = $paymentResponse->json()['data'];
         $qrisUrl = $paymentData['qris_url'] ?? null;
         $expiresAt = $paymentData['expires_at'] ?? null;
-        // dd($qrisUrl);
         return view('beranda.bookingValidation', [
             'booking' => $booking,
             'booking_id' => $booking_id,

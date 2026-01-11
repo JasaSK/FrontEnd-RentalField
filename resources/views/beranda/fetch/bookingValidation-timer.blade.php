@@ -140,4 +140,33 @@
         startTimer();
         setInterval(checkStatus, 5000);
     });
+
+    // Fungsi untuk menangani cancel booking
+    function handleCancelBooking(event, form) {
+        event.preventDefault(); // Mencegah submit langsung
+
+        // Tampilkan konfirmasi menggunakan GlobalAlertSystem
+        if (typeof GlobalAlert !== 'undefined') {
+            GlobalAlert.showCancelBooking(form);
+        } else {
+            // Fallback jika GlobalAlert belum siap
+            if (confirm('Apakah Anda yakin ingin membatalkan booking ini?')) {
+                form.submit();
+            }
+        }
+
+        return false; // Pastikan form tidak di-submit langsung
+    }
+
+    // Event listener untuk multiple forms (opsional)
+    document.addEventListener('DOMContentLoaded', function() {
+        const cancelForms = document.querySelectorAll('.cancel-booking-form');
+
+        cancelForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleCancelBooking(e, this);
+            });
+        });
+    });
 </script>

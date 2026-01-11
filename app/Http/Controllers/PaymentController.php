@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\BookingAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -14,13 +15,9 @@ class PaymentController extends Controller
         $this->apiUrl = config('services.api_service.url');
     }
 
-    public function paymentPage($booking_id)
+    public function paymentPage(BookingAuth $request, $booking_id)
     {
-        if (!session('token')) {
-            return redirect()->route('PageLogin')->with('error', 'Login diperlukan');
-        }
 
-        // Ambil detail booking
         $bookingResponse = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/booking/{$booking_id}");
@@ -34,14 +31,12 @@ class PaymentController extends Controller
         $paymentResponse = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/payment/{$booking_id}");
-        // dd($paymentResponse->json());
         if ($paymentResponse->failed()) {
             return back()->with('error', 'Gagal memuat data payment');
         }
         $paymentData = $paymentResponse->json()['data'];
         $qrisUrl = $paymentData['qris_url'] ?? null;
         $expiresAt = $paymentData['expires_at'] ?? null;
-        // dd($qrisUrl);
         return view('beranda.payment', [
             'booking' => $booking,
             'booking_id' => $booking_id,
@@ -74,7 +69,6 @@ class PaymentController extends Controller
         $res = Http::withHeaders([
             "Authorization" => "Bearer " . session('token')
         ])->get("{$this->apiUrl}/booking/status/{$id}");
-        // dd($res->json());
         return response()->json($res->json());
     }
 }

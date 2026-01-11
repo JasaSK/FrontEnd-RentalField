@@ -279,9 +279,13 @@
 
         <!-- Cancel Button -->
         <form action="{{ route('beranda.bookingValidation.cancel', $booking['id'] ?? '') }}" method="POST"
-            onsubmit="return confirm('Apakah Anda yakin ingin membatalkan booking ini?');" class="w-full sm:w-auto">
+            class="w-full sm:w-auto cancel-booking-form" data-booking-id="{{ $booking['id'] ?? '' }}"
+            onsubmit="return handleCancelBooking(event, this)">
+
             @csrf
             @method('DELETE')
+
+            <input type="hidden" name="booking_id" value="{{ $booking['id'] ?? '' }}">
 
             <button type="submit"
                 class="group w-full sm:w-auto bg-gradient-to-r from-red-50 to-white hover:from-red-100 text-red-600 px-10 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-md hover:shadow-xl border-2 border-red-200 hover:border-red-300 flex items-center justify-center">

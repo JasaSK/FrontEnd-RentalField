@@ -36,5 +36,3 @@
 
 <!-- Load the minimal green alert -->
 <script src="{{ asset('js/global-alert.js') }}" type="module"></script>
-<!-- Fallback for older browsers -->
-<script nomodule src="{{ asset('js/global-alert-initializer.js') }}"></script>
