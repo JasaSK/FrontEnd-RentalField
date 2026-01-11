@@ -428,18 +428,19 @@
                 <!-- Filter Buttons -->
                 <div class="flex justify-center gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-12 flex-wrap px-2">
                     <button
-                        class="filter-btn bg-gradient-to-r from-[#13810A] to-[#0f6e09] 
-                                 text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg sm:rounded-xl font-bold border-2 border-[#13810A]
-                                 shadow-lg hover:shadow-xl transition-all duration-300 text-xs sm:text-sm md:text-base"
+                        class="filter-btn gallery-filter-btn active
+           px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3
+           rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm md:text-base"
                         data-filter="all">
                         Semua
                     </button>
 
+
                     @foreach ($categoriesGalleries as $cat)
                         <button
-                            class="filter-btn bg-white text-[#13810A] border-2 border-[#13810A] 
-                                 hover:bg-gradient-to-r hover:from-[#13810A] hover:to-[#0f6e09] hover:text-white 
-                                 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg sm:rounded-xl font-bold transition-all duration-300 shadow-md hover:shadow-lg text-xs sm:text-sm md:text-base"
+                            class="filter-btn gallery-filter-btn
+           px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3
+           rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm md:text-base"
                             data-filter="{{ strtolower($cat['name']) }}">
                             {{ ucfirst($cat['name']) }}
                         </button>
@@ -591,206 +592,6 @@
         </section>
     @endif
 
-    <style>
-        @keyframes slowZoom {
+    <script src="{{ asset('js/main.js') }}"></script>
 
-            0%,
-            100% {
-                transform: scale(1.05);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        /* Custom breakpoint for extra small devices */
-        @media (max-width: 475px) {
-            .xs\:inline {
-                display: inline !important;
-            }
-
-            .xs\:hidden {
-                display: none !important;
-            }
-
-            .xs\:flex-row {
-                flex-direction: row !important;
-            }
-        }
-
-        /* Custom scrollbar for horizontal nav */
-        #sectionNav div::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        #sectionNav div::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        #sectionNav div::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
-        }
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Banner Carousel
-            let currentSlide = 0;
-            const slides = document.querySelectorAll('#banner-carousel > div');
-            const dots = document.querySelectorAll('.banner-dot');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-
-            function updateCarousel() {
-                const carousel = document.getElementById('banner-carousel');
-                if (carousel) {
-                    carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
-                }
-
-                dots.forEach((dot, index) => {
-                    if (dot) {
-                        dot.classList.toggle('!bg-white', index === currentSlide);
-                        dot.classList.toggle('w-4', index === currentSlide);
-                        dot.classList.toggle('sm:w-5', index === currentSlide && window.innerWidth >= 640);
-                        dot.classList.toggle('md:w-6', index === currentSlide && window.innerWidth >= 768);
-                        dot.classList.toggle('lg:w-8', index === currentSlide && window.innerWidth >= 1024);
-                        dot.classList.toggle('w-2', index !== currentSlide && window.innerWidth < 640);
-                        dot.classList.toggle('sm:w-2.5', index !== currentSlide && window.innerWidth >=
-                            640);
-                        dot.classList.toggle('md:w-3', index !== currentSlide && window.innerWidth >= 768);
-                    }
-                });
-            }
-
-            if (prevBtn && nextBtn) {
-                prevBtn.addEventListener('click', () => {
-                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-                    updateCarousel();
-                });
-
-                nextBtn.addEventListener('click', () => {
-                    currentSlide = (currentSlide + 1) % slides.length;
-                    updateCarousel();
-                });
-
-                // Auto slide every 5 seconds
-                setInterval(() => {
-                    currentSlide = (currentSlide + 1) % slides.length;
-                    updateCarousel();
-                }, 5000);
-            }
-
-            // Gallery Filter
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const galleryItems = document.querySelectorAll('.gallery-item');
-
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Update active button
-                    filterButtons.forEach(btn => {
-                        if (btn.dataset.filter === 'all') {
-                            btn.classList.remove('bg-white', 'text-[#13810A]',
-                                'border-[#13810A]');
-                            btn.classList.add('bg-gradient-to-r', 'from-[#13810A]',
-                                'to-[#0f6e09]', 'text-white');
-                        } else {
-                            btn.classList.remove('bg-gradient-to-r', 'from-[#13810A]',
-                                'to-[#0f6e09]', 'text-white');
-                            btn.classList.add('bg-white', 'text-[#13810A]',
-                                'border-[#13810A]');
-                        }
-                    });
-
-                    if (button.dataset.filter === 'all') {
-                        button.classList.remove('bg-white', 'text-[#13810A]', 'border-[#13810A]');
-                        button.classList.add('bg-gradient-to-r', 'from-[#13810A]', 'to-[#0f6e09]',
-                            'text-white');
-                    } else {
-                        button.classList.remove('bg-white', 'text-[#13810A]', 'border-[#13810A]');
-                        button.classList.add('bg-gradient-to-r', 'from-[#13810A]', 'to-[#0f6e09]',
-                            'text-white');
-                    }
-
-                    // Filter gallery items
-                    const filterValue = button.dataset.filter;
-
-                    galleryItems.forEach(item => {
-                        if (filterValue === 'all' || item.classList.contains(filterValue)) {
-                            item.style.display = 'block';
-                            setTimeout(() => {
-                                item.style.opacity = '1';
-                                item.style.transform = 'scale(1)';
-                            }, 10);
-                        } else {
-                            item.style.opacity = '0';
-                            item.style.transform = 'scale(0.8)';
-                            setTimeout(() => {
-                                item.style.display = 'none';
-                            }, 300);
-                        }
-                    });
-                });
-            });
-
-            // Form Loader
-            const form = document.getElementById('myForm');
-            const formLoader = document.getElementById('formLoader');
-
-            if (form && formLoader) {
-                form.addEventListener('submit', function(e) {
-                    formLoader.classList.remove('hidden');
-                    formLoader.classList.add('flex');
-                });
-            }
-
-            // Time select validation
-            const jamMulai = document.getElementById('jam_mulai');
-            const jamSelesai = document.getElementById('close_time');
-
-            function updateOptions() {
-                if (!jamMulai || !jamSelesai) return;
-
-                const startHour = parseInt(jamMulai.value.split(':')[0]) || 0;
-                const endHour = parseInt(jamSelesai.value.split(':')[0]) || 24;
-
-                // Disable jam selesai yang lebih kecil atau sama dengan jam mulai
-                for (let i = 8; i <= 21; i++) {
-                    const option = jamSelesai.querySelector(`option[value="${String(i).padStart(2,'0')}:00"]`);
-                    if (option) option.disabled = i <= startHour;
-                }
-
-                // Disable jam mulai yang lebih besar atau sama dengan jam selesai
-                for (let i = 8; i <= 21; i++) {
-                    const option = jamMulai.querySelector(`option[value="${String(i).padStart(2,'0')}:00"]`);
-                    if (option) option.disabled = i >= endHour;
-                }
-            }
-
-            if (jamMulai && jamSelesai) {
-                jamMulai.addEventListener('change', updateOptions);
-                jamSelesai.addEventListener('change', updateOptions);
-                updateOptions();
-            }
-
-            // Smooth scroll for navigation
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        const offset = window.innerWidth < 768 ? 80 : 100;
-                        window.scrollTo({
-                            top: targetElement.offsetTop - offset,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-        });
-    </script>
 @endsection
