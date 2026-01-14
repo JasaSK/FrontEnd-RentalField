@@ -108,7 +108,7 @@ class BerandaController extends Controller
             'categoriesFields'    => $this->fetchApi('category-fields'),
             'categoriesGalleries' => $this->fetchApi('category-gallery'),
             'galleries'           => $this->mapGalleryImages($this->fetchApi('galleries')),
-            'banners'             => $this->mapBannerImages($this->fetchApi('banners')),
+            'banners'             => $this->mapBannerImages($this->fetchActiveBanners()),
         ];
     }
 
@@ -154,8 +154,20 @@ class BerandaController extends Controller
 
     private function mapBannerImages(array $banners): array
     {
-        return array_map(fn($b) => [
-            'image' => "{$this->imgUrl}/storage/" . ($b['image'] ?? ''),
-        ], $banners);
+        return collect($banners)
+            ->filter(fn($b) => ($b['status'] ?? '') === 'active')
+            ->map(fn($b) => [
+                'image' => "{$this->imgUrl}/storage/" . ($b['image'] ?? ''),
+            ])
+            ->values()
+            ->toArray();
+    }
+
+
+    private function fetchActiveBanners(): array
+    {
+        return Http::get("{$this->apiUrl}/banners", [
+            'status' => 'active'
+        ])->json('data', []);
     }
 }
